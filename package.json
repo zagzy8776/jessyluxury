@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "prisma db push && prisma generate",
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate"
@@ -11,18 +12,19 @@
   "dependencies": {
     "@prisma/client": "^5.20.0",
     "lucide-react": "^0.400.0",
-    "next": "14.2.15",
+    "next": "14.2.35",
     "pg": "^8.12.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@types/node": "26.2.0",
-    "@types/react": "19.2.18",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
     "prisma": "^5.20.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "7.0.2"
+    "typescript": "^5.9.3"
   }
 }
