@@ -1,263 +1,252 @@
-'use client'
-import { useMemo, useState } from 'react'
-import { ArrowRight, Heart, Instagram, Menu, Search, ShoppingBag, X } from 'lucide-react'
+import Link from 'next/link'
+import {
+  ArrowRight,
+  BadgeCheck,
+  MessageCircle,
+  Sparkles,
+  Truck,
+} from 'lucide-react'
+import ProductCard from '@/components/ProductCard'
+import Bottle from '@/components/Bottle'
+import { products, formatNaira } from '@/lib/products'
+import { site, wa } from '@/lib/site'
 
-const products = [
-  { id: 1, name: 'Khair Pistachio', brand: 'Paris Corner', price: 32000, tag: 'BESTSELLER', tone: 'pistachio', notes: 'Pistachio · Cream · Vanilla', desc: 'A creamy gourmand scent with a playful, luxurious finish.' },
-  { id: 2, name: 'Supremacy Collector', brand: 'Afnan', price: 58000, tag: 'SIGNATURE', tone: 'amber', notes: 'Fruity · Woody · Amber', desc: 'Polished, confident and made to leave a memorable trail.' },
-  { id: 3, name: 'Invicto Legend', brand: 'Fragrance World', price: 38000, tag: 'NEW', tone: 'smoke', notes: 'Fresh · Aromatic · Woody', desc: 'A bold everyday fragrance with a clean, energetic character.' },
-  { id: 4, name: 'Almas Perfume Oil', brand: 'Jessy Selection', price: 12000, tag: 'OIL', tone: 'rose', notes: 'Warm · Floral · Musk', desc: 'An intimate oil blend designed for close-to-skin luxury.' },
+const featured = products.filter((p) => p.featured)
+
+const categoryTiles = [
+  { name: 'Oud & Amber', tone: 'oud', blurb: 'Bold, rich and grounding' },
+  { name: 'Fresh', tone: 'fresh', blurb: 'Clean, crisp everyday wear' },
+  { name: 'Sweet & Gourmand', tone: 'sweet', blurb: 'Warm, comforting and fun' },
+  { name: 'Perfume Oils', tone: 'rose', blurb: 'Intimate close-to-skin luxury' },
+  { name: 'Gift Sets', tone: 'amber', blurb: 'Curated, gift-ready boxes' },
+  { name: 'Body Mists', tone: 'musk', blurb: 'Light layers for any moment' },
 ]
 
-function Bottle({ tone = 'amber' }: { tone?: string }) {
-  return <div className={`bottle ${tone}`}><div className="cap" /><div className="neck" /><div className="glass"><div className="label">JESSY<br /><span>LUXURY</span></div></div></div>
-}
-
-function ProductCard({ p }: { p: any }) {
-  const [liked, setLiked] = useState(false)
-  return (
-    <article className="group relative">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-gradient-to-br from-zinc-100 to-zinc-200 flex items-center justify-center">
-        <span className="absolute left-3 top-3 z-10 text-[9px] tracking-[0.2em] font-bold text-zinc-800 bg-white/80 backdrop-blur px-2 py-1 rounded">{p.tag}</span>
-        <button onClick={() => setLiked(!liked)} className="absolute right-3 top-3 z-10 rounded-full bg-white/90 p-2 backdrop-blur shadow-sm hover:scale-110 transition">
-          <Heart size={14} fill={liked ? '#0D0B0A' : 'none'} className={liked ? 'text-zinc-900' : 'text-zinc-600'} />
-        </button>
-        <div className="scale-[0.85] transition duration-700 group-hover:scale-[0.95]">
-          <Bottle tone={p.tone} />
-        </div>
-        <div className="absolute inset-x-3 bottom-3 flex translate-y-2 justify-center opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
-          <a href={`https://wa.me/?text=${encodeURIComponent('Hello Jessy Luxury, I want to order ' + p.name)}`} className="w-full bg-zinc-900 text-white text-center py-3 text-[10px] tracking-[0.15em] rounded-lg font-medium hover:bg-zinc-800 transition">
-            ORDER VIA WHATSAPP
-          </a>
-        </div>
-      </div>
-      <div className="pt-4">
-        <p className="text-[9px] uppercase tracking-[0.18em] text-zinc-500">{p.brand}</p>
-        <h3 className="serif text-lg mt-1 text-zinc-900">{p.name}</h3>
-        <p className="text-xs text-zinc-600 mt-1.5">{p.notes}</p>
-        <p className="mt-2.5 font-semibold text-zinc-900">₦{p.price.toLocaleString()}</p>
-      </div>
-    </article>
-  )
-}
+const testimonials = [
+  { name: 'Adaeze O.', text: 'Ordered the Khair Pistachio — it arrived the same day and smells even better than I expected. Delivery was smooth.', role: 'Owerri' },
+  { name: 'Chinedu K.', text: 'The perfume finder picked the Supremacy Collector for me and it is perfect. Exactly the confidence I wanted.', role: 'Nigeria' },
+  { name: 'Amaka E.', text: 'Got the Signature Gift Set for my mum’s birthday. Beautiful presentation and authentic scents. Highly recommended!', role: 'Lagos' },
+]
 
 export default function Home() {
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const filtered = useMemo(() => products.filter(p => (p.name + p.brand + p.notes).toLowerCase().includes(query.toLowerCase())), [query])
-
   return (
-    <main className="min-h-screen bg-zinc-50">
-      {/* Header */}
-      <header className="fixed top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
-          <button className="lg:hidden p-2" onClick={() => setOpen(!open)}>
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-          <a href="#" className="flex items-center gap-2">
-            <img src="/logo.png.jpeg" alt="Jessy Luxury" className="h-8 w-auto" />
-          </a>
-          <nav className="hidden items-center gap-8 lg:flex text-[10px] tracking-[0.15em] font-medium text-zinc-700">
-            <a href="#shop" className="hover:text-zinc-900 transition">SHOP</a>
-            <a href="#collections" className="hover:text-zinc-900 transition">COLLECTIONS</a>
-            <a href="#story" className="hover:text-zinc-900 transition">ABOUT</a>
-            <a href="#finder" className="hover:text-zinc-900 transition">FIND YOUR SCENT</a>
-          </nav>
-          <div className="flex items-center gap-3">
-            <button onClick={() => document.getElementById('search')?.focus()} className="p-2 hover:bg-zinc-100 rounded-full transition">
-              <Search size={18} className="text-zinc-700" />
-            </button>
-            <a href="#shop" className="p-2 hover:bg-zinc-100 rounded-full transition relative">
-              <ShoppingBag size={18} className="text-zinc-700" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-amber-600 rounded-full"></span>
-            </a>
-          </div>
-        </div>
-        {open && (
-          <div className="lg:hidden border-t border-zinc-200 px-6 py-6 space-y-4 text-sm">
-            <a className="block py-2 text-zinc-700 hover:text-zinc-900" href="#shop" onClick={() => setOpen(false)}>SHOP</a>
-            <a className="block py-2 text-zinc-700 hover:text-zinc-900" href="#collections" onClick={() => setOpen(false)}>COLLECTIONS</a>
-            <a className="block py-2 text-zinc-700 hover:text-zinc-900" href="#story" onClick={() => setOpen(false)}>ABOUT</a>
-            <a className="block py-2 text-zinc-700 hover:text-zinc-900" href="#finder" onClick={() => setOpen(false)}>FIND YOUR SCENT</a>
-          </div>
-        )}
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative min-h-[700px] overflow-hidden pt-[72px] bg-zinc-900 text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-amber-950/30" />
-        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-        <div className="absolute -right-20 top-20 h-[500px] w-[500px] rounded-full bg-amber-600/20 blur-3xl" />
-        <div className="relative mx-auto grid min-h-[620px] max-w-7xl items-center px-6 lg:grid-cols-2 lg:px-8">
-          <div className="max-w-xl py-16 lg:py-24">
-            <p className="mb-5 text-[9px] tracking-[0.35em] text-amber-400 font-semibold">JESSY LUXURY FRAGRANCE</p>
-            <h1 className="serif text-5xl leading-[0.95] sm:text-6xl lg:text-[88px] text-white">
-              SMELL<br /><em className="font-normal text-amber-200">EXPENSIVE.</em>
-            </h1>
-            <p className="mt-6 max-w-md text-sm leading-7 text-zinc-300">
-              Curated Arabic, designer and everyday luxury fragrances for the moments you want to be remembered.
+    <main className="bg-stone-950">
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(201,163,93,0.16),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(120,60,20,0.18),transparent_55%)]" />
+        <div className="grain absolute inset-0" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pb-20 pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pb-28 lg:pt-24">
+          <div className="max-w-xl">
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] text-amber-300">
+              <Sparkles size={12} /> JESSY LUXURY FRAGRANCE
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#shop" className="bg-amber-600 hover:bg-amber-700 px-6 py-3.5 text-[10px] font-bold tracking-[0.2em] text-white rounded-lg transition">
+            <h1 className="font-display text-6xl font-medium leading-[0.95] text-stone-50 sm:text-7xl lg:text-[92px]">
+              Discover your <span className="text-amber-400 italic">signature</span> scent.
+            </h1>
+            <p className="mt-6 max-w-md text-base leading-7 text-stone-400">
+              Experience luxury that lingers. Original designer and Arabian fragrances, oil
+              perfumes and gift sets curated for confident everyday living — with personal
+              WhatsApp ordering.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link
+                href="/shop"
+                className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400"
+              >
                 SHOP THE COLLECTION
-              </a>
-              <a href="#finder" className="border border-white/20 hover:border-white/40 px-6 py-3.5 text-[10px] tracking-[0.2em] rounded-lg transition">
-                FIND YOUR SCENT
+                <ArrowRight size={15} className="transition group-hover:translate-x-1" />
+              </Link>
+              <a
+                href={wa("Hello Jessy Luxury! I'd love some perfume recommendations.")}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-stone-700 px-7 py-4 text-xs font-bold tracking-[0.14em] text-stone-200 transition hover:border-green-500 hover:text-green-400"
+              >
+                <MessageCircle size={15} /> CHAT ON WHATSAPP
               </a>
             </div>
+            <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-[10px] tracking-[0.16em] text-stone-500">
+              <span className="flex items-center gap-2"><BadgeCheck size={14} className="text-amber-400" /> 100% ORIGINAL</span>
+              <span className="flex items-center gap-2"><Truck size={14} className="text-amber-400" /> FAST DELIVERY</span>
+              <span className="flex items-center gap-2"><MessageCircle size={14} className="text-amber-400" /> WHATSAPP ORDERS</span>
+            </div>
           </div>
-          <div className="flex justify-center lg:justify-end py-12 lg:py-0">
-            <div className="relative flex h-[450px] w-[380px] items-center justify-center">
-              <div className="absolute h-[340px] w-[340px] rounded-full border border-amber-500/20" />
-              <div className="absolute h-[280px] w-[280px] rounded-full border border-white/10" />
-              <div className="scale-[1.35]">
-                <Bottle tone="amber" />
-              </div>
+
+          <div className="relative flex items-center justify-center py-8">
+            <div className="absolute h-[420px] w-[280px] rounded-full bg-amber-500/10 blur-3xl" />
+            <div className="relative -rotate-3 transition duration-700 hover:rotate-0 hover:scale-105">
+              <Bottle tone="amber" className="scale-[2.1] origin-bottom drop-shadow-[0_30px_50px_rgba(0,0,0,0.6)]" />
+            </div>
+            <div className="absolute left-4 top-6 hidden rounded-2xl border border-stone-800 bg-stone-950/80 p-4 backdrop-blur sm:block">
+              <p className="text-[9px] tracking-[0.18em] text-stone-500">BESTSELLER</p>
+              <p className="mt-1 font-display text-sm text-stone-100">Khair Pistachio</p>
+              <p className="text-xs text-amber-300">{formatNaira(32000)}</p>
+            </div>
+            <div className="absolute bottom-10 right-0 hidden rounded-2xl border border-stone-800 bg-stone-950/80 p-4 backdrop-blur sm:block">
+              <p className="text-[9px] tracking-[0.18em] text-stone-500">NEW IN</p>
+              <p className="mt-1 font-display text-sm text-stone-100">Invicto Legend</p>
+              <p className="text-xs text-amber-300">{formatNaira(38000)}</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Collections Section */}
-      <section id="collections" className="border-b border-zinc-200 bg-white py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-[9px] tracking-[0.25em] text-amber-600 font-semibold">DISCOVER</p>
-              <h2 className="serif mt-2 text-3xl sm:text-4xl text-zinc-900">Your signature scent.</h2>
+      {/* FEATURES STRIP */}
+      <section className="border-y border-stone-800 bg-stone-900/40">
+        <div className="mx-auto grid max-w-7xl divide-y divide-stone-800 px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8">
+          {[
+            { icon: BadgeCheck, t: 'Authentic Selection', d: 'Original designer, Arabic and niche fragrances only.' },
+            { icon: MessageCircle, t: 'WhatsApp Support', d: 'Talk to us personally before you order.' },
+            { icon: Truck, t: 'Fast, Reliable Delivery', d: 'Pickup, Owerri delivery and waybill dispatch.' },
+          ].map((f) => (
+            <div key={f.t} className="flex items-start gap-4 px-2 py-8 sm:px-8">
+              <span className="rounded-full bg-amber-500/10 p-3 text-amber-400">
+                <f.icon size={20} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-stone-100">{f.t}</p>
+                <p className="mt-1 text-xs leading-5 text-stone-500">{f.d}</p>
+              </div>
             </div>
-            <a href="#shop" className="hidden items-center gap-2 text-[10px] tracking-[0.18em] text-zinc-600 hover:text-zinc-900 sm:flex">
-              VIEW ALL <ArrowRight size={14} />
-            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* BEST SELLERS */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+        <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">CUSTOMER FAVOURITES</p>
+            <h2 className="mt-3 font-display text-4xl text-stone-50 sm:text-5xl">Best Sellers</h2>
           </div>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {['ARABIC', 'DESIGNER', 'PERFUME OILS', 'GIFT SETS'].map((x, i) => (
-              <a href="#shop" key={x} className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-gradient-to-br from-zinc-100 to-zinc-200">
-                <div className="absolute inset-0 transition duration-700 group-hover:scale-105" style={{ background: `radial-gradient(circle at ${30 + i * 18}% ${25 + i * 10}%, rgba(217, 119, 6, 0.2), transparent 40%), linear-gradient(145deg, #fafafa, #e4e4e7)` }} />
-                <div className="absolute inset-0 flex items-end p-4">
-                  <span className="text-xs tracking-[0.18em] font-medium text-zinc-800">{x}</span>
+          <Link href="/shop" className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-stone-400 transition hover:text-amber-300">
+            VIEW ALL <ArrowRight size={14} className="transition group-hover:translate-x-1" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
+          {featured.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+
+      {/* COLLECTIONS */}
+      <section className="border-y border-stone-800 bg-stone-900/30">
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">SHOP BY MOOD</p>
+            <h2 className="mt-3 font-display text-4xl text-stone-50 sm:text-5xl">Collections</h2>
+            <p className="mt-3 text-sm leading-6 text-stone-500">
+              Explore by scent family — from deep ouds to crisp freshies and sweet gourmands.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {categoryTiles.map((c) => (
+              <Link
+                key={c.name}
+                href={`/shop?cat=${encodeURIComponent(c.name)}`}
+                className="group relative flex h-44 flex-col justify-end overflow-hidden rounded-2xl border border-stone-800 bg-gradient-to-b from-stone-800/60 to-stone-950 p-5 transition hover:border-amber-500/50"
+              >
+                <div className="absolute -right-4 -top-6 opacity-80 transition duration-700 group-hover:opacity-100">
+                  <Bottle tone={c.tone} className="scale-[0.62] origin-top-right" />
                 </div>
-              </a>
+                <p className="font-display text-2xl text-stone-100">{c.name}</p>
+                <p className="mt-1 text-xs text-stone-500">{c.blurb}</p>
+                <span className="mt-3 text-[10px] font-bold tracking-[0.16em] text-amber-400 opacity-0 transition group-hover:opacity-100">
+                  SHOP NOW →
+                </span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
-
-      {/* Shop Section */}
-      <section id="shop" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end mb-12">
-          <div>
-            <p className="text-[9px] tracking-[0.25em] text-amber-600 font-semibold">THE EDIT</p>
-            <h2 className="serif mt-2 text-3xl sm:text-4xl text-zinc-900">Customer favourites</h2>
+      {/* FINDER TEASER */}
+      <section className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,163,93,0.12),transparent_60%)]" />
+        <div className="relative mx-auto max-w-3xl text-center">
+          <p className="text-[10px] font-bold tracking-[0.26em] text-amber-400">NOT SURE WHAT TO CHOOSE?</p>
+          <h2 className="mt-4 font-display text-5xl text-stone-50 sm:text-6xl">Find your signature scent.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-stone-400">
+            Answer a few quick questions and we will point you to the perfect bottle — or send your
+            scent profile straight to our WhatsApp for a personal recommendation.
+          </p>
+          <div className="mt-9">
+            <Link
+              href="/perfume-finder"
+              className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400"
+            >
+              TAKE THE QUIZ <ArrowRight size={15} className="transition group-hover:translate-x-1" />
+            </Link>
           </div>
-          <div className="relative w-full sm:w-64">
-            <Search size={14} className="absolute left-0 top-3 text-zinc-400" />
-            <input
-              id="search"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search fragrances"
-              className="w-full border-b border-zinc-300 bg-transparent py-2 pl-7 text-xs outline-none focus:border-amber-600 transition"
+        </div>
+      </section>
+
+      {/* STORY TEASER */}
+      <section className="border-t border-stone-800 bg-stone-900/30">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8 lg:py-24">
+          <div className="relative flex min-h-[380px] items-center justify-center overflow-hidden rounded-3xl border border-stone-800 bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950">
+            <div className="grain absolute inset-0" />
+            <div className="absolute h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
+            <img
+              src="/logo.png.jpeg"
+              alt="Jessy Luxury"
+              className="relative h-40 w-auto rounded-2xl object-contain drop-shadow-2xl"
             />
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-4 md:gap-x-6">
-          {filtered.map(p => <ProductCard key={p.id} p={p} />)}
-        </div>
-      </section>
-
-      {/* Story Section */}
-      <section id="story" className="bg-zinc-100 py-20">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:px-8">
-          <div className="flex items-center justify-center min-h-[380px] bg-zinc-900 rounded-2xl">
-            <div className="text-center text-white px-8">
-              <p className="text-[9px] tracking-[0.3em] text-amber-400 font-semibold">THE JESSY STANDARD</p>
-              <p className="serif mt-5 text-4xl">Luxury is how<br /><em className="font-normal text-amber-200">you show up.</em></p>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center">
-            <p className="text-[9px] tracking-[0.25em] text-amber-600 font-semibold">ABOUT JESSY LUXURY</p>
-            <h2 className="serif mt-3 text-3xl leading-tight sm:text-4xl text-zinc-900">A fragrance should feel like part of your identity.</h2>
-            <p className="mt-5 max-w-lg text-sm leading-7 text-zinc-600">
-              From carefully selected Arabic and designer fragrances to oils and gift sets, Jessy Luxury helps you choose a scent that fits your personality, occasion and lifestyle.
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">ABOUT JESSY LUXURY</p>
+            <h2 className="mt-3 font-display text-4xl leading-tight text-stone-50 sm:text-5xl">
+              A fragrance should feel like part of your identity.
+            </h2>
+            <p className="mt-5 max-w-lg text-sm leading-7 text-stone-400">
+              From carefully selected Arabic and designer fragrances to oils and gift sets, {site.brand}
+              helps you choose a scent that fits your personality, occasion and lifestyle. We believe
+              luxury is not about noise — it is about how you show up.
             </p>
-            <div className="mt-6 flex gap-6 text-[10px] tracking-[0.15em] text-zinc-500">
-              <span className="font-medium text-zinc-700">AUTHENTIC SELECTION</span>
-              <span className="font-medium text-zinc-700">WHATSAPP SUPPORT</span>
-            </div>
+            <Link href="/about" className="mt-7 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-amber-300 transition hover:text-amber-200">
+              READ OUR STORY <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Finder Section */}
-      <section id="finder" className="bg-zinc-900 py-20 text-white">
-        <div className="mx-auto max-w-5xl px-6 text-center">
-          <p className="text-[9px] tracking-[0.3em] text-amber-400 font-semibold">NOT SURE WHAT TO CHOOSE?</p>
-          <h2 className="serif mt-4 text-4xl sm:text-5xl">Find your scent.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-zinc-400">
-            Choose the mood and we'll point you toward the right part of the collection.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
-            {['ROMANTIC', 'BOLD', 'FRESH', 'SWEET', 'ELEGANT', 'EVERYDAY'].map(x => (
-              <a key={x} href="#shop" className="border border-white/10 hover:border-amber-600 hover:text-amber-400 px-5 py-3 text-[10px] tracking-[0.18em] rounded-lg transition">
-                {x}
-              </a>
-            ))}
-          </div>
+      {/* TESTIMONIALS */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+        <div className="mb-10 text-center">
+          <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">WHAT CUSTOMERS SAY</p>
+          <h2 className="mt-3 font-display text-4xl text-stone-50 sm:text-5xl">Loved across Nigeria</h2>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {testimonials.map((t) => (
+            <figure key={t.name} className="rounded-2xl border border-stone-800 bg-stone-900/60 p-7">
+              <div className="text-amber-400">★★★★★</div>
+              <blockquote className="mt-4 text-sm leading-7 text-stone-300">“{t.text}”</blockquote>
+              <figcaption className="mt-5">
+                <p className="text-sm font-semibold text-stone-100">{t.name}</p>
+                <p className="text-xs text-stone-500">{t.role}</p>
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white px-6 py-14 border-t border-zinc-200">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 md:grid-cols-4">
-            <div>
-              <a className="serif text-lg tracking-[0.15em] text-zinc-900">JESSY LUXURY</a>
-              <p className="mt-3 max-w-xs text-xs leading-6 text-zinc-500">Smell expensive. Feel unforgettable.</p>
-            </div>
-            <div>
-              <p className="text-[10px] tracking-[0.18em] font-bold text-zinc-900">SHOP</p>
-              <div className="mt-4 space-y-3 text-xs text-zinc-600">
-                <a className="block hover:text-zinc-900 transition" href="#shop">All fragrances</a>
-                <a className="block hover:text-zinc-900 transition" href="#collections">Collections</a>
-                <a className="block hover:text-zinc-900 transition" href="#finder">Find your scent</a>
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] tracking-[0.18em] font-bold text-zinc-900">HELP</p>
-              <div className="mt-4 space-y-3 text-xs text-zinc-600">
-                <a className="block hover:text-zinc-900 transition" href="#">Delivery & pickup</a>
-                <a className="block hover:text-zinc-900 transition" href="#">FAQ</a>
-                <a className="block hover:text-zinc-900 transition" href="https://wa.me/">WhatsApp</a>
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] tracking-[0.18em] font-bold text-zinc-900">FOLLOW</p>
-              <a href="#" className="mt-4 flex items-center gap-2 text-xs text-zinc-600 hover:text-zinc-900 transition">
-                <Instagram size={14} /> Instagram
-              </a>
-            </div>
+      {/* CTA BANNER */}
+      <section className="border-t border-stone-800">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 py-14 text-center sm:flex-row sm:text-left lg:px-8">
+          <div>
+            <h3 className="font-display text-3xl text-stone-50">Smell expensive. Feel unforgettable.</h3>
+            <p className="mt-2 text-sm text-stone-500">The full collection is one message away.</p>
           </div>
-          <div className="border-t border-zinc-200 my-8" />
-          <div className="flex flex-col justify-between gap-3 text-[10px] tracking-[0.08em] text-zinc-400 sm:flex-row">
-            <span>© 2026 Jessy Luxury Fragrance</span>
-            <span>Designed for a luxury-first shopping experience.</span>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/shop" className="rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.12em] text-stone-950 transition hover:bg-amber-400">
+              BROWSE THE SHOP
+            </Link>
+            <a href={wa("Hello Jessy Luxury! I'd like to place an order.")} target="_blank" rel="noreferrer" className="rounded-full bg-green-600 px-7 py-4 text-xs font-bold tracking-[0.12em] text-white transition hover:bg-green-500">
+              ORDER ON WHATSAPP
+            </a>
           </div>
         </div>
-      </footer>
-
-      <style jsx global>{`
-        .serif { font-family: Georgia, 'Times New Roman', serif; }
-        .bottle { position: relative; width: 100px; height: 220px; }
-        .cap { position: absolute; z-index: 3; left: 32px; top: 0; width: 36px; height: 32px; border-radius: 4px 4px 2px 2px; background: linear-gradient(90deg, #181818, #4a4a4a, #181818); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .neck { position: absolute; z-index: 2; left: 40px; top: 28px; width: 20px; height: 28px; background: linear-gradient(90deg, #6b6b6b, #a3a3a3, #6b6b6b); }
-        .glass { position: absolute; left: 8px; top: 52px; width: 84px; height: 155px; border-radius: 14px 14px 18px 18px; background: linear-gradient(90deg, #1a1a1a, #8B6914 40%, #d4a84b 55%, #1a1a1a); box-shadow: inset 6px 0 10px rgba(255,255,255,0.1), inset -8px 0 15px rgba(0,0,0,0.4), 0 15px 25px rgba(0,0,0,0.2); }
-        .pistachio .glass { background: linear-gradient(90deg, #2d3a24, #8a9a5f, #4a5a34); }
-        .smoke .glass { background: linear-gradient(90deg, #1a1a1a, #5a5a5a, #1a1a1a); }
-        .rose .glass { background: linear-gradient(90deg, #3d1a24, #a05a5a, #5a1a2a); }
-        .label { position: absolute; left: 12px; right: 12px; top: 60px; border: 1px solid rgba(212, 168, 75, 0.5); text-align: center; padding: 8px 2px; color: #d4a84b; font-family: Georgia, serif; font-size: 10px; letter-spacing: 0.18em; }
-        .label span { font-size: 6px; letter-spacing: 0.25em; }
-      `}</style>
+      </section>
     </main>
   )
 }
