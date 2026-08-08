@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import Bottle from '@/components/Bottle'
-import { products, formatNaira } from '@/lib/products'
+import { products } from '@/lib/products'
 import { site, wa } from '@/lib/site'
 
 const featured = products.filter((p) => p.featured)
@@ -36,8 +36,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(201,163,93,0.16),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(120,60,20,0.18),transparent_55%)]" />
         <div className="grain absolute inset-0" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pb-20 pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pb-28 lg:pt-24">
-          <div className="max-w-xl">
+        <div className="relative mx-auto max-w-3xl px-6 pb-20 pt-16 text-center lg:px-8 lg:pb-28 lg:pt-24">
+          <div className="mx-auto max-w-2xl">
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] text-amber-300">
               <Sparkles size={12} /> JESSY LUXURY FRAGRANCE
             </p>
@@ -49,7 +49,7 @@ export default function Home() {
               perfumes and gift sets curated for confident everyday living — with personal
               WhatsApp ordering.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/shop"
                 className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400"
@@ -66,27 +66,10 @@ export default function Home() {
                 <MessageCircle size={15} /> CHAT ON WHATSAPP
               </a>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-[10px] tracking-[0.16em] text-stone-500">
+            <div className="mt-10 flex flex-wrap justify-center gap-x-7 gap-y-3 text-[10px] tracking-[0.16em] text-stone-500">
               <span className="flex items-center gap-2"><BadgeCheck size={14} className="text-amber-400" /> 100% ORIGINAL</span>
               <span className="flex items-center gap-2"><Truck size={14} className="text-amber-400" /> FAST DELIVERY</span>
               <span className="flex items-center gap-2"><MessageCircle size={14} className="text-amber-400" /> WHATSAPP ORDERS</span>
-            </div>
-          </div>
-
-          <div className="relative flex items-center justify-center py-8">
-            <div className="absolute h-[420px] w-[280px] rounded-full bg-amber-500/10 blur-3xl" />
-            <div className="relative -rotate-3 transition duration-700 hover:rotate-0 hover:scale-105">
-              <Bottle tone="amber" className="scale-[2.1] origin-bottom drop-shadow-[0_30px_50px_rgba(0,0,0,0.6)]" />
-            </div>
-            <div className="absolute left-4 top-6 hidden rounded-2xl border border-stone-800 bg-stone-950/80 p-4 backdrop-blur sm:block">
-              <p className="text-[9px] tracking-[0.18em] text-stone-500">BESTSELLER</p>
-              <p className="mt-1 font-display text-sm text-stone-100">Khair Pistachio</p>
-              <p className="text-xs text-amber-300">{formatNaira(32000)}</p>
-            </div>
-            <div className="absolute bottom-10 right-0 hidden rounded-2xl border border-stone-800 bg-stone-950/80 p-4 backdrop-blur sm:block">
-              <p className="text-[9px] tracking-[0.18em] text-stone-500">NEW IN</p>
-              <p className="mt-1 font-display text-sm text-stone-100">Invicto Legend</p>
-              <p className="text-xs text-amber-300">{formatNaira(38000)}</p>
             </div>
           </div>
         </div>
