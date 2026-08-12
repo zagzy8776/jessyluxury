@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { X, Minus, Plus, Trash2, ShoppingBag, MessageCircle, Ticket, Truck, User, Phone, MapPin, CheckCircle2, AlertCircle } from 'lucide-react'
+import { X, Minus, Plus, Trash2, ShoppingBag, MessageCircle, Ticket, Truck, User, CheckCircle2, AlertCircle } from 'lucide-react'
 import { useCart } from './CartProvider'
 import Bottle from './Bottle'
 import { formatNaira } from '@/lib/products'
-import { site, wa } from '@/lib/site'
+import { wa } from '@/lib/site'
 
 export default function CartDrawer() {
   const { drawer, setDrawer, items, updateQty, remove, subtotal, count, clear } = useCart()
@@ -88,7 +88,6 @@ export default function CartDrawer() {
     setCheckoutError('')
 
     try {
-      // 1. Create order in PostgreSQL DB
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,7 +112,6 @@ export default function CartDrawer() {
       const orderData = await res.json()
       const orderNum = orderData.orderNumber || `JL-${Math.floor(100000 + Math.random() * 900000)}`
 
-      // 2. Build WhatsApp confirmation message
       const lines = items
         .map((i) => `• ${i.name} (${i.brand}) x${i.quantity} — ${formatNaira(i.price * i.quantity)}`)
         .join('\n')
@@ -131,11 +129,8 @@ export default function CartDrawer() {
         `Total: ${formatNaira(finalTotal)}\n\n` +
         `Please confirm availability and share payment details. Thank you!`
 
-      // Clear cart and close drawer
       clear()
       setDrawer(false)
-
-      // Open WhatsApp chat
       window.open(wa(waMsg), '_blank')
     } catch (err) {
       console.error('Error completing checkout', err)
@@ -149,26 +144,26 @@ export default function CartDrawer() {
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setDrawer(false)} />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-stone-800 bg-stone-950 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-stone-800 px-6 py-5">
-          <h2 className="font-display text-xl text-stone-100">
-            Your Cart <span className="text-amber-400">({count})</span>
+      <div className="absolute inset-0 bg-stone-950/40" onClick={() => setDrawer(false)} />
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-primary)] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">
+            Your Cart <span className="text-amber-500">({count})</span>
           </h2>
-          <button onClick={() => setDrawer(false)} className="p-1 text-stone-400 hover:text-stone-100" aria-label="Close">
+          <button onClick={() => setDrawer(false)} className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]" aria-label="Close">
             <X size={20} />
           </button>
         </div>
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
-            <div className="rounded-full bg-stone-900 p-5 text-stone-500">
-              <ShoppingBag size={26} />
+            <div className="rounded-full bg-[var(--bg-primary)] p-5 text-[var(--text-muted)] border border-[var(--border)]">
+              <ShoppingBag size={28} />
             </div>
-            <p className="text-sm text-stone-400">Your cart is empty.</p>
+            <p className="text-sm font-semibold text-[var(--text-secondary)]">Your cart is empty.</p>
             <button
               onClick={() => setDrawer(false)}
-              className="rounded-full bg-amber-500 px-6 py-3 text-xs font-bold tracking-[0.12em] text-stone-950 transition hover:bg-amber-400"
+              className="rounded-xl bg-amber-500 px-6 py-3 text-xs font-bold tracking-wider text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10"
             >
               Browse fragrances
             </button>
@@ -179,35 +174,35 @@ export default function CartDrawer() {
               {/* Items List */}
               <div className="space-y-3">
                 {items.map((i) => (
-                  <div key={i.id} className="flex gap-4 rounded-2xl bg-stone-900 p-3">
+                  <div key={i.id} className="flex gap-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border)] p-3">
                     <div className="flex h-20 w-12 shrink-0 items-center justify-center">
                       <div className="scale-[0.45] origin-center -my-4">
                         <Bottle tone={i.tone} />
                       </div>
                     </div>
                     <div className="flex-1">
-                      <p className="text-[10px] text-stone-500 uppercase">{i.brand}</p>
-                      <p className="font-display text-base text-stone-100">{i.name}</p>
-                      <p className="text-xs text-amber-300 font-mono">{formatNaira(i.price)}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] uppercase font-bold">{i.brand}</p>
+                      <p className="font-display text-base font-bold text-[var(--text-primary)]">{i.name}</p>
+                      <p className="text-xs text-amber-500 font-mono font-bold">{formatNaira(i.price)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <button
                           onClick={() => updateQty(i.id, i.quantity - 1)}
-                          className="rounded-full bg-stone-800 p-1 text-stone-300 hover:text-white"
+                          className="rounded-full bg-[var(--card-bg)] border border-[var(--border)] p-1 text-[var(--text-primary)] hover:border-amber-500"
                           aria-label="Decrease"
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="w-5 text-center text-xs text-stone-100 font-mono">{i.quantity}</span>
+                        <span className="w-5 text-center text-xs text-[var(--text-primary)] font-mono font-bold">{i.quantity}</span>
                         <button
                           onClick={() => updateQty(i.id, i.quantity + 1)}
-                          className="rounded-full bg-stone-800 p-1 text-stone-300 hover:text-white"
+                          className="rounded-full bg-[var(--card-bg)] border border-[var(--border)] p-1 text-[var(--text-primary)] hover:border-amber-500"
                           aria-label="Increase"
                         >
                           <Plus size={12} />
                         </button>
                         <button
                           onClick={() => remove(i.id)}
-                          className="ml-auto p-1 text-stone-500 hover:text-red-400"
+                          className="ml-auto p-1 text-[var(--text-muted)] hover:text-red-500"
                           aria-label="Remove"
                         >
                           <Trash2 size={14} />
@@ -219,41 +214,41 @@ export default function CartDrawer() {
               </div>
 
               {/* Coupon Redemption Input */}
-              <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-4 space-y-2">
-                <label className="text-[10px] font-bold tracking-widest text-amber-400 uppercase flex items-center gap-1.5">
-                  <Ticket size={13} /> Promo Coupon / Discount
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 space-y-2">
+                <label className="text-[10px] font-bold tracking-widest text-amber-500 uppercase flex items-center gap-1.5">
+                  <Ticket size={14} /> Promo Coupon / Discount
                 </label>
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
                   <input
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                     placeholder="Try JESSY10, OUD2026..."
-                    className="flex-1 rounded-xl border border-stone-800 bg-stone-950 px-3 py-2 text-xs text-stone-200 outline-none uppercase font-mono font-bold tracking-wider focus:border-amber-500"
+                    className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-xs text-[var(--text-primary)] outline-none uppercase font-mono font-bold tracking-wider focus:border-amber-500 shadow-sm"
                   />
                   <button
                     type="submit"
                     disabled={couponLoading}
-                    className="rounded-xl bg-stone-800 border border-stone-700 px-4 py-2 text-xs font-bold text-stone-200 hover:bg-amber-500 hover:text-stone-950 transition disabled:opacity-50"
+                    className="rounded-xl bg-stone-900 text-white border border-stone-800 px-4 py-2 text-xs font-bold hover:bg-amber-500 hover:text-stone-950 transition disabled:opacity-50"
                   >
                     APPLY
                   </button>
                 </form>
                 {appliedCoupon && (
-                  <p className="text-[11px] text-green-400 flex items-center gap-1">
-                    <CheckCircle2 size={12} /> Coupon <strong>{appliedCoupon.code}</strong> applied (-{formatNaira(appliedCoupon.discountAmount)})!
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 size={13} /> Coupon <strong>{appliedCoupon.code}</strong> applied (-{formatNaira(appliedCoupon.discountAmount)})!
                   </p>
                 )}
                 {couponError && (
-                  <p className="text-[11px] text-red-400 flex items-center gap-1">
-                    <AlertCircle size={12} /> {couponError}
+                  <p className="text-[11px] text-red-500 font-bold flex items-center gap-1">
+                    <AlertCircle size={13} /> {couponError}
                   </p>
                 )}
               </div>
 
               {/* Customer Contact & Shipping Selector */}
-              <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-4 space-y-3">
-                <label className="text-[10px] font-bold tracking-widest text-amber-400 uppercase flex items-center gap-1.5">
-                  <User size={13} /> Your Order Details
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 space-y-3">
+                <label className="text-[10px] font-bold tracking-widest text-amber-500 uppercase flex items-center gap-1.5">
+                  <User size={14} /> Your Order Details
                 </label>
 
                 <input
@@ -261,7 +256,7 @@ export default function CartDrawer() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your Full Name *"
                   required
-                  className="w-full rounded-xl border border-stone-800 bg-stone-950 px-3 py-2.5 text-xs text-stone-200 outline-none focus:border-amber-500"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-amber-500 font-medium shadow-sm"
                 />
 
                 <input
@@ -269,20 +264,20 @@ export default function CartDrawer() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Phone Number (WhatsApp) *"
                   required
-                  className="w-full rounded-xl border border-stone-800 bg-stone-950 px-3 py-2.5 text-xs text-stone-200 outline-none focus:border-amber-500 font-mono"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono font-medium shadow-sm"
                 />
 
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Delivery Address / City [Optional]"
-                  className="w-full rounded-xl border border-stone-800 bg-stone-950 px-3 py-2.5 text-xs text-stone-200 outline-none focus:border-amber-500"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-amber-500 font-medium shadow-sm"
                 />
 
                 {shippingZones.length > 0 && (
                   <div>
-                    <label className="text-[10px] text-stone-400 block mb-1 flex items-center gap-1">
-                      <Truck size={12} /> Shipping Destination:
+                    <label className="text-[10px] text-[var(--text-secondary)] font-bold block mb-1 flex items-center gap-1">
+                      <Truck size={13} className="text-amber-500" /> Shipping Destination:
                     </label>
                     <select
                       value={selectedZone?.id || ''}
@@ -290,7 +285,7 @@ export default function CartDrawer() {
                         const z = shippingZones.find((x) => x.id === Number(e.target.value))
                         setSelectedZone(z)
                       }}
-                      className="w-full rounded-xl border border-stone-800 bg-stone-950 px-3 py-2.5 text-xs text-stone-200 outline-none focus:border-amber-500 font-medium"
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-amber-500 font-bold shadow-sm"
                     >
                       {shippingZones.map((z) => (
                         <option key={z.id} value={z.id}>
@@ -304,36 +299,36 @@ export default function CartDrawer() {
             </div>
 
             {/* Total Summary & Checkout Button */}
-            <div className="border-t border-stone-800 px-6 py-4 bg-stone-950 space-y-3">
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between text-stone-400">
+            <div className="border-t border-[var(--border)] px-6 py-5 bg-[var(--card-bg)] space-y-3">
+              <div className="space-y-1 text-xs font-medium">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Subtotal:</span>
-                  <span className="font-mono text-stone-200">{formatNaira(subtotal)}</span>
+                  <span className="font-mono font-bold text-[var(--text-primary)]">{formatNaira(subtotal)}</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between text-green-400">
+                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                     <span>Discount ({appliedCoupon?.code}):</span>
                     <span className="font-mono">-{formatNaira(discountAmount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-stone-400">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Shipping Fee ({selectedZone?.name}):</span>
-                  <span className="font-mono text-stone-200">{formatNaira(shippingFee)}</span>
+                  <span className="font-mono font-bold text-[var(--text-primary)]">{formatNaira(shippingFee)}</span>
                 </div>
-                <div className="flex justify-between text-base font-bold border-t border-stone-800/80 pt-2 text-stone-100">
+                <div className="flex justify-between text-base font-bold border-t border-[var(--border)] pt-2 text-[var(--text-primary)]">
                   <span>Total Amount:</span>
-                  <span className="font-display text-amber-300 text-xl">{formatNaira(finalTotal)}</span>
+                  <span className="font-display text-amber-500 text-xl font-bold">{formatNaira(finalTotal)}</span>
                 </div>
               </div>
 
               {checkoutError && (
-                <p className="text-xs text-red-400 text-center font-medium">{checkoutError}</p>
+                <p className="text-xs text-red-500 text-center font-bold">{checkoutError}</p>
               )}
 
               <button
                 onClick={handleCheckout}
                 disabled={ordering}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-3.5 text-sm font-bold text-white transition hover:bg-green-500 shadow-lg disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3.5 text-xs font-bold text-white transition hover:bg-emerald-500 shadow-md disabled:opacity-50"
               >
                 <MessageCircle size={18} /> {ordering ? 'PROCESSING ORDER…' : 'CONFIRM & ORDER VIA WHATSAPP'}
               </button>

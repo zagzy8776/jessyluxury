@@ -25,18 +25,21 @@ const NAV: [string, string][] = [
 export default function Header() {
   const [open, setOpen] = useState(false)
   const [collectionsOpen, setCollectionsOpen] = useState(false)
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [theme, setTheme] = useState<'dark' | 'light'>('light')
   const { count, setDrawer } = useCart()
   const pathname = usePathname()
   const collectionsRef = useRef<HTMLDivElement>(null)
 
+  if (pathname?.startsWith('/store-portal-jl') || pathname?.startsWith('/admin')) {
+    return null
+  }
+
   // Load saved theme on mount
   useEffect(() => {
     const saved = localStorage.getItem('jl_theme') as 'dark' | 'light' | null
-    if (saved) {
-      setTheme(saved)
-      document.documentElement.setAttribute('data-theme', saved)
-    }
+    const active = saved || 'light'
+    setTheme(active)
+    document.documentElement.setAttribute('data-theme', active)
   }, [])
 
   // Close collections dropdown on outside click
@@ -61,7 +64,7 @@ export default function Header() {
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg-primary)] shadow-xs transition-all">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         {/* Mobile menu toggle */}
         <button
@@ -178,47 +181,75 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Slide-Out Drawer */}
       {open && (
-        <div className="border-t border-[var(--border)] bg-[var(--card-bg)] px-6 py-4 lg:hidden">
-          <div className="grid gap-1">
-            {NAV.map(([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className={`rounded-lg py-2.5 px-2 text-sm transition ${
-                  isActive(href) ? 'text-amber-400 font-semibold' : 'text-[var(--text-muted)] hover:text-amber-400'
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
+        <div className="fixed inset-0 z-50 flex justify-end lg:hidden">
+          {/* Backdrop Dimming Overlay */}
+          <div
+            className="fixed inset-0 bg-stone-950/60 backdrop-blur-sm transition-opacity z-40 cursor-pointer"
+            onClick={() => setOpen(false)}
+          />
 
-            {/* Mobile Collections */}
-            <div className="pt-2 border-t border-[var(--border)] mt-2">
-              <p className="px-2 py-1 text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase">Collections</p>
+          {/* Rightward Solid Opaque Panel */}
+          <aside className="relative z-50 flex h-full w-full max-w-[320px] flex-col border-l border-[var(--border)] bg-[var(--card-bg)] shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300">
+            {/* Sticky Top Bar with Close Button */}
+            <div className="sticky top-0 z-20 flex items-center justify-between border-b border-[var(--border)] bg-[var(--card-bg)] px-6 py-5 shadow-xs">
+              <span className="font-display text-base tracking-[0.2em] font-bold text-[var(--text-primary)]">
+                MENU
+              </span>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-2 text-[var(--text-secondary)] hover:text-amber-500 transition"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Menu Links */}
+            <div className="flex-1 px-4 py-6 space-y-1">
+              {NAV.map(([label, href]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className={`block rounded-xl px-4 py-3.5 text-sm transition font-medium ${
+                    isActive(href)
+                      ? 'bg-amber-500/10 text-amber-500'
+                      : 'text-[var(--text-primary)] hover:bg-[var(--bg-primary)] hover:text-amber-400'
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+
+              <div className="my-4 h-px bg-[var(--border)] mx-4" />
+
+              {/* Mobile Collections */}
+              <p className="px-4 py-2 text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase">Collections</p>
               {COLLECTIONS.map(([label, href]) => (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-lg py-2 px-2 text-sm text-[var(--text-muted)] hover:text-amber-400 transition"
+                  className="block rounded-xl px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-amber-400 transition"
                 >
                   {label}
                 </Link>
               ))}
-            </div>
 
-            {/* Mobile theme toggle */}
-            <button
-              onClick={() => { toggleTheme(); setOpen(false) }}
-              className="mt-2 flex items-center gap-2 rounded-lg py-2.5 px-2 text-sm text-[var(--text-muted)] hover:text-amber-400 transition"
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
-            </button>
-          </div>
+              <div className="my-4 h-px bg-[var(--border)] mx-4" />
+
+              {/* Mobile Theme Toggle */}
+              <button
+                onClick={() => { toggleTheme(); setOpen(false) }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-amber-400 transition font-medium"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
+              </button>
+            </div>
+          </aside>
         </div>
       )}
     </header>

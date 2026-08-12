@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import {
-  Ticket, Plus, Edit2, Trash2, CheckCircle, RefreshCw, AlertCircle,
-  Tag, MapPin, DollarSign, Percent, ToggleLeft, ToggleRight, Sparkles, X,
+  Ticket, Plus, Edit2, Trash2, CheckCircle, RefreshCw, X,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
@@ -134,140 +133,142 @@ export default function DiscountsEnginePage() {
   const activeCount = coupons.filter((c) => c.isActive).length
   const totalUses = coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)
 
-  const inp = 'w-full rounded-xl border border-stone-800 bg-stone-900 p-3 text-stone-200 text-xs outline-none transition focus:border-amber-500 font-sans'
-  const lbl = 'block text-[11px] font-semibold text-stone-400 mb-1 uppercase tracking-wider'
+  const inp = 'w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] text-xs outline-none transition focus:border-amber-500 font-sans font-medium shadow-sm'
+  const lbl = 'block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-medium text-stone-50">Discount &amp; Promo Engine</h1>
-          <p className="mt-1 text-xs text-stone-400">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+            Discount &amp; Promo Engine
+          </h1>
+          <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
             Bumpa-style discount creation by store location, fixed ₦ or %, and auto-reactivation.
           </p>
         </div>
 
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-xs font-bold tracking-wider text-stone-950 transition hover:bg-amber-400 shadow-md"
+          className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10"
         >
           <Plus size={16} /> CREATE DISCOUNT
         </button>
       </div>
 
       {/* Summary Metrics */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 shadow-lg backdrop-blur-xl">
+      <div className="grid gap-5 sm:grid-cols-3">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-stone-400 uppercase">Active Promo Codes</span>
-            <span className="rounded-full bg-amber-500/10 p-2 text-amber-400 border border-amber-500/20">
-              <Ticket size={18} />
+            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Active Promo Codes</span>
+            <span className="rounded-xl bg-amber-500/10 p-2.5 text-amber-500 border border-amber-500/20">
+              <Ticket size={20} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-semibold text-stone-50">{activeCount}</p>
-          <p className="mt-1 text-xs text-stone-500">Live in cart checkout</p>
+          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">{activeCount}</p>
+          <p className="mt-1 text-xs text-[var(--text-secondary)] font-medium">Live in cart checkout</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 shadow-lg backdrop-blur-xl">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-stone-400 uppercase">Total Redemptions</span>
-            <span className="rounded-full bg-emerald-500/10 p-2 text-emerald-400 border border-emerald-500/20">
-              <CheckCircle size={18} />
+            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Total Redemptions</span>
+            <span className="rounded-xl bg-emerald-500/10 p-2.5 text-emerald-500 border border-emerald-500/20">
+              <CheckCircle size={20} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-semibold text-stone-50">{totalUses}</p>
-          <p className="mt-1 text-xs text-emerald-400">Used by customers</p>
+          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">{totalUses}</p>
+          <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Used by customers</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 shadow-lg backdrop-blur-xl">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-stone-400 uppercase">Auto-Reactivation</span>
-            <span className="rounded-full bg-purple-500/10 p-2 text-purple-400 border border-purple-500/20">
-              <RefreshCw size={18} />
+            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Auto-Reactivation</span>
+            <span className="rounded-xl bg-purple-500/10 p-2.5 text-purple-500 border border-purple-500/20">
+              <RefreshCw size={20} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-semibold text-stone-50">6 Active</p>
-          <p className="mt-1 text-xs text-stone-500">Resets count when limit is hit</p>
+          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">Active</p>
+          <p className="mt-1 text-xs text-[var(--text-secondary)] font-medium">Resets count when limit is hit</p>
         </div>
       </div>
 
       {/* Discounts List */}
       {loading ? (
-        <div className="py-20 text-center text-sm text-stone-500 animate-pulse">Loading discount engine…</div>
+        <div className="py-20 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading discount engine…</div>
       ) : coupons.length === 0 ? (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/40 py-20 text-center text-stone-500 text-sm">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] py-20 text-center text-xs font-medium text-[var(--text-muted)]">
           No discount codes created yet.
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {coupons.map((c) => (
             <div
               key={c.id}
-              className="flex flex-col justify-between rounded-2xl border border-stone-800 bg-stone-900/60 p-5 transition hover:border-amber-500/40 shadow-xl backdrop-blur-xl"
+              className="flex flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition hover:border-amber-500/40 shadow-sm"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-mono text-lg font-bold text-amber-400 tracking-wider">{c.code}</span>
-                    <p className="text-xs font-semibold text-stone-200 mt-0.5">{c.name || 'Store Promo'}</p>
+                    <span className="font-mono text-lg font-bold text-amber-500 tracking-wider">{c.code}</span>
+                    <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5">{c.name || 'Store Promo'}</p>
                   </div>
 
                   <button
                     onClick={() => handleToggleActive(c)}
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider border ${
+                    className={`rounded-full px-3 py-0.5 text-[10px] font-bold tracking-wider border ${
                       c.isActive
-                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                        : 'bg-stone-800 text-stone-500 border-stone-700'
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                        : 'bg-[var(--bg-primary)] text-[var(--text-muted)] border-[var(--border)]'
                     }`}
                   >
                     {c.isActive ? 'ACTIVE' : 'INACTIVE'}
                   </button>
                 </div>
 
-                <div className="mt-4 space-y-2 text-xs text-stone-400 border-t border-stone-800/80 pt-4">
+                <div className="mt-4 space-y-2 text-xs text-[var(--text-secondary)] border-t border-[var(--border)] pt-4 font-medium">
                   <div className="flex items-center justify-between">
                     <span>Discount Value:</span>
-                    <strong className="text-amber-300 font-mono">
+                    <strong className="text-amber-500 font-mono">
                       {c.discountType === 'PERCENTAGE' ? `${c.discountValue}% OFF` : `₦${c.discountValue?.toLocaleString('en-NG')} OFF`}
                     </strong>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span>Store Location:</span>
-                    <span className="text-stone-200">{c.storeLocation || 'Headquarters (Owerri)'}</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{c.storeLocation || 'Headquarters (Owerri)'}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span>Min Order Amount:</span>
-                    <span className="font-mono text-stone-200">₦{c.minOrderAmount?.toLocaleString('en-NG')}</span>
+                    <span className="font-mono text-[var(--text-primary)] font-semibold">₦{c.minOrderAmount?.toLocaleString('en-NG')}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span>Usage Count:</span>
-                    <span className="font-mono text-stone-200">{c.usedCount} / {c.usageLimit} uses</span>
+                    <span className="font-mono text-[var(--text-primary)] font-semibold">{c.usedCount} / {c.usageLimit} uses</span>
                   </div>
 
                   {c.autoReactivate && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium pt-1">
-                      <RefreshCw size={12} /> Auto-reactivates on limit reach
+                    <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold pt-1">
+                      <RefreshCw size={13} /> Auto-reactivates on limit reach
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-end gap-2 border-t border-stone-800/80 pt-4">
+              <div className="mt-5 flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
                 <button
                   onClick={() => handleOpenModal(c)}
-                  className="inline-flex items-center gap-1 rounded-lg border border-stone-700 bg-stone-800 px-3 py-1.5 text-xs text-stone-300 hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 hover:text-amber-500 transition"
                 >
                   <Edit2 size={13} /> Edit
                 </button>
                 <button
                   onClick={() => handleDelete(c.id)}
-                  className="inline-flex items-center gap-1 rounded-lg bg-red-600/10 border border-red-600/20 px-3 py-1.5 text-xs text-red-400 hover:bg-red-600 hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition"
                 >
                   <Trash2 size={13} /> Delete
                 </button>
@@ -279,13 +280,13 @@ export default function DiscountsEnginePage() {
 
       {/* Modal for Creating / Editing Discount */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-3xl border border-stone-800 bg-stone-950 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-800 pb-4">
-              <h3 className="font-display text-xl text-stone-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+              <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">
                 {editingCoupon ? 'Edit Discount Code' : 'Create New Discount Code'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-stone-400 hover:text-white">
+              <button onClick={() => setShowModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X size={20} />
               </button>
             </div>
@@ -310,7 +311,7 @@ export default function DiscountsEnginePage() {
                     onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                     placeholder="JESSY10"
                     required
-                    className={inp + ' font-mono font-bold text-amber-300'}
+                    className={inp + ' font-mono font-bold text-amber-500'}
                   />
                 </div>
 
@@ -384,17 +385,17 @@ export default function DiscountsEnginePage() {
                     type="checkbox"
                     checked={form.autoReactivate}
                     onChange={(e) => setForm({ ...form, autoReactivate: e.target.checked })}
-                    className="h-4 w-4 rounded border-stone-800 bg-stone-900 accent-amber-500"
+                    className="h-4 w-4 rounded accent-amber-500"
                   />
-                  <span className="text-stone-300">Auto-Reactivate when limit is reached</span>
+                  <span className="text-[var(--text-primary)] font-medium">Auto-Reactivate when limit is reached</span>
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3 border-t border-stone-800 pt-4">
+              <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-xl border border-stone-800 px-5 py-2.5 font-semibold text-stone-400 hover:text-white"
+                  className="rounded-xl border border-[var(--border)] px-5 py-2.5 font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 >
                   Cancel
                 </button>

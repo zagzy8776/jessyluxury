@@ -10,13 +10,13 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  ShieldCheck,
 } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
-import Bottle from '@/components/Bottle'
 import { site, wa } from '@/lib/site'
 
 const CATEGORIES = ['All', 'Oud & Amber', 'Fresh & Floral', 'Sweet & Gourmand', 'Perfume Oils', 'Gift Sets']
-const PER_PAGE = 8
+const PER_PAGE = 9
 
 const testimonials = [
   { name: 'Adaeze O.', text: 'Ordered the Khair Pistachio — it arrived the same day and smells even better than I expected. Delivery was smooth.', role: 'Owerri' },
@@ -46,7 +46,6 @@ export default function Home() {
     load()
   }, [])
 
-  // Reset to page 1 when filter changes
   useEffect(() => { setPage(1) }, [cat, q])
 
   const filtered = useMemo(() => {
@@ -71,57 +70,73 @@ export default function Home() {
   return (
     <main className="bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-200">
 
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(201,163,93,0.16),transparent_55%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(120,60,20,0.18),transparent_55%)]" />
-        <div className="grain absolute inset-0 opacity-40" />
-        <div className="relative mx-auto max-w-3xl px-6 pb-20 pt-16 text-center lg:px-8 lg:pb-28 lg:pt-24">
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-[10px] font-semibold tracking-[0.22em] text-amber-400">
-            <Sparkles size={12} /> JESSY LUXURY FRAGRANCE
+      {/* ── HERO BANNER WITH USER'S PHOTO BACKGROUND ── */}
+      <section className="relative min-h-[88vh] sm:min-h-[85vh] w-full flex items-center justify-center overflow-hidden border-b border-[var(--border)]">
+        {/* Background Image: User's Exact Uploaded Photo */}
+        <div className="absolute inset-0 z-0 w-full h-full">
+          <img
+            src="/hero-spray.jpg"
+            alt="Perfume Spray"
+            className="h-full w-full object-cover object-center"
+          />
+          {/* Subtle gradient vignette overlay to ensure text contrast while retaining the dark rim light photo */}
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/75 to-stone-950/50" />
+          <div className="grain absolute inset-0 opacity-30" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center lg:px-8">
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/15 px-4 py-1.5 text-[10px] font-bold tracking-[0.24em] text-amber-300 uppercase shadow-md backdrop-blur-md">
+            <Sparkles size={13} /> JESSY LUXURY FRAGRANCE
           </p>
-          <h1 className="font-display text-6xl font-medium leading-[0.95] text-[var(--text-primary)] sm:text-7xl lg:text-[92px]">
-            Discover your <span className="text-amber-400 italic">signature</span> scent.
+
+          <h1 className="font-display text-5xl font-bold leading-[0.98] text-white sm:text-7xl lg:text-[88px] drop-shadow-lg">
+            Smell expensive. <br />
+            <span className="text-amber-400 italic font-serif">Feel unforgettable.</span>
           </h1>
-          <p className="mt-6 max-w-md mx-auto text-base leading-7 text-[var(--text-secondary)]">
-            Original designer and Arabian fragrances, oil perfumes and gift sets curated for confident everyday living — with personal WhatsApp ordering.
+
+          <p className="mt-6 max-w-lg mx-auto text-base leading-8 text-stone-200 font-medium drop-shadow">
+            Original designer and Arabian fragrances, perfume oils and curated gift sets crafted for confident everyday living.
           </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={scrollToCatalog}
-              className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400 shadow-md"
+              className="group inline-flex items-center gap-2.5 rounded-full bg-amber-500 px-8 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400 shadow-xl"
             >
               SHOP THE COLLECTION <ArrowRight size={15} className="transition group-hover:translate-x-1" />
             </button>
             <a
               href={wa("Hello Jessy Luxury! I'd love some perfume recommendations.")}
               target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card-bg)] px-7 py-4 text-xs font-bold tracking-[0.14em] text-[var(--text-primary)] transition hover:border-emerald-500 hover:text-emerald-400 shadow-sm"
+              className="inline-flex items-center gap-2.5 rounded-full border border-stone-600 bg-stone-900/80 backdrop-blur-md px-8 py-4 text-xs font-bold tracking-[0.14em] text-white transition hover:border-emerald-500 hover:text-emerald-400 shadow-lg"
             >
-              <MessageCircle size={15} /> CHAT ON WHATSAPP
+              <MessageCircle size={15} className="text-emerald-400" /> CHAT ON WHATSAPP
             </a>
           </div>
-          <div className="mt-10 flex flex-wrap justify-center gap-x-7 gap-y-3 text-[10px] tracking-[0.16em] text-[var(--text-muted)]">
-            <span className="flex items-center gap-2"><BadgeCheck size={14} className="text-amber-400" /> 100% ORIGINAL</span>
-            <span className="flex items-center gap-2"><Truck size={14} className="text-amber-400" /> FAST DELIVERY</span>
-            <span className="flex items-center gap-2"><MessageCircle size={14} className="text-amber-400" /> WHATSAPP ORDERS</span>
+
+          <div className="mt-14 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[10px] font-bold tracking-[0.18em] text-stone-300 uppercase">
+            <span className="flex items-center gap-2"><BadgeCheck size={16} className="text-amber-400" /> 100% ORIGINAL</span>
+            <span className="flex items-center gap-2"><Truck size={16} className="text-amber-400" /> FAST NIGERIA DISPATCH</span>
+            <span className="flex items-center gap-2"><MessageCircle size={16} className="text-amber-400" /> WHATSAPP ORDERS</span>
           </div>
         </div>
       </section>
 
       {/* ── FEATURES STRIP ── */}
-      <section className="border-y border-[var(--border)] bg-[var(--card-bg)]">
-        <div className="mx-auto grid max-w-7xl divide-y divide-[var(--border)] px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8">
+      <section className="border-b border-[var(--border)] bg-[var(--card-bg)]">
+        <div className="mx-auto grid max-w-7xl divide-y divide-[var(--border)] px-4 sm:px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8">
           {[
-            { icon: BadgeCheck, t: 'Authentic Selection', d: 'Original designer, Arabic and niche fragrances only.' },
+            { icon: BadgeCheck, t: 'Authentic Selection', d: 'Original designer, Arabic and niche fragrances.' },
             { icon: MessageCircle, t: 'WhatsApp Support', d: 'Talk to us personally before you order.' },
             { icon: Truck, t: 'Fast, Reliable Delivery', d: 'Pickup, Owerri delivery and waybill dispatch.' },
           ].map((f) => (
             <div key={f.t} className="flex items-start gap-4 px-2 py-8 sm:px-8">
-              <span className="rounded-full bg-amber-500/10 p-3 text-amber-400"><f.icon size={20} /></span>
+              <span className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <f.icon size={22} />
+              </span>
               <div>
-                <p className="text-sm font-semibold text-[var(--text-primary)]">{f.t}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">{f.d}</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{f.t}</p>
+                <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)] font-medium">{f.d}</p>
               </div>
             </div>
           ))}
@@ -129,14 +144,14 @@ export default function Home() {
       </section>
 
       {/* ── FULL CATALOG WITH PAGINATION ── */}
-      <section id="catalog" className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+      <section id="catalog" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
 
         {/* Section header */}
-        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-[var(--border)] pb-6">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">OUR COLLECTION</p>
-            <h2 className="mt-2 font-display text-4xl text-[var(--text-primary)] sm:text-5xl">Shop All Fragrances</h2>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
+            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-500 uppercase">OUR COLLECTION</p>
+            <h2 className="mt-2 font-display text-4xl font-bold text-[var(--text-primary)] sm:text-5xl">Shop All Fragrances</h2>
+            <p className="mt-2 text-sm text-[var(--text-secondary)] font-medium">
               {loading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'product' : 'products'}`}
             </p>
           </div>
@@ -148,7 +163,7 @@ export default function Home() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search fragrances, brands, notes…"
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] py-2.5 pl-9 pr-4 text-sm text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] py-2.5 pl-9 pr-4 text-xs font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 shadow-sm"
             />
           </div>
         </div>
@@ -159,10 +174,10 @@ export default function Home() {
             <button
               key={c}
               onClick={() => setCat(c)}
-              className={`rounded-full border px-5 py-2 text-[11px] font-semibold tracking-[0.08em] transition ${
+              className={`rounded-full border px-5 py-2.5 text-[11px] font-bold tracking-[0.08em] transition shadow-xs ${
                 cat === c
-                  ? 'border-amber-500 bg-amber-500 text-stone-950 shadow-md'
-                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-500/50 hover:text-amber-400 bg-[var(--card-bg)]'
+                  ? 'border-amber-500 bg-amber-500 text-stone-950'
+                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-500/50 hover:text-amber-500 bg-[var(--card-bg)]'
               }`}
             >
               {c}
@@ -170,28 +185,28 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid - 3 items per row */}
         {loading ? (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <div className="grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12">
+            {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-[4/5] rounded-2xl bg-stone-800/40" />
-                <div className="mt-4 h-2.5 w-16 rounded bg-stone-800/40" />
-                <div className="mt-2 h-5 w-28 rounded bg-stone-800/40" />
-                <div className="mt-2 h-2.5 w-20 rounded bg-stone-800/40" />
-                <div className="mt-3 h-4 w-14 rounded bg-stone-800/40" />
+                <div className="aspect-[4/5] rounded-2xl bg-stone-200/40 dark:bg-stone-800/40" />
+                <div className="mt-4 h-2.5 w-16 rounded bg-stone-200/40 dark:bg-stone-800/40" />
+                <div className="mt-2 h-5 w-28 rounded bg-stone-200/40 dark:bg-stone-800/40" />
+                <div className="mt-2 h-2.5 w-20 rounded bg-stone-200/40 dark:bg-stone-800/40" />
+                <div className="mt-3 h-4 w-14 rounded bg-stone-200/40 dark:bg-stone-800/40" />
               </div>
             ))}
           </div>
         ) : paginated.length === 0 ? (
           <div className="py-24 text-center">
-            <p className="text-[var(--text-muted)]">No products match your search.</p>
-            <button onClick={() => { setQ(''); setCat('All') }} className="mt-4 text-xs font-semibold text-amber-400 hover:text-amber-300 transition">
+            <p className="text-[var(--text-muted)] font-medium">No products match your search.</p>
+            <button onClick={() => { setQ(''); setCat('All') }} className="mt-4 text-xs font-bold text-amber-500 hover:text-amber-400 transition">
               Clear filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12">
             {paginated.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}
@@ -201,21 +216,21 @@ export default function Home() {
         {/* ── PAGINATION ── */}
         {!loading && totalPages > 1 && (
           <div className="mt-16 flex flex-col items-center gap-4">
-            <p className="text-xs text-[var(--text-muted)]">
-              Page <span className="font-semibold text-[var(--text-primary)]">{page}</span> of{' '}
-              <span className="font-semibold text-[var(--text-primary)]">{totalPages}</span> &nbsp;·&nbsp;{' '}
+            <p className="text-xs text-[var(--text-muted)] font-medium">
+              Page <span className="font-bold text-[var(--text-primary)]">{page}</span> of{' '}
+              <span className="font-bold text-[var(--text-primary)]">{totalPages}</span> &nbsp;·&nbsp;{' '}
               Showing{' '}
-              <span className="font-semibold text-[var(--text-primary)]">
+              <span className="font-bold text-[var(--text-primary)]">
                 {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)}
               </span>{' '}
-              of <span className="font-semibold text-[var(--text-primary)]">{filtered.length}</span> products
+              of <span className="font-bold text-[var(--text-primary)]">{filtered.length}</span> products
             </p>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setPage(page - 1); scrollToCatalog() }}
                 disabled={page === 1}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -238,10 +253,10 @@ export default function Home() {
                     <button
                       key={item}
                       onClick={() => { setPage(item as number); scrollToCatalog() }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-semibold transition ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-bold transition shadow-xs ${
                         page === item
                           ? 'border-amber-500 bg-amber-500 text-stone-950'
-                          : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-amber-500 hover:text-amber-400'
+                          : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-amber-500 hover:text-amber-500'
                       }`}
                     >
                       {item}
@@ -252,7 +267,7 @@ export default function Home() {
               <button
                 onClick={() => { setPage(page + 1); scrollToCatalog() }}
                 disabled={page === totalPages}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
               >
                 <ChevronRight size={18} />
               </button>
@@ -261,23 +276,23 @@ export default function Home() {
         )}
       </section>
 
-      {/* ── STORY TEASER ── */}
+      {/* ── STORY TEASER WITH LOGO ── */}
       <section className="border-t border-[var(--border)] bg-[var(--card-bg)]">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8 lg:py-24">
-          <div className="relative flex min-h-[380px] items-center justify-center overflow-hidden rounded-3xl border border-[var(--border)] bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950">
-            <div className="grain absolute inset-0" />
+          <div className="relative flex min-h-[380px] items-center justify-center overflow-hidden rounded-3xl border border-[var(--border)] bg-stone-950 p-8 shadow-md">
+            <div className="grain absolute inset-0 opacity-30" />
             <div className="absolute h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
-            <img src="/logo.png.jpeg" alt="Jessy Luxury" className="relative h-40 w-auto rounded-2xl object-contain drop-shadow-2xl" />
+            <img src="/logo.png.jpeg" alt="Jessy Luxury" className="relative h-44 w-auto rounded-2xl object-contain drop-shadow-2xl" />
           </div>
           <div>
-            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">ABOUT JESSY LUXURY</p>
-            <h2 className="mt-3 font-display text-4xl leading-tight text-[var(--text-primary)] sm:text-5xl">
+            <p className="text-[10px] font-bold tracking-[0.24em] text-amber-500 uppercase">ABOUT JESSY LUXURY</p>
+            <h2 className="mt-3 font-display text-4xl leading-tight font-bold text-[var(--text-primary)] sm:text-5xl">
               A fragrance should feel like part of your identity.
             </h2>
-            <p className="mt-5 max-w-lg text-sm leading-7 text-[var(--text-secondary)]">
+            <p className="mt-5 max-w-lg text-sm leading-8 text-[var(--text-secondary)] font-medium">
               From carefully selected Arabic and designer fragrances to oils and gift sets, {site.brand} helps you choose a scent that fits your personality, occasion and lifestyle.
             </p>
-            <Link href="/about" className="mt-7 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-amber-400 transition hover:text-amber-300">
+            <Link href="/about" className="mt-7 inline-flex items-center gap-2 text-xs font-bold tracking-[0.1em] text-amber-500 transition hover:text-amber-600">
               READ OUR STORY <ArrowRight size={14} />
             </Link>
           </div>
@@ -287,17 +302,17 @@ export default function Home() {
       {/* ── TESTIMONIALS ── */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
         <div className="mb-10 text-center">
-          <p className="text-[10px] font-bold tracking-[0.24em] text-amber-400">WHAT CUSTOMERS SAY</p>
-          <h2 className="mt-3 font-display text-4xl text-[var(--text-primary)] sm:text-5xl">Loved across Nigeria</h2>
+          <p className="text-[10px] font-bold tracking-[0.24em] text-amber-500 uppercase">WHAT CUSTOMERS SAY</p>
+          <h2 className="mt-3 font-display text-4xl font-bold text-[var(--text-primary)] sm:text-5xl">Loved Across Nigeria</h2>
         </div>
         <div className="grid gap-5 md:grid-cols-3">
           {testimonials.map((t) => (
             <figure key={t.name} className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-7 shadow-sm">
-              <div className="text-amber-400">★★★★★</div>
-              <blockquote className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">"{t.text}"</blockquote>
+              <div className="text-amber-500 text-xs">★★★★★</div>
+              <blockquote className="mt-4 text-sm leading-7 text-[var(--text-secondary)] font-medium">"{t.text}"</blockquote>
               <figcaption className="mt-5">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">{t.name}</p>
-                <p className="text-xs text-[var(--text-muted)]">{t.role}</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{t.name}</p>
+                <p className="text-xs text-[var(--text-muted)] font-medium">{t.role}</p>
               </figcaption>
             </figure>
           ))}
@@ -308,8 +323,8 @@ export default function Home() {
       <section className="border-t border-[var(--border)] bg-[var(--card-bg)]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 py-14 text-center sm:flex-row sm:text-left lg:px-8">
           <div>
-            <h3 className="font-display text-3xl text-[var(--text-primary)]">Smell expensive. Feel unforgettable.</h3>
-            <p className="mt-2 text-sm text-[var(--text-muted)]">The full collection is one message away.</p>
+            <h3 className="font-display text-3xl font-bold text-[var(--text-primary)]">Smell expensive. Feel unforgettable.</h3>
+            <p className="mt-2 text-sm text-[var(--text-secondary)] font-medium">The full collection is one message away.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             <button onClick={scrollToCatalog} className="rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.12em] text-stone-950 transition hover:bg-amber-400 shadow-md">

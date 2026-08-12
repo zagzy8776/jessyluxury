@@ -1,20 +1,17 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft, Search, Plus, Trash2, ShoppingBag, CheckCircle, MessageCircle,
-  MapPin, DollarSign, Tag, User, Loader2,
+  ArrowLeft, Search, Plus, ShoppingBag, CheckCircle, MessageCircle,
+  User, Loader2,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
 export default function CreateManualOrderPage() {
-  const router = useRouter()
   const { toast, showToast, clearToast } = useToast()
 
   const [products, setProducts] = useState<any[]>([])
   const [shippingZones, setShippingZones] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
 
   // Form State
@@ -48,8 +45,6 @@ export default function CreateManualOrderPage() {
         }
       } catch {
         showToast('Error loading store catalog', 'error')
-      } finally {
-        setLoading(false)
       }
     }
     loadData()
@@ -161,48 +156,48 @@ export default function CreateManualOrderPage() {
     (p.name + p.brand + p.notes).toLowerCase().includes(searchProd.toLowerCase())
   )
 
-  const inp = 'w-full rounded-xl border border-stone-800 bg-stone-900 p-3 text-stone-200 text-xs outline-none transition focus:border-amber-500 font-sans'
-  const lbl = 'block text-[11px] font-semibold text-stone-400 mb-1 uppercase tracking-wider'
+  const inp = 'w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] text-xs outline-none transition focus:border-amber-500 font-sans font-medium shadow-sm'
+  const lbl = 'block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider'
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+      <div className="flex items-center justify-between border-b border-[var(--border)] pb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/store-portal-jl/dashboard/orders"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-800 bg-stone-900 text-stone-400 hover:text-white transition"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-amber-500 transition shadow-sm"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="font-display text-2xl font-medium text-stone-50">Record Manual POS Order</h1>
-            <p className="text-xs text-stone-400">Create walk-in, phone, or custom orders with instant receipts</p>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)]">Record Manual POS Order</h1>
+            <p className="text-xs font-medium text-[var(--text-secondary)]">Create walk-in, phone, or custom orders with instant receipts</p>
           </div>
         </div>
       </div>
 
       {createdOrder ? (
         /* Order Success Receipt Panel */
-        <div className="rounded-3xl border border-emerald-500/40 bg-stone-900/80 p-8 shadow-2xl space-y-6 text-center backdrop-blur-xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+        <div className="rounded-3xl border border-emerald-500/40 bg-[var(--card-bg)] p-8 shadow-xl space-y-6 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500">
             <CheckCircle size={32} />
           </div>
 
           <div>
-            <h2 className="font-display text-3xl text-stone-50">Order Recorded Successfully!</h2>
-            <p className="mt-1 font-mono text-lg font-bold text-amber-400">#{createdOrder.orderNumber}</p>
-            <p className="text-xs text-stone-400 mt-2">
-              Customer: <strong className="text-stone-200">{createdOrder.customerName}</strong> ({createdOrder.customerPhone})
+            <h2 className="font-display text-3xl font-bold text-[var(--text-primary)]">Order Recorded Successfully!</h2>
+            <p className="mt-1 font-mono text-lg font-bold text-amber-500">#{createdOrder.orderNumber}</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-2 font-medium">
+              Customer: <strong className="text-[var(--text-primary)]">{createdOrder.customerName}</strong> ({createdOrder.customerPhone})
             </p>
-            <p className="text-sm font-semibold text-stone-100 mt-1">
-              Total: ₦{createdOrder.total?.toLocaleString('en-NG')} · <span className="text-emerald-400">{createdOrder.paymentStatus}</span>
+            <p className="text-sm font-bold text-[var(--text-primary)] mt-1">
+              Total: ₦{createdOrder.total?.toLocaleString('en-NG')} · <span className="text-emerald-600 dark:text-emerald-400">{createdOrder.paymentStatus}</span>
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4 border-t border-stone-800">
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4 border-t border-[var(--border)]">
             <a
               href={`https://wa.me/${(createdOrder.customerWhatsapp || createdOrder.customerPhone).replace(/\D/g, '')}?text=${encodeURIComponent(
                 `Hello ${createdOrder.customerName}! Your Jessy Luxury receipt #${createdOrder.orderNumber}:\n\nTotal: ₦${createdOrder.total?.toLocaleString('en-NG')}\nPayment Status: ${createdOrder.paymentStatus}\n\nThank you for your order!`
@@ -221,14 +216,14 @@ export default function CreateManualOrderPage() {
                 setCustomerName('')
                 setCustomerPhone('')
               }}
-              className="rounded-xl border border-stone-700 bg-stone-800 px-6 py-3 text-xs font-bold text-stone-200 hover:text-white transition"
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-6 py-3 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 transition"
             >
               Record Another Order
             </button>
 
             <Link
               href="/store-portal-jl/dashboard/orders"
-              className="rounded-xl border border-stone-800 px-5 py-3 text-xs font-semibold text-stone-400 hover:text-white"
+              className="rounded-xl border border-[var(--border)] px-5 py-3 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               View Orders List
             </Link>
@@ -239,9 +234,9 @@ export default function CreateManualOrderPage() {
           {/* Left Column: Customer & Product Selection */}
           <div className="space-y-6 md:col-span-7">
             {/* Customer Details */}
-            <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 space-y-4 shadow-xl backdrop-blur-xl">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-300 flex items-center gap-2">
-                <User size={15} className="text-amber-400" /> Customer Information
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 space-y-4 shadow-sm">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
+                <User size={16} className="text-amber-500" /> Customer Information
               </h2>
 
               <div className="grid grid-cols-2 gap-3">
@@ -280,21 +275,21 @@ export default function CreateManualOrderPage() {
             </div>
 
             {/* Product Selector */}
-            <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 space-y-4 shadow-xl backdrop-blur-xl">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-stone-300 flex items-center gap-2">
-                  <ShoppingBag size={15} className="text-amber-400" /> Select Fragrances
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-2">
+                  <ShoppingBag size={16} className="text-amber-500" /> Select Fragrances
                 </h2>
-                <span className="text-[11px] text-stone-500 font-mono">{products.length} in catalog</span>
+                <span className="text-[11px] text-[var(--text-muted)] font-mono font-medium">{products.length} in catalog</span>
               </div>
 
               <div className="relative">
-                <Search size={15} className="absolute left-3 top-3 text-stone-500" />
+                <Search size={16} className="absolute left-3.5 top-3 text-[var(--text-muted)]" />
                 <input
                   value={searchProd}
                   onChange={(e) => setSearchProd(e.target.value)}
                   placeholder="Search catalog to add..."
-                  className={inp + ' pl-9'}
+                  className={inp + ' pl-10'}
                 />
               </div>
 
@@ -302,16 +297,16 @@ export default function CreateManualOrderPage() {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between rounded-xl border border-stone-800 bg-stone-950 p-3 hover:border-amber-500/40 transition"
+                    className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 hover:border-amber-500 transition"
                   >
                     <div>
-                      <p className="font-semibold text-xs text-stone-100">{p.name}</p>
-                      <p className="text-[10px] text-stone-500 font-mono">{p.brand} · ₦{p.price?.toLocaleString('en-NG')}</p>
+                      <p className="font-bold text-xs text-[var(--text-primary)]">{p.name}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] font-mono">{p.brand} · ₦{p.price?.toLocaleString('en-NG')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleAddToCart(p)}
-                      className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-300 hover:bg-amber-500 hover:text-stone-950 transition flex items-center gap-1"
+                      className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500 hover:text-stone-950 transition flex items-center gap-1"
                     >
                       <Plus size={13} /> Add
                     </button>
@@ -323,35 +318,35 @@ export default function CreateManualOrderPage() {
 
           {/* Right Column: Order Summary & Payment Status */}
           <div className="space-y-6 md:col-span-5">
-            <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-5 space-y-4 shadow-xl backdrop-blur-xl">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-300 border-b border-stone-800 pb-3">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 space-y-4 shadow-sm">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border)] pb-3">
                 Order Summary ({cartItems.length} items)
               </h2>
 
               {/* Cart Items List */}
               <div className="space-y-3 max-h-56 overflow-y-auto">
                 {cartItems.length === 0 ? (
-                  <p className="py-6 text-center text-xs text-stone-500">No items added to order yet.</p>
+                  <p className="py-6 text-center text-xs text-[var(--text-muted)] font-medium">No items added to order yet.</p>
                 ) : (
                   cartItems.map((ci) => (
-                    <div key={ci.product.id} className="flex items-center justify-between text-xs border-b border-stone-800/60 pb-2">
+                    <div key={ci.product.id} className="flex items-center justify-between text-xs border-b border-[var(--border)] pb-2 font-medium">
                       <div>
-                        <p className="font-semibold text-stone-200">{ci.product.name}</p>
-                        <p className="text-[10px] text-amber-400 font-mono">₦{ci.product.price?.toLocaleString('en-NG')}</p>
+                        <p className="font-bold text-[var(--text-primary)]">{ci.product.name}</p>
+                        <p className="text-[10px] text-amber-500 font-mono">₦{ci.product.price?.toLocaleString('en-NG')}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleUpdateQty(ci.product.id, -1)}
-                          className="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:text-white"
+                          className="h-6 w-6 rounded bg-[var(--bg-primary)] border border-[var(--border)] font-bold text-[var(--text-primary)]"
                         >
                           -
                         </button>
-                        <span className="font-mono font-bold text-stone-100">{ci.quantity}</span>
+                        <span className="font-mono font-bold text-[var(--text-primary)]">{ci.quantity}</span>
                         <button
                           type="button"
                           onClick={() => handleUpdateQty(ci.product.id, 1)}
-                          className="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:text-white"
+                          className="h-6 w-6 rounded bg-[var(--bg-primary)] border border-[var(--border)] font-bold text-[var(--text-primary)]"
                         >
                           +
                         </button>
@@ -390,7 +385,7 @@ export default function CreateManualOrderPage() {
                   <button
                     type="button"
                     onClick={handleValidateCoupon}
-                    className="rounded-xl border border-stone-700 bg-stone-800 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-stone-700 shrink-0"
+                    className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2 text-xs font-bold text-amber-500 hover:border-amber-500 shrink-0 transition"
                   >
                     Apply
                   </button>
@@ -403,7 +398,7 @@ export default function CreateManualOrderPage() {
                 <select
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
-                  className={`${inp} font-bold text-emerald-400`}
+                  className={`${inp} font-bold text-emerald-600 dark:text-emerald-400`}
                 >
                   <option value="PAID">PAID (Full Bank Transfer / Cash)</option>
                   <option value="PARTIALLY_PAID">PARTIALLY PAID (Deposit)</option>
@@ -412,31 +407,31 @@ export default function CreateManualOrderPage() {
               </div>
 
               {/* Total Calculation */}
-              <div className="border-t border-stone-800 pt-3 space-y-1.5 text-xs">
-                <div className="flex justify-between text-stone-400">
+              <div className="border-t border-[var(--border)] pt-3 space-y-1.5 text-xs font-medium">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Subtotal:</span>
-                  <span className="font-mono text-stone-200">₦{subtotal.toLocaleString('en-NG')}</span>
+                  <span className="font-mono font-bold text-[var(--text-primary)]">₦{subtotal.toLocaleString('en-NG')}</span>
                 </div>
-                <div className="flex justify-between text-stone-400">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Shipping Fee:</span>
-                  <span className="font-mono text-stone-200">₦{shippingFee.toLocaleString('en-NG')}</span>
+                  <span className="font-mono font-bold text-[var(--text-primary)]">₦{shippingFee.toLocaleString('en-NG')}</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-400">
+                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                     <span>Discount Applied:</span>
                     <span className="font-mono">-₦{discountAmount.toLocaleString('en-NG')}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-display text-lg font-bold text-stone-50 border-t border-stone-800 pt-2">
+                <div className="flex justify-between font-display text-lg font-bold text-[var(--text-primary)] border-t border-[var(--border)] pt-2">
                   <span>Total Amount:</span>
-                  <span className="text-amber-400">₦{total.toLocaleString('en-NG')}</span>
+                  <span className="text-amber-500">₦{total.toLocaleString('en-NG')}</span>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={submitting || cartItems.length === 0}
-                className="w-full rounded-xl bg-amber-500 py-3.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-lg disabled:opacity-60 flex items-center justify-center gap-2"
+                className="w-full rounded-xl bg-amber-500 py-3.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {submitting ? <Loader2 size={16} className="animate-spin" /> : 'Confirm & Generate Order'}
               </button>

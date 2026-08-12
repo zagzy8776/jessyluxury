@@ -1,17 +1,25 @@
+'use client'
 import Link from 'next/link'
-import { Instagram, MessageCircle, MapPin, Mail, ShieldCheck } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { Instagram, MessageCircle, MapPin, Mail } from 'lucide-react'
 import { site, wa } from '@/lib/site'
 
 export default function Footer() {
+  const pathname = usePathname()
+
+  if (pathname?.startsWith('/store-portal-jl') || pathname?.startsWith('/admin')) {
+    return null
+  }
+
   return (
-    <footer className="border-t border-stone-800 bg-stone-950">
+    <footer className="border-t border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-primary)]">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <span className="font-display text-lg tracking-[0.2em] text-stone-100">
-              {site.brandUpper}
+            <span className="font-display text-lg tracking-[0.2em] font-bold text-[var(--text-primary)]">
+              JESSY <span className="text-amber-500">LUXURY</span>
             </span>
-            <p className="mt-3 max-w-xs text-xs leading-6 text-stone-500">
+            <p className="mt-3 max-w-xs text-xs leading-6 text-[var(--text-secondary)] font-medium">
               Original designer and Arabian fragrances, oil perfumes and gift sets curated for
               confident everyday living.
             </p>
@@ -20,17 +28,15 @@ export default function Footer() {
                 href={site.instagram}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full bg-stone-900 p-2.5 text-stone-300 transition hover:text-amber-400"
-                aria-label="Instagram"
+                className="rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] p-2 text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-500"
               >
                 <Instagram size={16} />
               </a>
               <a
-                href={wa('Hello! I visited your website.')}
+                href={wa('Hello Jessy Luxury! I have a general question.')}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full bg-stone-900 p-2.5 text-stone-300 transition hover:text-green-400"
-                aria-label="WhatsApp"
+                className="rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] p-2 text-[var(--text-secondary)] transition hover:border-emerald-500 hover:text-emerald-400"
               >
                 <MessageCircle size={16} />
               </a>
@@ -38,46 +44,46 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">SHOP &amp; TRACK</p>
-            <div className="mt-4 space-y-3 text-xs text-stone-500">
-              <Link className="block transition hover:text-amber-300" href="/shop">All fragrances</Link>
-              <Link className="block transition hover:text-amber-300" href="/gifts">Gifts &amp; sets</Link>
-              <Link className="block transition hover:text-amber-300" href="/perfume-finder">Perfume finder</Link>
-              <Link className="block font-semibold text-amber-400 transition hover:text-amber-300" href="/track">Live Order Tracking</Link>
-            </div>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">SHOP</p>
+            <ul className="mt-4 flex flex-col gap-2.5 text-xs text-[var(--text-secondary)] font-medium">
+              <li><Link href="/shop" className="hover:text-[var(--text-primary)] transition">All Fragrances</Link></li>
+              <li><Link href="/gifts" className="hover:text-[var(--text-primary)] transition">Gift Sets</Link></li>
+              <li><Link href="/perfume-finder" className="hover:text-[var(--text-primary)] transition">Perfume Finder</Link></li>
+            </ul>
           </div>
 
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">LEGAL &amp; INFO</p>
-            <div className="mt-4 space-y-3 text-xs text-stone-500">
-              <Link className="block transition hover:text-amber-300" href="/about">About Us</Link>
-              <Link className="block transition hover:text-amber-300" href="/privacy">Privacy Policy</Link>
-              <Link className="block transition hover:text-amber-300" href="/terms">Terms of Service</Link>
-              <Link className="block transition hover:text-amber-300" href="/returns">Return Policy</Link>
-              <Link className="block font-semibold text-stone-400 hover:text-amber-400 transition" href="/admin">Admin Suite</Link>
-            </div>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">CUSTOMER CARE</p>
+            <ul className="mt-4 flex flex-col gap-2.5 text-xs text-[var(--text-secondary)] font-medium">
+              <li><Link href="/track" className="hover:text-[var(--text-primary)] transition">Track Order</Link></li>
+              <li><Link href="/delivery" className="hover:text-[var(--text-primary)] transition">Delivery & Pickup</Link></li>
+              <li><Link href="/returns" className="hover:text-[var(--text-primary)] transition">Returns & Exchanges</Link></li>
+              <li><Link href="/contact" className="hover:text-[var(--text-primary)] transition">Contact Us</Link></li>
+            </ul>
           </div>
 
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">CONTACT</p>
-            <div className="mt-4 space-y-3 text-xs text-stone-500">
-              <span className="flex items-center gap-2">
-                <MapPin size={13} /> {site.location}
+            <p className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">CONTACT</p>
+            <div className="mt-4 flex flex-col gap-3 text-xs text-[var(--text-secondary)] font-medium">
+              <span className="flex items-start gap-2">
+                <MapPin size={15} className="mt-0.5 shrink-0 text-amber-500" />
+                <span>{site.location}</span>
               </span>
-              <a className="flex items-center gap-2 transition hover:text-green-400" href={wa('Hello Jessy Luxury!')} target="_blank" rel="noreferrer">
-                <MessageCircle size={13} /> WhatsApp us
-              </a>
-              <a className="flex items-center gap-2 transition hover:text-amber-300" href={`mailto:${site.email}`}>
-                <Mail size={13} /> {site.email}
-              </a>
+              <span className="flex items-center gap-2">
+                <Mail size={15} className="shrink-0 text-amber-500" />
+                <span>{site.email}</span>
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-stone-800" />
-        <div className="flex flex-col items-center justify-between gap-3 pt-6 text-[10px] tracking-[0.08em] text-stone-600 sm:flex-row">
-          <span>© {new Date().getFullYear()} {site.brand} Fragrance</span>
-          <span>{site.tagline}</span>
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-[var(--border)] pt-8 text-[11px] text-[var(--text-muted)] font-medium sm:flex-row">
+          <p>© {new Date().getFullYear()} {site.brand}. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="hover:text-[var(--text-secondary)] transition">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-[var(--text-secondary)] transition">Terms of Service</Link>
+            <Link href="/store-portal-jl" className="hover:text-amber-500 transition font-semibold">Store Manager</Link>
+          </div>
         </div>
       </div>
     </footer>

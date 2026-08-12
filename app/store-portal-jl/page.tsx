@@ -1,10 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sparkles, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { Lock, Eye, EyeOff } from 'lucide-react'
 
 const SESSION_KEY = 'jl_admin_session'
-const CORRECT_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'jessyluxuryadmin2024'
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
@@ -13,7 +12,6 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  // If already logged in, redirect to dashboard
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const session = localStorage.getItem(SESSION_KEY)
@@ -28,10 +26,8 @@ export default function AdminLoginPage() {
     setLoading(true)
     setError('')
 
-    // Small artificial delay for security feel
     await new Promise((r) => setTimeout(r, 600))
 
-    // Validate against env var OR a fixed fallback
     const res = await fetch('/api/admin-auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -48,27 +44,23 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 flex items-center justify-center p-6">
-      {/* Background grain */}
-      <div className="grain fixed inset-0 opacity-40 pointer-events-none" />
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-6 text-[var(--text-primary)]">
+      <div className="grain fixed inset-0 opacity-30 pointer-events-none" />
 
       <div className="relative w-full max-w-sm">
         {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 mb-5">
-            <Sparkles size={28} className="text-amber-400" />
-          </div>
-          <h1 className="font-display text-2xl tracking-widest text-stone-100">
-            JESSY <span className="text-amber-400">LUXURY</span>
+        <div className="text-center mb-8">
+          <h1 className="font-display text-2xl font-bold tracking-widest text-[var(--text-primary)]">
+            JESSY <span className="text-amber-500">LUXURY</span>
           </h1>
-          <p className="mt-2 text-xs text-stone-500 tracking-wider">STORE MANAGER PORTAL</p>
+          <p className="mt-1 text-xs text-[var(--text-secondary)] font-bold tracking-wider">STORE MANAGER PORTAL</p>
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl border border-stone-800 bg-stone-900/80 backdrop-blur-xl p-8 shadow-2xl">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-8 shadow-xl">
           <div className="flex items-center gap-2 mb-6">
-            <Lock size={15} className="text-amber-400" />
-            <h2 className="text-sm font-semibold text-stone-200">Enter your admin password</h2>
+            <Lock size={16} className="text-amber-500" />
+            <h2 className="text-sm font-bold text-[var(--text-primary)]">Enter admin password</h2>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -80,47 +72,33 @@ export default function AdminLoginPage() {
                 placeholder="Password"
                 required
                 autoFocus
-                className="w-full rounded-xl border border-stone-700 bg-stone-950 py-3.5 pl-4 pr-12 text-sm text-stone-200 outline-none transition placeholder:text-stone-600 focus:border-amber-500"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] py-3.5 pl-4 pr-12 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 shadow-sm"
               />
               <button
                 type="button"
                 onClick={() => setShow(!show)}
-                className="absolute right-3.5 top-3.5 text-stone-500 hover:text-stone-300 transition"
+                className="absolute right-3.5 top-3.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
               >
-                {show ? <EyeOff size={17} /> : <Eye size={17} />}
+                {show ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
 
             {error && (
-              <p className="text-xs text-red-400 flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-400" />
+              <p className="text-xs text-red-500 font-bold flex items-center gap-1.5">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
                 {error}
               </p>
             )}
 
             <button
               type="submit"
-              disabled={loading || !password}
-              className="w-full rounded-xl bg-amber-500 py-3.5 text-sm font-bold text-stone-950 transition hover:bg-amber-400 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full rounded-xl bg-amber-500 py-3.5 text-xs font-bold tracking-wider text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10 disabled:opacity-60"
             >
-              {loading ? (
-                <>
-                  <span className="h-4 w-4 rounded-full border-2 border-stone-950/40 border-t-stone-950 animate-spin" />
-                  Verifying…
-                </>
-              ) : (
-                <>
-                  <ShieldCheck size={17} />
-                  Enter Dashboard
-                </>
-              )}
+              {loading ? 'UNLOCKING…' : 'UNLOCK PORTAL'}
             </button>
           </form>
         </div>
-
-        <p className="mt-6 text-center text-[11px] text-stone-600">
-          This is a private area. Unauthorised access is prohibited.
-        </p>
       </div>
     </div>
   )

@@ -18,10 +18,10 @@ export function Toast({ message, type = 'success', onClose }: ToastProps) {
 
   return (
     <div
-      className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 rounded-2xl border px-5 py-3.5 shadow-2xl backdrop-blur-md animate-slide-up ${
+      className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 rounded-2xl border px-5 py-3.5 shadow-2xl backdrop-blur-xl animate-slide-up ${
         type === 'success'
-          ? 'bg-stone-900/95 border-green-500/40 text-green-300'
-          : 'bg-stone-900/95 border-red-500/40 text-red-300'
+          ? 'bg-stone-900/90 backdrop-blur-xl border-amber-500/40 text-amber-200'
+          : 'bg-stone-900/90 backdrop-blur-xl border-red-500/40 text-red-300'
       }`}
     >
       {type === 'success' ? (

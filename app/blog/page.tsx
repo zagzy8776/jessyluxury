@@ -47,16 +47,16 @@ export default function BlogPage() {
   const [open, setOpen] = useState<string | null>(null)
 
   return (
-    <main className="bg-stone-950">
-      <section className="relative overflow-hidden border-b border-stone-800">
+    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      <section className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--card-bg)]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,163,93,0.14),transparent_60%)]" />
-        <div className="grain absolute inset-0" />
+        <div className="grain absolute inset-0 opacity-30" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 text-center lg:px-8 lg:py-20">
-          <p className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.26em] text-amber-400">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.26em] text-amber-500">
             <Newspaper size={14} /> SCENT NOTES
           </p>
-          <h1 className="mt-3 font-display text-5xl text-stone-50 sm:text-6xl">The Journal</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-stone-400">
+          <h1 className="mt-3 font-display text-5xl font-bold text-[var(--text-primary)] sm:text-6xl">The Journal</h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[var(--text-secondary)] font-medium">
             Perfume advice, guides and stories from the world of fragrance.
           </p>
         </div>
@@ -67,23 +67,23 @@ export default function BlogPage() {
           {posts.map((post) => {
             const isOpen = open === post.slug
             return (
-              <article key={post.slug} className="overflow-hidden rounded-3xl border border-stone-800 bg-stone-900/50">
+              <article key={post.slug} className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] shadow-sm">
                 <button
                   onClick={() => setOpen(isOpen ? null : post.slug)}
                   className="flex w-full items-start justify-between gap-4 p-6 text-left sm:p-8"
                 >
                   <div>
-                    <h2 className="font-display text-2xl text-stone-50">{post.title}</h2>
-                    <p className="mt-2 text-sm leading-6 text-stone-500">{post.excerpt}</p>
+                    <h2 className="font-display text-2xl font-bold text-[var(--text-primary)]">{post.title}</h2>
+                    <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)] font-medium">{post.excerpt}</p>
                   </div>
-                  <ChevronDown size={20} className={`mt-1 shrink-0 text-amber-400 transition ${isOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={20} className={`mt-1 shrink-0 text-amber-500 transition ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
-                  <div className="border-t border-stone-800 px-6 pb-8 pt-5 sm:px-8">
+                  <div className="border-t border-[var(--border)] px-6 pb-8 pt-5 sm:px-8">
                     <ol className="space-y-3">
                       {post.content.map((line, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm leading-6 text-stone-300">
-                          <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-[10px] font-bold text-amber-400">
+                        <li key={i} className="flex items-start gap-3 text-sm leading-6 text-[var(--text-secondary)] font-medium">
+                          <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-[10px] font-bold text-amber-600">
                             {i + 1}
                           </span>
                           {line}
@@ -94,7 +94,7 @@ export default function BlogPage() {
                       href={wa('Hello! I read your journal article and have a question.')}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-6 inline-block text-xs font-semibold tracking-[0.1em] text-amber-300 transition hover:text-amber-200"
+                      className="mt-6 inline-block text-xs font-bold tracking-[0.1em] text-amber-600 transition hover:text-amber-500"
                     >
                       ASK US ABOUT THIS →
                     </a>

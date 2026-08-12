@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import {
-  Settings, Truck, Users, MapPin, Globe, CreditCard, DollarSign, Receipt,
-  Plus, Edit2, Trash2, ShieldCheck, CheckCircle, Save, Smartphone, Building,
+  Truck, Users, MapPin, Globe, CreditCard, DollarSign, Receipt,
+  Plus, Edit2, Save, Smartphone, Building,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
@@ -30,14 +30,14 @@ export default function StoreSettingsPage() {
   })
 
   // Staff Accounts state
-  const [staffList, setStaffList] = useState([
+  const [staffList] = useState([
     { id: 1, name: 'Jessy (Owner)', email: 'owner@jessyluxury.com', role: 'Owner', permissions: ['all'], active: true },
     { id: 2, name: 'Ada (Fulfillment Manager)', email: 'ada@jessyluxury.com', role: 'Fulfillment', permissions: ['orders', 'shipping'], active: true },
     { id: 3, name: 'Chidi (Catalog Manager)', email: 'chidi@jessyluxury.com', role: 'Catalog', permissions: ['products'], active: true },
   ])
 
   // Store Locations state
-  const [locations, setLocations] = useState([
+  const [locations] = useState([
     { id: 1, name: 'Headquarters (Owerri)', address: '57 MCC Road, Opposite Ihechiuwa Junction, Owerri', isDefault: true },
     { id: 2, name: 'Lagos Hub Pickup Point', address: 'Lekki Phase 1, Lagos', isDefault: false },
   ])
@@ -75,29 +75,31 @@ export default function StoreSettingsPage() {
     showToast('Expense recorded successfully')
   }
 
-  const inp = 'w-full rounded-xl border border-stone-800 bg-stone-900 p-3 text-stone-200 text-xs outline-none transition focus:border-amber-500 font-sans'
-  const lbl = 'block text-[11px] font-semibold text-stone-400 mb-1 uppercase tracking-wider'
+  const inp = 'w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] text-xs outline-none transition focus:border-amber-500 font-sans font-medium shadow-sm'
+  const lbl = 'block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
       {/* Header */}
-      <div className="border-b border-stone-800 pb-4">
-        <h1 className="font-display text-3xl font-medium text-stone-50">Operations &amp; Store Setup</h1>
-        <p className="mt-1 text-xs text-stone-400">
+      <div className="border-b border-[var(--border)] pb-5">
+        <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          Operations &amp; Store Setup
+        </h1>
+        <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
           Manage operations (shipping rules, staff permissions, locations) &amp; finance (bank accounts, expenses).
         </p>
       </div>
 
       {/* Primary Section Tabs (OPERATIONS vs FINANCE) */}
-      <div className="flex border-b border-stone-800">
+      <div className="flex border-b border-[var(--border)] gap-2">
         <button
           onClick={() => { setActiveSection('OPERATIONS'); setActiveSubTab('shipping') }}
           className={`flex items-center gap-2 border-b-2 px-6 py-3 text-xs font-bold tracking-wider transition ${
             activeSection === 'OPERATIONS'
-              ? 'border-amber-400 text-amber-400 bg-amber-500/5'
-              : 'border-transparent text-stone-400 hover:text-stone-200'
+              ? 'border-amber-500 text-amber-500 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <Building size={16} /> OPERATIONS SETUP
@@ -107,8 +109,8 @@ export default function StoreSettingsPage() {
           onClick={() => { setActiveSection('FINANCE'); setActiveSubTab('bank') }}
           className={`flex items-center gap-2 border-b-2 px-6 py-3 text-xs font-bold tracking-wider transition ${
             activeSection === 'FINANCE'
-              ? 'border-amber-400 text-amber-400 bg-amber-500/5'
-              : 'border-transparent text-stone-400 hover:text-stone-200'
+              ? 'border-amber-500 text-amber-500 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <CreditCard size={16} /> FINANCE &amp; PAYMENTS
@@ -128,10 +130,10 @@ export default function StoreSettingsPage() {
             <button
               key={sub.id}
               onClick={() => setActiveSubTab(sub.id)}
-              className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition whitespace-nowrap ${
                 activeSubTab === sub.id
-                  ? 'border-amber-500 bg-amber-500/10 text-amber-300'
-                  : 'border-stone-800 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                  ? 'border-amber-500 bg-amber-500/15 text-amber-500'
+                  : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-amber-500/40 hover:text-[var(--text-primary)]'
               }`}
             >
               <sub.icon size={14} /> {sub.label}
@@ -151,10 +153,10 @@ export default function StoreSettingsPage() {
             <button
               key={sub.id}
               onClick={() => setActiveSubTab(sub.id)}
-              className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-semibold transition ${
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition whitespace-nowrap ${
                 activeSubTab === sub.id
-                  ? 'border-amber-500 bg-amber-500/10 text-amber-300'
-                  : 'border-stone-800 text-stone-400 hover:border-stone-700 hover:text-stone-200'
+                  ? 'border-amber-500 bg-amber-500/15 text-amber-500'
+                  : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-amber-500/40 hover:text-[var(--text-primary)]'
               }`}
             >
               <sub.icon size={14} /> {sub.label}
@@ -167,33 +169,33 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: Shipping Rules */}
       {activeSection === 'OPERATIONS' && activeSubTab === 'shipping' && (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-stone-100">Delivery Zones &amp; Dispatch Rules</h3>
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Delivery Zones &amp; Dispatch Rules</h3>
             <Link
               href="/store-portal-jl/dashboard/shipping"
-              className="text-xs font-semibold text-amber-400 hover:text-amber-300 transition"
+              className="text-xs font-bold text-amber-500 hover:text-amber-400 transition"
             >
               Open Advanced Shipping Manager →
             </Link>
           </div>
-          <p className="text-xs text-stone-400">
+          <p className="text-xs text-[var(--text-secondary)] font-medium">
             Configure delivery fees (₦), lead times, and motor park waybill pickup instructions.
           </p>
         </div>
       )}
 
-      {/* SubTab: Staff Accounts & Granular Permissions */}
+      {/* SubTab: Staff Accounts */}
       {activeSection === 'OPERATIONS' && activeSubTab === 'staff' && (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
             <div>
-              <h3 className="text-sm font-semibold text-stone-100">Staff Accounts &amp; Permissions</h3>
-              <p className="text-xs text-stone-400">Grant individual staff accounts access to specific modules</p>
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Staff Accounts &amp; Permissions</h3>
+              <p className="text-xs text-[var(--text-secondary)] font-medium">Grant individual staff accounts access to specific modules</p>
             </div>
             <button
               onClick={() => showToast('Staff invite modal opened')}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-stone-950 hover:bg-amber-400 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10"
             >
               <Plus size={14} /> Add Staff Account
             </button>
@@ -201,19 +203,19 @@ export default function StoreSettingsPage() {
 
           <div className="space-y-3 pt-2">
             {staffList.map((st) => (
-              <div key={st.id} className="flex items-center justify-between rounded-xl bg-stone-950 p-4 border border-stone-800 text-xs">
+              <div key={st.id} className="flex items-center justify-between rounded-xl bg-[var(--bg-primary)] p-4 border border-[var(--border)] text-xs">
                 <div>
-                  <p className="font-semibold text-stone-100 flex items-center gap-2">
+                  <p className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                     {st.name}
-                    <span className="rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold">
+                    <span className="rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-bold">
                       {st.role}
                     </span>
                   </p>
-                  <p className="text-stone-500 font-mono mt-0.5">{st.email}</p>
+                  <p className="text-[var(--text-muted)] font-mono mt-0.5 font-medium">{st.email}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[11px] text-emerald-400 font-medium">Full Permissions</span>
-                  <button className="text-stone-400 hover:text-white"><Edit2 size={14} /></button>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Full Permissions</span>
+                  <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"><Edit2 size={14} /></button>
                 </div>
               </div>
             ))}
@@ -223,27 +225,27 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: Store Locations */}
       {activeSection === 'OPERATIONS' && activeSubTab === 'locations' && (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
             <div>
-              <h3 className="text-sm font-semibold text-stone-100">Physical Store Outlets</h3>
-              <p className="text-xs text-stone-400">Manage pickup points and retail locations</p>
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Physical Store Outlets</h3>
+              <p className="text-xs text-[var(--text-secondary)] font-medium">Manage pickup points and retail locations</p>
             </div>
           </div>
 
           <div className="space-y-3 pt-2">
             {locations.map((loc) => (
-              <div key={loc.id} className="flex items-center justify-between rounded-xl bg-stone-950 p-4 border border-stone-800 text-xs">
+              <div key={loc.id} className="flex items-center justify-between rounded-xl bg-[var(--bg-primary)] p-4 border border-[var(--border)] text-xs">
                 <div className="space-y-1">
-                  <p className="font-semibold text-stone-100 flex items-center gap-2">
-                    <MapPin size={14} className="text-amber-400" /> {loc.name}
+                  <p className="font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <MapPin size={14} className="text-amber-500" /> {loc.name}
                     {loc.isDefault && (
-                      <span className="rounded-full bg-emerald-500/10 text-emerald-400 px-2 py-0.5 text-[10px] font-bold">
+                      <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 text-[10px] font-bold border border-emerald-500/20">
                         Main HQ
                       </span>
                     )}
                   </p>
-                  <p className="text-stone-400">{loc.address}</p>
+                  <p className="text-[var(--text-secondary)] font-medium">{loc.address}</p>
                 </div>
               </div>
             ))}
@@ -253,8 +255,8 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: General Info */}
       {activeSection === 'OPERATIONS' && activeSubTab === 'general' && (
-        <form onSubmit={handleSaveStoreInfo} className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-semibold text-stone-100 border-b border-stone-800 pb-3">General Store Contact</h3>
+        <form onSubmit={handleSaveStoreInfo} className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">General Store Contact</h3>
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
               <label className={lbl}>Store Brand Name</label>
@@ -272,7 +274,7 @@ export default function StoreSettingsPage() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition">
+            <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10">
               <Save size={15} /> Save General Info
             </button>
           </div>
@@ -281,25 +283,25 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: Connected Apps */}
       {activeSection === 'OPERATIONS' && activeSubTab === 'apps' && (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-semibold text-stone-100 border-b border-stone-800 pb-3">Connected Services</h3>
-          <div className="grid gap-3 sm:grid-cols-3 text-xs">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">Connected Services</h3>
+          <div className="grid gap-4 sm:grid-cols-3 text-xs">
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-              <p className="font-bold text-emerald-300">WhatsApp Business</p>
-              <p className="text-[10px] text-stone-400 mt-1">Direct order checkout integration</p>
-              <span className="mt-2 inline-block rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">ACTIVE</span>
+              <p className="font-bold text-emerald-600 dark:text-emerald-300">WhatsApp Business</p>
+              <p className="text-[11px] text-[var(--text-secondary)] font-medium mt-1">Direct order checkout integration</p>
+              <span className="mt-2.5 inline-block rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">ACTIVE</span>
             </div>
 
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-              <p className="font-bold text-amber-300">Cloudinary Library</p>
-              <p className="text-[10px] text-stone-400 mt-1">Phone gallery photo uploads</p>
-              <span className="mt-2 inline-block rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400">CONNECTED</span>
+              <p className="font-bold text-amber-600 dark:text-amber-300">Cloudinary Library</p>
+              <p className="text-[11px] text-[var(--text-secondary)] font-medium mt-1">Phone gallery photo uploads</p>
+              <span className="mt-2.5 inline-block rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30">CONNECTED</span>
             </div>
 
             <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
-              <p className="font-bold text-blue-300">Neon PostgreSQL</p>
-              <p className="text-[10px] text-stone-400 mt-1">Live database cloud engine</p>
-              <span className="mt-2 inline-block rounded bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-400">SYNCED</span>
+              <p className="font-bold text-blue-600 dark:text-blue-300">Neon PostgreSQL</p>
+              <p className="text-[11px] text-[var(--text-secondary)] font-medium mt-1">Live database cloud engine</p>
+              <span className="mt-2.5 inline-block rounded-full bg-blue-500/20 px-2.5 py-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 border border-blue-500/30">SYNCED</span>
             </div>
           </div>
         </div>
@@ -309,8 +311,8 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: Bank Details */}
       {activeSection === 'FINANCE' && activeSubTab === 'bank' && (
-        <form onSubmit={handleSaveBankInfo} className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-semibold text-stone-100 border-b border-stone-800 pb-3">Bank Transfer Details (Manual Payment)</h3>
+        <form onSubmit={handleSaveBankInfo} className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">Bank Transfer Details (Manual Payment)</h3>
           <div className="grid grid-cols-3 gap-4 text-xs">
             <div>
               <label className={lbl}>Bank Name</label>
@@ -318,7 +320,7 @@ export default function StoreSettingsPage() {
             </div>
             <div>
               <label className={lbl}>Account Number</label>
-              <input value={bankInfo.accountNumber} onChange={(e) => setBankInfo({ ...bankInfo, accountNumber: e.target.value })} className={`${inp} font-mono font-bold text-amber-300`} />
+              <input value={bankInfo.accountNumber} onChange={(e) => setBankInfo({ ...bankInfo, accountNumber: e.target.value })} className={`${inp} font-mono font-bold text-amber-500`} />
             </div>
             <div>
               <label className={lbl}>Account Name</label>
@@ -327,7 +329,7 @@ export default function StoreSettingsPage() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition">
+            <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10">
               <Save size={15} /> Save Bank Details
             </button>
           </div>
@@ -337,8 +339,8 @@ export default function StoreSettingsPage() {
       {/* SubTab: Expenses Tracker */}
       {activeSection === 'FINANCE' && activeSubTab === 'expenses' && (
         <div className="space-y-6">
-          <form onSubmit={handleAddExpense} className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl">
-            <h3 className="text-sm font-semibold text-stone-100 border-b border-stone-800 pb-3">Record Operational Expense</h3>
+          <form onSubmit={handleAddExpense} className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">Record Operational Expense</h3>
             <div className="grid grid-cols-3 gap-4 text-xs">
               <div>
                 <label className={lbl}>Category</label>
@@ -359,29 +361,29 @@ export default function StoreSettingsPage() {
               </div>
             </div>
             <div className="flex justify-end">
-              <button type="submit" className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition">
+              <button type="submit" className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10">
                 Record Expense
               </button>
             </div>
           </form>
 
-          <div className="rounded-2xl border border-stone-800 bg-stone-900/40 overflow-hidden shadow-xl">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-stone-800 bg-stone-950/80 uppercase tracking-wider text-stone-400 font-semibold">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden shadow-sm">
+            <table className="w-full text-left text-xs text-[var(--text-primary)]">
+              <thead className="border-b border-[var(--border)] bg-[var(--table-header-bg)] uppercase tracking-wider text-[var(--text-secondary)] text-[11px] font-bold">
                 <tr>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Description</th>
-                  <th className="py-3 px-4 text-right">Amount</th>
+                  <th className="py-3.5 px-4">Date</th>
+                  <th className="py-3.5 px-4">Category</th>
+                  <th className="py-3.5 px-4">Description</th>
+                  <th className="py-3.5 px-4 text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-800/60">
+              <tbody className="divide-y divide-[var(--border)]">
                 {expenses.map((ex) => (
-                  <tr key={ex.id} className="hover:bg-stone-900/60">
-                    <td className="py-3 px-4 font-mono text-stone-400">{ex.date}</td>
-                    <td className="py-3 px-4 text-amber-300 font-semibold">{ex.category}</td>
-                    <td className="py-3 px-4 text-stone-200">{ex.description}</td>
-                    <td className="py-3 px-4 text-right font-mono font-bold text-stone-100">₦{ex.amount?.toLocaleString('en-NG')}</td>
+                  <tr key={ex.id} className="hover:bg-[var(--table-row-hover)] transition">
+                    <td className="py-3.5 px-4 font-mono text-[var(--text-secondary)] font-medium">{ex.date}</td>
+                    <td className="py-3.5 px-4 text-amber-500 font-bold">{ex.category}</td>
+                    <td className="py-3.5 px-4 text-[var(--text-primary)] font-medium">{ex.description}</td>
+                    <td className="py-3.5 px-4 text-right font-mono font-bold text-[var(--text-primary)]">₦{ex.amount?.toLocaleString('en-NG')}</td>
                   </tr>
                 ))}
               </tbody>
@@ -392,8 +394,8 @@ export default function StoreSettingsPage() {
 
       {/* SubTab: Taxes & Receipts */}
       {activeSection === 'FINANCE' && activeSubTab === 'taxes' && (
-        <div className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 space-y-4 shadow-xl backdrop-blur-xl text-xs text-stone-300">
-          <h3 className="text-sm font-semibold text-stone-100 border-b border-stone-800 pb-3">Taxes &amp; Order Invoice Setup</h3>
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm text-xs text-[var(--text-secondary)] font-medium">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">Taxes &amp; Order Invoice Setup</h3>
           <p>Configure VAT percentage toggles and custom header notes for WhatsApp receipt links.</p>
         </div>
       )}
