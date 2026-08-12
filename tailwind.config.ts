@@ -17,6 +17,15 @@ const config: Config = {
       boxShadow: {
         card: '0 1px 0 rgba(255,255,255,0.04) inset, 0 10px 30px -12px rgba(0,0,0,0.5)',
       },
+      keyframes: {
+        'slide-up': {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        'slide-up': 'slide-up 0.25s ease-out forwards',
+      },
     },
   },
   plugins: [],

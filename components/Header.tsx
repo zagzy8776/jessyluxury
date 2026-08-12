@@ -1,65 +1,158 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { Menu, X, ShoppingBag, MessageCircle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Menu, X, ShoppingBag, MessageCircle, ChevronDown, Sun, Moon } from 'lucide-react'
 import { useCart } from './CartProvider'
 import { wa } from '@/lib/site'
+
+const COLLECTIONS = [
+  ['Oud & Amber', '/shop?cat=Oud+%26+Amber'],
+  ['Fresh & Floral', '/shop?cat=Fresh+%26+Floral'],
+  ['Sweet & Gourmand', '/shop?cat=Sweet+%26+Gourmand'],
+  ['Perfume Oils', '/shop?cat=Perfume+Oils'],
+  ['Gift Sets', '/shop?cat=Gift+Sets'],
+]
 
 const NAV: [string, string][] = [
   ['Home', '/'],
   ['Shop', '/shop'],
-  ['Gifts', '/gifts'],
-  ['Finder', '/perfume-finder'],
   ['Track Order', '/track'],
-  ['Gallery', '/gallery'],
-  ['Blog', '/blog'],
-  ['Delivery', '/delivery'],
   ['About', '/about'],
   ['Contact', '/contact'],
-  ['Admin', '/admin'],
 ]
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const [collectionsOpen, setCollectionsOpen] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const { count, setDrawer } = useCart()
   const pathname = usePathname()
+  const collectionsRef = useRef<HTMLDivElement>(null)
+
+  // Load saved theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('jl_theme') as 'dark' | 'light' | null
+    if (saved) {
+      setTheme(saved)
+      document.documentElement.setAttribute('data-theme', saved)
+    }
+  }, [])
+
+  // Close collections dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (collectionsRef.current && !collectionsRef.current.contains(e.target as Node)) {
+        setCollectionsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    localStorage.setItem('jl_theme', next)
+    document.documentElement.setAttribute('data-theme', next)
+  }
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-800/80 bg-stone-950/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
+        {/* Mobile menu toggle */}
         <button
-          className="-ml-1.5 p-1.5 text-stone-300 lg:hidden"
+          className="-ml-1.5 p-1.5 text-[var(--text-muted)] lg:hidden"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
 
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="font-display text-lg tracking-[0.2em] text-stone-100">
+          <span className="font-display text-lg tracking-[0.2em] text-[var(--text-primary)]">
             JESSY<span className="text-amber-400"> LUXURY</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        {/* Desktop Nav */}
+        <nav className="hidden items-center gap-5 lg:flex">
           {NAV.map(([label, href]) => (
             <Link
               key={href}
               href={href}
               className={`text-[11px] tracking-[0.08em] transition ${
-                isActive(href) ? 'text-amber-400' : 'text-stone-400 hover:text-stone-100'
+                isActive(href)
+                  ? 'text-amber-400'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
               {label}
             </Link>
           ))}
+
+          {/* Collections Dropdown */}
+          <div ref={collectionsRef} className="relative">
+            <button
+              onClick={() => setCollectionsOpen(!collectionsOpen)}
+              className={`flex items-center gap-1 text-[11px] tracking-[0.08em] transition ${
+                pathname.startsWith('/shop')
+                  ? 'text-amber-400'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              Collections
+              <ChevronDown
+                size={13}
+                className={`transition-transform duration-200 ${collectionsOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {collectionsOpen && (
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 w-52 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-2xl backdrop-blur-xl py-2 z-50">
+                <p className="px-4 py-1.5 text-[9px] font-bold tracking-[0.2em] text-stone-500 uppercase">
+                  Shop by Collection
+                </p>
+                {COLLECTIONS.map(([label, href]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setCollectionsOpen(false)}
+                    className="block px-4 py-2.5 text-xs text-[var(--text-muted)] hover:text-amber-400 hover:bg-amber-500/5 transition"
+                  >
+                    {label}
+                  </Link>
+                ))}
+                <div className="mx-4 my-1 border-t border-[var(--border)]" />
+                <Link
+                  href="/shop"
+                  onClick={() => setCollectionsOpen(false)}
+                  className="block px-4 py-2.5 text-xs font-semibold text-amber-400 hover:bg-amber-500/5 transition"
+                >
+                  View All Products →
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
+        {/* Right side actions */}
         <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
+            aria-label="Toggle theme"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+
+          {/* WhatsApp Chat */}
           <a
             href={wa("Hello! I'd like help choosing a scent.")}
             target="_blank"
@@ -68,7 +161,13 @@ export default function Header() {
           >
             <MessageCircle size={15} /> Chat
           </a>
-          <button onClick={() => setDrawer(true)} className="relative p-2 text-stone-300 transition hover:text-amber-400" aria-label="Cart">
+
+          {/* Cart */}
+          <button
+            onClick={() => setDrawer(true)}
+            className="relative p-2 text-[var(--text-muted)] transition hover:text-amber-400"
+            aria-label="Cart"
+          >
             <ShoppingBag size={19} />
             {count > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-bold text-stone-950">
@@ -79,21 +178,46 @@ export default function Header() {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {open && (
-        <div className="border-t border-stone-800 bg-stone-950 px-6 py-4 lg:hidden">
-          <div className="grid">
+        <div className="border-t border-[var(--border)] bg-[var(--card-bg)] px-6 py-4 lg:hidden">
+          <div className="grid gap-1">
             {NAV.map(([label, href]) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className={`rounded py-2.5 text-sm transition ${
-                  isActive(href) ? 'text-amber-400' : 'text-stone-300 hover:text-amber-400'
+                className={`rounded-lg py-2.5 px-2 text-sm transition ${
+                  isActive(href) ? 'text-amber-400 font-semibold' : 'text-[var(--text-muted)] hover:text-amber-400'
                 }`}
               >
                 {label}
               </Link>
             ))}
+
+            {/* Mobile Collections */}
+            <div className="pt-2 border-t border-[var(--border)] mt-2">
+              <p className="px-2 py-1 text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase">Collections</p>
+              {COLLECTIONS.map(([label, href]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg py-2 px-2 text-sm text-[var(--text-muted)] hover:text-amber-400 transition"
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile theme toggle */}
+            <button
+              onClick={() => { toggleTheme(); setOpen(false) }}
+              className="mt-2 flex items-center gap-2 rounded-lg py-2.5 px-2 text-sm text-[var(--text-muted)] hover:text-amber-400 transition"
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
+            </button>
           </div>
         </div>
       )}
