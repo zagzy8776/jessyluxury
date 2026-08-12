@@ -235,7 +235,7 @@ export default function AdminOrdersPage() {
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition shadow-sm"
                     >
-                      <MessageCircle size={14} /> WhatsApp Receipt
+                      <MessageCircle size={14} /> Receipt
                     </a>
                   </div>
                 </div>

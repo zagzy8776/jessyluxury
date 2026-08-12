@@ -211,7 +211,7 @@ export default function CreateManualOrderPage() {
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white hover:bg-emerald-500 transition shadow-md"
             >
-              <MessageCircle size={16} /> Share Receipt on WhatsApp
+              <MessageCircle size={16} /> Share Receipt
             </a>
 
             <button
