@@ -1,15 +1,18 @@
 // Central site configuration for Jessy Luxury.
-// NOTE: replace the placeholder WhatsApp number with the client's real number.
+// IMPORTANT: Set WHATSAPP_NUMBER in Vercel env vars (country code + number, no +)
+// e.g. WHATSAPP_NUMBER=2348123456789
 export const site = {
   brand: 'Jessy Luxury',
   brandUpper: 'JESSY LUXURY',
   tagline: 'Smell expensive. Feel unforgettable.',
-  whatsapp: '2340000000000', // <-- TODO: replace with the real WhatsApp number (country code + number, no +)
-  instagram: 'https://instagram.com/',
-  location: 'Owerri, Imo State, Nigeria',
-  phone: '+234 000 000 0000', // <-- TODO
-  email: 'hello@jessyluxury.com', // <-- TODO
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '2348000000000', // set in Vercel env
+  instagram: 'https://instagram.com/jessyluxury',
+  location: '57 MCC Road, Opposite Ihechiuwa Junction, Owerri, Imo State, Nigeria',
+  locationShort: 'Owerri, Imo State',
+  phone: '+234 800 000 0000', // update with real phone number
+  email: 'ijeomaasiegbu963@gmail.com',
   hours: 'Mon – Sat, 9am – 7pm',
+  googleMaps: 'https://maps.google.com/?q=57+MCC+Road+Owerri+Imo+State+Nigeria',
   describers: [
     'Original designer & Arabian fragrances',
     'Oil perfumes, body mists & home scents',
