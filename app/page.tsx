@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -8,27 +10,48 @@ import {
 } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import Bottle from '@/components/Bottle'
-import { products } from '@/lib/products'
 import { site, wa } from '@/lib/site'
-
-const featured = products.filter((p) => p.featured)
 
 const categoryTiles = [
   { name: 'Oud & Amber', tone: 'oud', blurb: 'Bold, rich and grounding' },
-  { name: 'Fresh', tone: 'fresh', blurb: 'Clean, crisp everyday wear' },
+  { name: 'Fresh & Floral', tone: 'fresh', blurb: 'Clean, crisp everyday wear' },
   { name: 'Sweet & Gourmand', tone: 'sweet', blurb: 'Warm, comforting and fun' },
   { name: 'Perfume Oils', tone: 'rose', blurb: 'Intimate close-to-skin luxury' },
   { name: 'Gift Sets', tone: 'amber', blurb: 'Curated, gift-ready boxes' },
-  { name: 'Body Mists', tone: 'musk', blurb: 'Light layers for any moment' },
 ]
 
 const testimonials = [
   { name: 'Adaeze O.', text: 'Ordered the Khair Pistachio — it arrived the same day and smells even better than I expected. Delivery was smooth.', role: 'Owerri' },
   { name: 'Chinedu K.', text: 'The perfume finder picked the Supremacy Collector for me and it is perfect. Exactly the confidence I wanted.', role: 'Nigeria' },
-  { name: 'Amaka E.', text: 'Got the Signature Gift Set for my mum’s birthday. Beautiful presentation and authentic scents. Highly recommended!', role: 'Lagos' },
+  { name: 'Amaka E.', text: 'Got the Signature Gift Set for my mum\'s birthday. Beautiful presentation and authentic scents. Highly recommended!', role: 'Lagos' },
 ]
 
 export default function Home() {
+  const [featured, setFeatured] = useState<any[]>([])
+  const [loadingProducts, setLoadingProducts] = useState(true)
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const res = await fetch('/api/products?featured=true')
+        const data = await res.json()
+        if (Array.isArray(data) && data.length > 0) {
+          setFeatured(data.slice(0, 4))
+        } else {
+          // fallback: load all and take first 4
+          const res2 = await fetch('/api/products')
+          const all = await res2.json()
+          if (Array.isArray(all)) setFeatured(all.slice(0, 4))
+        }
+      } catch {
+        // silently fail — empty section is better than crash
+      } finally {
+        setLoadingProducts(false)
+      }
+    }
+    loadFeatured()
+  }, [])
+
   return (
     <main className="bg-stone-950">
       {/* HERO */}
@@ -74,6 +97,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       {/* FEATURES STRIP */}
       <section className="border-y border-stone-800 bg-stone-900/40">
         <div className="mx-auto grid max-w-7xl divide-y divide-stone-800 px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:px-8">
@@ -95,7 +119,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BEST SELLERS */}
+      {/* BEST SELLERS — Live from DB */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
         <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
@@ -106,11 +130,32 @@ export default function Home() {
             VIEW ALL <ArrowRight size={14} className="transition group-hover:translate-x-1" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
-          {featured.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} p={p} />
-          ))}
-        </div>
+
+        {loadingProducts ? (
+          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-[4/5] rounded-2xl bg-stone-800" />
+                <div className="mt-4 h-3 w-20 rounded bg-stone-800" />
+                <div className="mt-2 h-5 w-32 rounded bg-stone-800" />
+                <div className="mt-2 h-3 w-24 rounded bg-stone-800" />
+              </div>
+            ))}
+          </div>
+        ) : featured.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="text-stone-500 text-sm">Products are being loaded. Check back soon.</p>
+            <Link href="/shop" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-amber-400 hover:text-amber-300 transition">
+              Browse the shop <ArrowRight size={13} />
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
+            {featured.map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* COLLECTIONS */}
@@ -123,7 +168,7 @@ export default function Home() {
               Explore by scent family — from deep ouds to crisp freshies and sweet gourmands.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             {categoryTiles.map((c) => (
               <Link
                 key={c.name}
@@ -133,33 +178,13 @@ export default function Home() {
                 <div className="absolute -right-4 -top-6 opacity-80 transition duration-700 group-hover:opacity-100">
                   <Bottle tone={c.tone} className="scale-[0.62] origin-top-right" />
                 </div>
-                <p className="font-display text-2xl text-stone-100">{c.name}</p>
+                <p className="font-display text-xl text-stone-100">{c.name}</p>
                 <p className="mt-1 text-xs text-stone-500">{c.blurb}</p>
                 <span className="mt-3 text-[10px] font-bold tracking-[0.16em] text-amber-400 opacity-0 transition group-hover:opacity-100">
                   SHOP NOW →
                 </span>
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-      {/* FINDER TEASER */}
-      <section className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,163,93,0.12),transparent_60%)]" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <p className="text-[10px] font-bold tracking-[0.26em] text-amber-400">NOT SURE WHAT TO CHOOSE?</p>
-          <h2 className="mt-4 font-display text-5xl text-stone-50 sm:text-6xl">Find your signature scent.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-stone-400">
-            Answer a few quick questions and we will point you to the perfect bottle — or send your
-            scent profile straight to our WhatsApp for a personal recommendation.
-          </p>
-          <div className="mt-9">
-            <Link
-              href="/perfume-finder"
-              className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-4 text-xs font-bold tracking-[0.14em] text-stone-950 transition hover:bg-amber-400"
-            >
-              TAKE THE QUIZ <ArrowRight size={15} className="transition group-hover:translate-x-1" />
-            </Link>
           </div>
         </div>
       </section>
@@ -182,9 +207,9 @@ export default function Home() {
               A fragrance should feel like part of your identity.
             </h2>
             <p className="mt-5 max-w-lg text-sm leading-7 text-stone-400">
-              From carefully selected Arabic and designer fragrances to oils and gift sets, {site.brand}
-              helps you choose a scent that fits your personality, occasion and lifestyle. We believe
-              luxury is not about noise — it is about how you show up.
+              From carefully selected Arabic and designer fragrances to oils and gift sets, {site.brand} helps
+              you choose a scent that fits your personality, occasion and lifestyle. We believe luxury is not
+              about noise — it is about how you show up.
             </p>
             <Link href="/about" className="mt-7 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-amber-300 transition hover:text-amber-200">
               READ OUR STORY <ArrowRight size={14} />
@@ -203,7 +228,7 @@ export default function Home() {
           {testimonials.map((t) => (
             <figure key={t.name} className="rounded-2xl border border-stone-800 bg-stone-900/60 p-7">
               <div className="text-amber-400">★★★★★</div>
-              <blockquote className="mt-4 text-sm leading-7 text-stone-300">“{t.text}”</blockquote>
+              <blockquote className="mt-4 text-sm leading-7 text-stone-300">"{t.text}"</blockquote>
               <figcaption className="mt-5">
                 <p className="text-sm font-semibold text-stone-100">{t.name}</p>
                 <p className="text-xs text-stone-500">{t.role}</p>
@@ -224,7 +249,12 @@ export default function Home() {
             <Link href="/shop" className="rounded-full bg-amber-500 px-7 py-4 text-xs font-bold tracking-[0.12em] text-stone-950 transition hover:bg-amber-400">
               BROWSE THE SHOP
             </Link>
-            <a href={wa("Hello Jessy Luxury! I'd like to place an order.")} target="_blank" rel="noreferrer" className="rounded-full bg-green-600 px-7 py-4 text-xs font-bold tracking-[0.12em] text-white transition hover:bg-green-500">
+            <a
+              href={wa("Hello Jessy Luxury! I'd like to place an order.")}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-green-600 px-7 py-4 text-xs font-bold tracking-[0.12em] text-white transition hover:bg-green-500"
+            >
               ORDER ON WHATSAPP
             </a>
           </div>
