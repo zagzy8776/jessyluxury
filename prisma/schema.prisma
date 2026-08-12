@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,48 +8,123 @@ datasource db {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  brand     String
-  price     Int
-  badge     String?
-  notes     String
-  tone      String
-  imageUrl  String?
-  stock     Int      @default(0)
-  category  Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  orderItems OrderItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int         @id @default(autoincrement())
+  name        String
+  brand       String
+  price       Int
+  salePrice   Int?
+  badge       String?
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  volume      String      @default("100ml EDP")
+  notes       String
+  topNotes    String?
+  middleNotes String?
+  baseNotes   String?
+  description String?
+  tone        String      @default("amber")
+  stock       Int         @default(10)
+  featured    Boolean     @default(false)
+  gift        Boolean     @default(false)
+  images      String[]    @default([])
+  orderItems  OrderItem[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  slug        String    @unique
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String   @unique
+  whatsapp    String
+  email       String?
+  city        String?
+  address     String?
+  totalSpent  Int      @default(0)
+  ordersCount Int      @default(0)
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  customerName String
-  whatsapp    String
-  status      String     @default("pending")
-  total       Int
-  items       OrderItem[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id              Int         @id @default(autoincrement())
+  orderNumber     String      @unique
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  customerId      Int?
+  customerName    String
+  customerPhone   String
+  customerWhatsapp String
+  shippingAddress String?
+  shippingZone    ShippingZone? @relation(fields: [shippingZoneId], references: [id])
+  shippingZoneId  Int?
+  shippingFee     Int         @default(0)
+  subtotal        Int
+  discountAmount  Int         @default(0)
+  couponCode      String?
+  total           Int
+  status          String      @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  trackingNumber  String?
+  courierName     String?
+  courierPhone    String?
+  waybillNotes    String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 model OrderItem {
   id        Int      @id @default(autoincrement())
-  order     Order    @relation(fields: [orderId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   Int
   product   Product  @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
   price     Int
+}
+
+model ShippingZone {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  fee            Int
+  estimatedDays  String   @default("1-2 days")
+  description    String?
+  active         Boolean  @default(true)
+  orders         Order[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Coupon {
+  id             Int      @id @default(autoincrement())
+  code           String   @unique
+  discountType   String   @default("PERCENTAGE") // PERCENTAGE or FIXED
+  discountValue  Int      // e.g. 10 for 10% or 2000 for N2000
+  minOrderAmount Int      @default(0)
+  usageLimit     Int      @default(100)
+  usedCount      Int      @default(0)
+  autoReactivate Boolean  @default(true)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    Int
+  customerName String
+  rating       Int      @default(5)
+  comment      String
+  createdAt    DateTime @default(now())
 }

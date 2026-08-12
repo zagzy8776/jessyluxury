@@ -11,11 +11,13 @@ const NAV: [string, string][] = [
   ['Shop', '/shop'],
   ['Gifts', '/gifts'],
   ['Finder', '/perfume-finder'],
+  ['Track Order', '/track'],
   ['Gallery', '/gallery'],
   ['Blog', '/blog'],
   ['Delivery', '/delivery'],
   ['About', '/about'],
   ['Contact', '/contact'],
+  ['Admin', '/admin'],
 ]
 
 export default function Header() {

@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import { Instagram, MessageCircle, MapPin, Mail } from 'lucide-react'
+import { Instagram, MessageCircle, MapPin, Mail, ShieldCheck } from 'lucide-react'
 import { site, wa } from '@/lib/site'
 
 export default function Footer() {
   return (
     <footer className="border-t border-stone-800 bg-stone-950">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          <div>
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
             <span className="font-display text-lg tracking-[0.2em] text-stone-100">
               {site.brandUpper}
             </span>
@@ -38,22 +38,23 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">SHOP</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">SHOP &amp; TRACK</p>
             <div className="mt-4 space-y-3 text-xs text-stone-500">
               <Link className="block transition hover:text-amber-300" href="/shop">All fragrances</Link>
               <Link className="block transition hover:text-amber-300" href="/gifts">Gifts &amp; sets</Link>
               <Link className="block transition hover:text-amber-300" href="/perfume-finder">Perfume finder</Link>
-              <Link className="block transition hover:text-amber-300" href="/gallery">Gallery</Link>
+              <Link className="block font-semibold text-amber-400 transition hover:text-amber-300" href="/track">Live Order Tracking</Link>
             </div>
           </div>
 
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">EXPLORE</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">LEGAL &amp; INFO</p>
             <div className="mt-4 space-y-3 text-xs text-stone-500">
-              <Link className="block transition hover:text-amber-300" href="/about">About</Link>
-              <Link className="block transition hover:text-amber-300" href="/blog">Blog</Link>
-              <Link className="block transition hover:text-amber-300" href="/delivery">Delivery &amp; pickup</Link>
-              <Link className="block transition hover:text-amber-300" href="/contact">Contact</Link>
+              <Link className="block transition hover:text-amber-300" href="/about">About Us</Link>
+              <Link className="block transition hover:text-amber-300" href="/privacy">Privacy Policy</Link>
+              <Link className="block transition hover:text-amber-300" href="/terms">Terms of Service</Link>
+              <Link className="block transition hover:text-amber-300" href="/returns">Return Policy</Link>
+              <Link className="block font-semibold text-stone-400 hover:text-amber-400 transition" href="/admin">Admin Suite</Link>
             </div>
           </div>
 

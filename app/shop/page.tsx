@@ -1,26 +1,58 @@
 'use client'
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PackageSearch, Search } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
-import { products, categories } from '@/lib/products'
+import { products as fallbackProducts, categories } from '@/lib/products'
 
 function ShopInner() {
   const params = useSearchParams()
   const [cat, setCat] = useState(params.get('cat') || 'All')
   const [q, setQ] = useState('')
+  const [liveProducts, setLiveProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products')
+        const data = await res.json()
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveProducts(data)
+        } else {
+          setLiveProducts(fallbackProducts)
+        }
+      } catch (e) {
+        console.error('Error loading DB products', e)
+        setLiveProducts(fallbackProducts)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProducts()
+  }, [])
 
   const list = useMemo(() => {
     const term = q.toLowerCase()
-    return products.filter(
-      (p) =>
-        (cat === 'All' || p.category === cat) &&
-        (p.name + p.brand + p.notes + p.category + p.volume).toLowerCase().includes(term)
-    )
-  }, [cat, q])
+    return liveProducts.filter((p) => {
+      const categoryName = typeof p.category === 'object' ? p.category?.name : p.category
+      const matchesCat = cat === 'All' || categoryName === cat || p.category === cat
+      const matchesQuery = (
+        (p.name || '') +
+        (p.brand || '') +
+        (p.notes || '') +
+        (categoryName || '') +
+        (p.volume || '')
+      )
+        .toLowerCase()
+        .includes(term)
+
+      return matchesCat && matchesQuery
+    })
+  }, [cat, q, liveProducts])
 
   return (
-    <main className="bg-stone-950">
+    <main className="bg-stone-950 min-h-[80vh]">
       <section className="relative overflow-hidden border-b border-stone-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,163,93,0.14),transparent_60%)]" />
         <div className="grain absolute inset-0" />
@@ -61,11 +93,13 @@ function ShopInner() {
           </div>
         </div>
 
-        <p className="mt-8 text-[11px] tracking-[0.12em] text-stone-500">
+        <p className="mt-8 text-[11px] tracking-[0.12em] text-stone-500 font-mono">
           {list.length} {list.length === 1 ? 'PRODUCT' : 'PRODUCTS'}
         </p>
 
-        {list.length === 0 ? (
+        {loading ? (
+          <div className="py-24 text-center text-sm text-stone-500">Loading live catalog…</div>
+        ) : list.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-24 text-center">
             <PackageSearch size={40} className="text-stone-600" />
             <p className="text-sm text-stone-400">Nothing matches your search — try another word or category.</p>

@@ -44,7 +44,7 @@ if (!dbUrl) {
   )
 } else {
   console.log('\n→ DATABASE_URL found — syncing schema with `prisma db push`...\n')
-  const status = run('npx prisma db push')
+  const status = run('npx prisma db push --accept-data-loss')
   if (status !== 0) {
     console.warn(
       '\n⚠️  `prisma db push` failed (database unreachable or invalid string?).\n' +
