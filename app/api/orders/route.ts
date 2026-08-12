@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       subtotal,
       discountAmount = 0,
       couponCode,
+      paymentStatus = 'PAID',
       items,
     } = body
 
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
         discountAmount: Number(discountAmount),
         couponCode: couponCode || null,
         total: Number(total),
+        paymentStatus,
         status: 'PENDING',
         items: {
           create: items.map((item: any) => ({

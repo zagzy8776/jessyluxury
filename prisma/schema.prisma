@@ -13,6 +13,7 @@ model Product {
   brand       String
   price       Int
   salePrice   Int?
+  costPrice   Int?        @default(0)
   badge       String?
   category    Category    @relation(fields: [categoryId], references: [id])
   categoryId  Int
@@ -58,29 +59,30 @@ model Customer {
 }
 
 model Order {
-  id              Int         @id @default(autoincrement())
-  orderNumber     String      @unique
-  customer        Customer?   @relation(fields: [customerId], references: [id])
-  customerId      Int?
-  customerName    String
-  customerPhone   String
+  id               Int          @id @default(autoincrement())
+  orderNumber      String       @unique
+  customer         Customer?    @relation(fields: [customerId], references: [id])
+  customerId       Int?
+  customerName     String
+  customerPhone    String
   customerWhatsapp String
-  shippingAddress String?
-  shippingZone    ShippingZone? @relation(fields: [shippingZoneId], references: [id])
-  shippingZoneId  Int?
-  shippingFee     Int         @default(0)
-  subtotal        Int
-  discountAmount  Int         @default(0)
-  couponCode      String?
-  total           Int
-  status          String      @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  trackingNumber  String?
-  courierName     String?
-  courierPhone    String?
-  waybillNotes    String?
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  shippingAddress  String?
+  shippingZone     ShippingZone? @relation(fields: [shippingZoneId], references: [id])
+  shippingZoneId   Int?
+  shippingFee      Int          @default(0)
+  subtotal         Int
+  discountAmount   Int          @default(0)
+  couponCode       String?
+  total            Int
+  paymentStatus    String       @default("PAID") // PAID, PARTIALLY_PAID, PENDING, UNPAID, ABANDONED
+  status           String       @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  trackingNumber   String?
+  courierName      String?
+  courierPhone     String?
+  waybillNotes     String?
+  items            OrderItem[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model OrderItem {
@@ -94,20 +96,22 @@ model OrderItem {
 }
 
 model ShippingZone {
-  id             Int      @id @default(autoincrement())
-  name           String   @unique
-  fee            Int
-  estimatedDays  String   @default("1-2 days")
-  description    String?
-  active         Boolean  @default(true)
-  orders         Order[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  fee           Int
+  estimatedDays String   @default("1-2 days")
+  description   String?
+  active        Boolean  @default(true)
+  orders        Order[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Coupon {
   id             Int      @id @default(autoincrement())
   code           String   @unique
+  name           String?
+  storeLocation  String?  @default("Headquarters (Owerri)")
   discountType   String   @default("PERCENTAGE") // PERCENTAGE or FIXED
   discountValue  Int      // e.g. 10 for 10% or 2000 for N2000
   minOrderAmount Int      @default(0)
@@ -127,4 +131,34 @@ model Review {
   rating       Int      @default(5)
   comment      String
   createdAt    DateTime @default(now())
+}
+
+model StoreLocation {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  address   String
+  city      String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StaffAccount {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  role        String   @default("Manager") // Owner, Manager, Fulfillment, Catalog
+  permissions String[] @default(["orders", "products"])
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  category    String   // Packaging, Shipping, Marketing, Utility, Salary
+  description String
+  amount      Int
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
 }

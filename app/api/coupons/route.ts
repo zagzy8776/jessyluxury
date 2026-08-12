@@ -19,6 +19,8 @@ export async function POST(request: Request) {
     const coupon = await prisma.coupon.create({
       data: {
         code: body.code.toUpperCase().trim(),
+        name: body.name || 'Promo Discount',
+        storeLocation: body.storeLocation || 'Headquarters (Owerri)',
         discountType: body.discountType || 'PERCENTAGE',
         discountValue: Number(body.discountValue),
         minOrderAmount: Number(body.minOrderAmount) || 0,

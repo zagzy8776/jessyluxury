@@ -63,6 +63,7 @@ export async function PUT(
       where: { id },
       data: {
         status: body.status,
+        paymentStatus: body.paymentStatus,
         trackingNumber: body.trackingNumber,
         courierName: body.courierName,
         courierPhone: body.courierPhone,
