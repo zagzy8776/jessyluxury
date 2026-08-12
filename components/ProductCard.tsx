@@ -100,16 +100,16 @@ export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd
       </div>
 
       <div className="pt-4">
-        <p className="text-[9px] uppercase tracking-[0.2em] text-stone-500">
+        <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {p.brand} · {p.volume}
         </p>
         <Link
           href={`/shop/${p.id}`}
-          className="mt-1 font-display text-lg text-stone-100 hover:text-amber-400 transition block"
+          className="mt-1 font-display text-lg text-[var(--text-primary)] hover:text-amber-400 transition block"
         >
           {p.name}
         </Link>
-        <p className="mt-0.5 text-xs text-stone-500">{p.notes}</p>
+        <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{p.notes}</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-sm font-semibold text-amber-300">{formatNaira(price)}</span>
           {p.salePrice != null && p.salePrice < p.price && (
