@@ -16,9 +16,8 @@ import {
   Sun,
   Moon,
   X,
+  Bell,
 } from 'lucide-react'
-
-const SESSION_KEY = 'jl_admin_session'
 
 // 3 Most Important Admin Links (Fixed at Bottom Navigation Dock)
 const BOTTOM_NAV = [
@@ -36,34 +35,73 @@ const TOP_DROPDOWN_NAV = [
   { label: 'Discounts & Coupons', href: '/store-portal-jl/dashboard/sales-marketing/discounts', icon: Ticket },
   { label: 'Analytics & Reports', href: '/store-portal-jl/dashboard/analytics', icon: BarChart3 },
   { label: 'Shipping & Delivery', href: '/store-portal-jl/dashboard/shipping', icon: Truck },
+  { label: 'Notifications Hub', href: '/store-portal-jl/dashboard/notifications', icon: Bell },
   { label: 'Store Settings', href: '/store-portal-jl/dashboard/settings', icon: Settings },
 ]
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [authed, setAuthed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('light')
+  const [unreadNotifications, setUnreadNotifications] = useState<any[]>([])
+  const [bellOpen, setBellOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const bellRef = useRef<HTMLDivElement>(null)
+
+  async function fetchUnreadNotifications() {
+    try {
+      const res = await fetch('/api/notifications?unread=true')
+      if (res.ok) {
+        const data = await res.json()
+        setUnreadNotifications(data)
+      }
+    } catch (err) {
+      console.error('Failed to load unread notifications count:', err)
+    }
+  }
 
   useEffect(() => {
-    const session = localStorage.getItem(SESSION_KEY)
-    if (session !== 'authenticated') {
-      router.replace('/store-portal-jl')
-    } else {
-      setAuthed(true)
-    }
+    fetchUnreadNotifications()
+    const interval = setInterval(fetchUnreadNotifications, 15000)
+    return () => clearInterval(interval)
+  }, [])
 
+  useEffect(() => {
+    // Theme initialization
     const savedTheme = localStorage.getItem('jl_theme') as 'dark' | 'light' | null
     const activeTheme = savedTheme || 'light'
     setTheme(activeTheme)
     document.documentElement.setAttribute('data-theme', activeTheme)
-  }, [router])
+  }, [])
+
+  useEffect(() => {
+    // Identify the admin in OneSignal so the worker can target this browser for push notifications.
+    // The admin is always recipientId = 1 (single-admin system).
+    const appId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID
+    if (!appId || appId === 'YOUR_APP_ID_HERE') return
+
+    const win = window as any
+    const tryLogin = () => {
+      if (win.OneSignal && typeof win.OneSignal.login === 'function') {
+        win.OneSignal.login('1').catch(() => {
+          // Ignore — may fail on localhost without HTTPS
+        })
+      } else if (win.OneSignalDeferred) {
+        win.OneSignalDeferred.push((OneSignal: any) => {
+          OneSignal.login('1').catch(() => {})
+        })
+      }
+    }
+    // Give SDK a moment to initialize
+    const t = setTimeout(tryLogin, 2000)
+    return () => clearTimeout(t)
+  }, [])
 
   // Close menu on route change
   useEffect(() => {
     setMenuOpen(false)
+    setBellOpen(false)
   }, [pathname])
 
   // Close dropdown on click outside
@@ -71,6 +109,9 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false)
+      }
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setBellOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -84,12 +125,37 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     document.documentElement.setAttribute('data-theme', next)
   }
 
-  function handleLogout() {
-    localStorage.removeItem(SESSION_KEY)
-    router.replace('/store-portal-jl')
+  async function handleNotificationClick(item: any) {
+    try {
+      await fetch(`/api/notifications/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'READ' }),
+      })
+      fetchUnreadNotifications()
+      setBellOpen(false)
+      
+      const payload = item.payload || {}
+      if (payload.orderId) {
+        router.push(`/store-portal-jl/dashboard/orders?openId=${payload.orderId}`)
+      } else if (payload.productId) {
+        router.push(`/store-portal-jl/dashboard/products/add?edit=${payload.productId}`)
+      } else {
+        router.push('/store-portal-jl/dashboard/notifications')
+      }
+    } catch (err) {
+      console.error('Failed to handle notification click:', err)
+    }
   }
 
-  if (!authed) return null
+  async function handleLogout() {
+    try {
+      await fetch('/api/admin-auth', { method: 'DELETE' })
+    } catch {
+      // ignore
+    }
+    router.replace('/store-portal-jl')
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col pb-20 font-sans selection:bg-amber-500 selection:text-stone-950 transition-colors duration-200">
@@ -101,10 +167,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
           {/* Left: Brand Logo & Title */}
           <div className="flex items-center gap-3">
             <div>
-              <span className="font-display text-base sm:text-lg tracking-widest font-bold text-[var(--text-primary)]">
-                JESSY <span className="text-amber-500">LUXURY</span>
+              <span className="font-display text-base sm:text-lg tracking-[0.2em] font-semibold text-[var(--text-primary)]">
+                JESSY LUXURY
               </span>
-              <span className="ml-2 rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[9px] font-bold tracking-wider text-amber-600 dark:text-amber-400 uppercase">
+              <span className="mx-2 text-[var(--text-muted)] font-light">·</span>
+              <span className="text-[10px] font-bold tracking-[0.25em] text-[var(--text-muted)] uppercase">
                 ADMIN
               </span>
             </div>
@@ -112,6 +179,71 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
           {/* Right: Theme Toggle & == Dropdown Button */}
           <div className="relative flex items-center gap-2 sm:gap-3" ref={menuRef}>
+            {/* Bell Icon Dropdown */}
+            <div className="relative" ref={bellRef}>
+              <button
+                onClick={() => setBellOpen(!bellOpen)}
+                className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition shadow-xs shrink-0"
+                title="Notifications Hub"
+              >
+                <Bell size={17} />
+                {unreadNotifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-bold text-stone-950">
+                    {unreadNotifications.length}
+                  </span>
+                )}
+              </button>
+
+              {bellOpen && (
+                <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-5 duration-200">
+                  <div className="border-b border-[var(--border)] px-4 py-3 bg-[var(--bg-primary)] flex items-center justify-between">
+                    <span className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Unread Messages</span>
+                    <Link
+                      href="/store-portal-jl/dashboard/notifications"
+                      onClick={() => setBellOpen(false)}
+                      className="text-[10px] font-bold text-amber-500 hover:underline uppercase tracking-wider"
+                    >
+                      Console
+                    </Link>
+                  </div>
+                  
+                  <div className="max-h-64 overflow-y-auto divide-y divide-[var(--border)]">
+                    {unreadNotifications.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-xs text-[var(--text-muted)] font-medium">
+                        No new notifications. Everything clear!
+                      </div>
+                    ) : (
+                      unreadNotifications.slice(0, 5).map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => handleNotificationClick(item)}
+                          className="w-full text-left px-4 py-3 hover:bg-[var(--bg-primary)] transition flex flex-col gap-1 min-w-0"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-bold text-[var(--text-primary)] truncate">{item.title}</span>
+                            <span className="text-[9px] text-[var(--text-muted)] shrink-0 font-medium">
+                              {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[var(--text-secondary)] leading-snug line-clamp-2">{item.message}</p>
+                        </button>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="border-t border-[var(--border)] px-4 py-2.5 bg-[var(--bg-primary)] text-center">
+                    <Link
+                      href="/store-portal-jl/dashboard/notifications"
+                      onClick={() => setBellOpen(false)}
+                      className="text-xs font-bold text-[var(--text-primary)] hover:text-amber-500 transition uppercase tracking-wider block"
+                    >
+                      View All Alerts ({unreadNotifications.length})
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}

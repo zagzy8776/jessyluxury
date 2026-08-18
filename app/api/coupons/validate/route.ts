@@ -1,62 +1,144 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isCompletedOrder } from '@/lib/analytics/domain'
+
+/**
+ * Normalise phone number to raw digits for matching
+ */
+function normalisePhone(phone: string): string {
+  return phone.replace(/\D/g, '')
+}
 
 export async function POST(request: Request) {
   try {
-    const { code, subtotal } = await request.json()
+    const body = await request.json()
+    const { code, customerId, subtotal, items } = body
 
-    if (!code) {
-      return NextResponse.json({ error: 'Coupon code is required' }, { status: 400 })
+    if (!code || !Array.isArray(items)) {
+      return NextResponse.json({ error: 'Coupon code and cart items are required' }, { status: 400 })
     }
 
+    // 1. Fetch Coupon from DB
     const coupon = await prisma.coupon.findUnique({
-      where: { code: code.toUpperCase().trim() },
+      where: { code: code.trim().toUpperCase() },
     })
 
-    if (!coupon || !coupon.isActive) {
-      return NextResponse.json({ error: 'Invalid or inactive promo code' }, { status: 404 })
+    if (!coupon) {
+      return NextResponse.json({ error: 'Coupon code not found' }, { status: 404 })
     }
 
-    if (subtotal < coupon.minOrderAmount) {
-      return NextResponse.json(
-        {
-          error: `Minimum order amount of ₦${coupon.minOrderAmount.toLocaleString()} required for this coupon`,
-        },
-        { status: 400 }
-      )
+    // 2. Validate Active Status
+    if (!coupon.isActive) {
+      return NextResponse.json({ error: 'This coupon is currently disabled' }, { status: 400 })
     }
 
-    // Auto-reactivate feature check: if reached limit but autoReactivate is enabled, reset usedCount
-    if (coupon.usedCount >= coupon.usageLimit) {
-      if (coupon.autoReactivate) {
-        await prisma.coupon.update({
-          where: { id: coupon.id },
-          data: { usedCount: 0 },
-        })
-      } else {
-        return NextResponse.json({ error: 'This coupon usage limit has been reached' }, { status: 400 })
+    // 3. Validate Date Boundaries (Africa/Lagos = UTC+1)
+    const nowUtc = new Date()
+    const LAGOS_OFFSET = 1 * 60 * 60 * 1000
+    const nowLagos = new Date(nowUtc.getTime() + LAGOS_OFFSET)
+
+    if (coupon.startDate) {
+      const startLagos = new Date(new Date(coupon.startDate).getTime() + LAGOS_OFFSET)
+      if (nowLagos < startLagos) {
+        return NextResponse.json({ error: 'This coupon promotion has not started yet' }, { status: 400 })
       }
     }
 
-    let discountAmount = 0
-    if (coupon.discountType === 'PERCENTAGE') {
-      discountAmount = Math.round((subtotal * coupon.discountValue) / 100)
-    } else {
-      discountAmount = coupon.discountValue
+    if (coupon.endDate) {
+      const endLagos = new Date(new Date(coupon.endDate).getTime() + LAGOS_OFFSET)
+      if (nowLagos > endLagos) {
+        return NextResponse.json({ error: 'This coupon has expired' }, { status: 400 })
+      }
     }
 
-    // Discount cannot exceed subtotal
-    discountAmount = Math.min(discountAmount, subtotal)
+    // 4. Validate Global Usage Limits
+    if (coupon.usedCount >= coupon.usageLimit) {
+      return NextResponse.json({ error: 'This coupon limit has been fully redeemed' }, { status: 400 })
+    }
+
+    // 5. Validate Per-Customer Usage Limits
+    if (customerId) {
+      const redemptionsCount = await prisma.couponRedemption.count({
+        where: {
+          couponId: coupon.id,
+          customerId: Number(customerId),
+        },
+      })
+
+      if (redemptionsCount >= coupon.customerLimit) {
+        return NextResponse.json({
+          error: `You have reached the limit of ${coupon.customerLimit} use(s) for this coupon`,
+        }, { status: 400 })
+      }
+    }
+
+    // 6. Validate Minimum Spend against overall order subtotal
+    if (subtotal < coupon.minOrderAmount) {
+      return NextResponse.json({
+        error: `Minimum order subtotal of ₦${coupon.minOrderAmount.toLocaleString('en-NG')} required to use this coupon`,
+      }, { status: 400 })
+    }
+
+    // 7. Calculate Eligible Subtotal (Filter items based on category/product constraints)
+    let eligibleSubtotal = 0
+    let hasEligibleItems = false
+
+    const hasProductRestrictions = coupon.productIds && coupon.productIds.length > 0
+    const hasCategoryRestrictions = coupon.categoryIds && coupon.categoryIds.length > 0
+
+    // Fetch product details for items to check category matching
+    const itemIds = items.map((i: any) => Number(i.productId))
+    const dbProducts = await prisma.product.findMany({
+      where: { id: { in: itemIds } },
+      select: { id: true, categoryId: true },
+    })
+    const productCategoryMap = Object.fromEntries(dbProducts.map((p) => [p.id, p.categoryId]))
+
+    for (const item of items) {
+      const productId = Number(item.productId)
+      const categoryId = productCategoryMap[productId]
+
+      const matchesProduct = !hasProductRestrictions || coupon.productIds.includes(productId)
+      const matchesCategory = !hasCategoryRestrictions || (categoryId && coupon.categoryIds.includes(categoryId))
+
+      // OR logic: eligible if satisfies product restriction OR category restriction
+      // If no restrictions are specified, all products are eligible by default
+      const isEligible = (!hasProductRestrictions && !hasCategoryRestrictions) || matchesProduct || matchesCategory
+
+      if (isEligible) {
+        eligibleSubtotal += Number(item.price) * Number(item.quantity)
+        hasEligibleItems = true
+      }
+    }
+
+    if (!hasEligibleItems) {
+      return NextResponse.json({
+        error: 'None of the items in your cart are eligible for this discount code',
+      }, { status: 400 })
+    }
+
+    // 8. Calculate Discount Amount
+    let discountAmount = 0
+    if (coupon.discountType === 'PERCENTAGE') {
+      discountAmount = Math.round((eligibleSubtotal * coupon.discountValue) / 100)
+      if (coupon.maxDiscountAmount !== null && coupon.maxDiscountAmount !== undefined) {
+        discountAmount = Math.min(discountAmount, coupon.maxDiscountAmount)
+      }
+    } else {
+      // FIXED DISCOUNT TYPE
+      discountAmount = Math.min(coupon.discountValue, eligibleSubtotal)
+    }
 
     return NextResponse.json({
-      valid: true,
+      couponId: coupon.id,
       code: coupon.code,
       discountType: coupon.discountType,
       discountValue: coupon.discountValue,
-      discountAmount,
+      calculatedDiscount: discountAmount,
+      eligibleSubtotal,
     })
-  } catch (error) {
-    console.error('Error validating coupon:', error)
-    return NextResponse.json({ error: 'Failed to validate coupon' }, { status: 500 })
+  } catch (error: any) {
+    console.error('Coupon validation error:', error)
+    return NextResponse.json({ error: error.message || 'Validation failed' }, { status: 500 })
   }
 }

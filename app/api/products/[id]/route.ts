@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdminAuth } from '@/lib/auth'
 
 export async function GET(
   request: Request,
@@ -36,6 +37,9 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const productId = parseInt(params.id, 10)
     const body = await request.json()
@@ -74,6 +78,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const productId = parseInt(params.id, 10)
     await prisma.product.delete({

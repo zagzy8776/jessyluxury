@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   ShoppingBag, Search, Truck, Phone, MessageCircle, CheckCircle,
-  X, MapPin, Plus, AlertCircle, Filter,
+  X, MapPin, Plus, AlertCircle, Filter, Clock, FileText,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
-const PAYMENT_FILTERS = ['ALL', 'PAID', 'PARTIALLY_PAID', 'PENDING', 'UNPAID', 'ABANDONED']
+const PAYMENT_FILTERS = ['ALL', 'PAID', 'PARTIALLY_PAID', 'PENDING', 'UNPAID', 'REFUNDED']
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([])
@@ -15,6 +15,8 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
+  const [activeModalTab, setActiveModalTab] = useState<'form' | 'timeline'>('form')
+  const [restockState, setRestockState] = useState<Record<number, boolean>>({})
   const { toast, showToast, clearToast } = useToast()
 
   const [statusForm, setStatusForm] = useState({
@@ -26,30 +28,63 @@ export default function AdminOrdersPage() {
     waybillNotes: '',
   })
 
-  useEffect(() => { fetchOrders() }, [search])
+  useEffect(() => {
+    fetchOrders()
+  }, [search, activePaymentFilter])
+
+  // Direct Deep Link Resolver using window.location.search to prevent Suspense build warnings
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const openIdParam = params.get('openId')
+      if (openIdParam) {
+        fetchOrderById(openIdParam)
+      }
+    }
+  }, [])
+
+  async function fetchOrderById(id: string) {
+    try {
+      const res = await fetch(`/api/orders/${id}`)
+      if (res.ok) {
+        const order = await res.json()
+        handleOpenFulfill(order)
+      } else {
+        showToast('Requested order details not found', 'error')
+      }
+    } catch {
+      showToast('Error loading requested order', 'error')
+    }
+  }
 
   async function fetchOrders() {
     try {
-      const res = await fetch(`/api/orders?search=${encodeURIComponent(search)}`)
+      const res = await fetch(`/api/orders?search=${encodeURIComponent(search)}&paymentStatus=${activePaymentFilter}`)
       const data = await res.json()
       if (Array.isArray(data)) setOrders(data)
-    } catch { showToast('Failed fetching order records', 'error') }
-    finally { setLoading(false) }
+    } catch {
+      showToast('Failed fetching order records', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // Filter Orders
-  const filteredOrders = orders.filter((o) => {
-    if (activePaymentFilter === 'ALL') return true
-    return (o.paymentStatus || 'PAID') === activePaymentFilter
-  })
-
-  // Counters
+  // Counters (unfiltered total counts)
   const totalOrdersCount = orders.length
   const completedOrdersCount = orders.filter((o) => o.status === 'DELIVERED').length
-  const unpaidOrdersCount = orders.filter((o) => (o.paymentStatus || 'PAID') === 'UNPAID' || (o.paymentStatus || 'PAID') === 'ABANDONED').length
+  const unpaidOrdersCount = orders.filter((o) => o.paymentStatus === 'UNPAID' || o.paymentStatus === 'PENDING').length
 
   function handleOpenFulfill(order: any) {
     setSelectedOrder(order)
+    setActiveModalTab('form')
+    
+    // Default returned items to restockable = true
+    const initialRestock: Record<number, boolean> = {}
+    order.items?.forEach((item: any) => {
+      initialRestock[item.productId] = true
+    })
+    setRestockState(initialRestock)
+
     setStatusForm({
       status: order.status,
       paymentStatus: order.paymentStatus || 'PAID',
@@ -65,33 +100,49 @@ export default function AdminOrdersPage() {
     if (!selectedOrder) return
 
     try {
-      await fetch(`/api/orders/${selectedOrder.id}`, {
+      const payload = {
+        ...statusForm,
+        restockItems: selectedOrder.items?.map((item: any) => ({
+          productId: item.productId,
+          isRestockable: restockState[item.productId] ?? false,
+          reason: `Customer return restock choice - ${statusForm.waybillNotes || 'No notes'}`,
+        })) || [],
+      }
+
+      const res = await fetch(`/api/orders/${selectedOrder.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(statusForm),
+        body: JSON.stringify(payload),
       })
-      showToast('Order status & dispatch info updated!')
-      setSelectedOrder(null)
-      fetchOrders()
+
+      const data = await res.json()
+
+      if (res.ok) {
+        showToast('Order status & dispatch info updated!')
+        setSelectedOrder(null)
+        fetchOrders()
+      } else {
+        showToast(data.error || 'Failed to update order', 'error')
+      }
     } catch {
       showToast('Error updating order status', 'error')
     }
   }
 
   const paymentBadgeStyle = (st: string) => {
-    if (st === 'PAID') return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-    if (st === 'PARTIALLY_PAID') return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-    if (st === 'UNPAID') return 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
-    if (st === 'ABANDONED') return 'bg-stone-500/15 text-[var(--text-secondary)] border border-[var(--border)]'
-    return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+    if (st === 'PAID') return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+    if (st === 'PARTIALLY_PAID') return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+    if (st === 'UNPAID' || st === 'PENDING') return 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
+    if (st === 'REFUNDED') return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+    return 'bg-stone-500/10 text-[var(--text-secondary)] border border-[var(--border)]'
   }
 
   const fulfillmentBadgeStyle = (st: string) => {
-    if (st === 'DELIVERED') return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-    if (st === 'SHIPPED') return 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
-    if (st === 'PROCESSING') return 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'
-    if (st === 'CANCELLED') return 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
-    return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+    if (st === 'DELIVERED') return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+    if (st === 'SHIPPED') return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+    if (st === 'PROCESSING') return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+    if (st === 'CANCELLED' || st === 'RETURNED') return 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
+    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
   }
 
   return (
@@ -188,13 +239,13 @@ export default function AdminOrdersPage() {
       {/* Orders List / Data Table */}
       {loading ? (
         <div className="py-20 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading orders list…</div>
-      ) : filteredOrders.length === 0 ? (
+      ) : orders.length === 0 ? (
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] py-20 text-center text-xs font-medium text-[var(--text-muted)]">
-          No orders found matching filter "{activePaymentFilter}".
+          No orders found matching filter.
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredOrders.map((o) => {
+          {orders.map((o) => {
             const cleanWa = (o.customerWhatsapp || o.customerPhone).replace(/\D/g, '')
 
             const waTrackingMsg = `Hello ${o.customerName}! Update on your Jessy Luxury order #${o.orderNumber}:\n\n• Payment: ${o.paymentStatus || 'PAID'}\n• Fulfillment Status: ${o.status}\n${
@@ -300,111 +351,205 @@ export default function AdminOrdersPage() {
 
       {/* Modal for Fulfillment & Payment Updates */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
           <div className="w-full max-w-lg rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
               <div>
                 <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">Order #{selectedOrder.orderNumber}</h3>
-                <p className="text-xs text-[var(--text-secondary)] font-medium">Update payment status & courier tracking details</p>
+                <p className="text-xs text-[var(--text-secondary)] font-medium">Fulfillment tracking & payment validation</p>
               </div>
               <button onClick={() => setSelectedOrder(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveFulfill} className="space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Fulfillment Status</label>
-                  <select
-                    value={statusForm.status}
-                    onChange={(e) => setStatusForm({ ...statusForm, status: e.target.value })}
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-amber-500 font-bold outline-none focus:border-amber-500"
-                  >
-                    <option value="PENDING">PENDING</option>
-                    <option value="CONFIRMED">CONFIRMED</option>
-                    <option value="PROCESSING">PROCESSING</option>
-                    <option value="SHIPPED">SHIPPED</option>
-                    <option value="DELIVERED">DELIVERED</option>
-                    <option value="CANCELLED">CANCELLED</option>
-                  </select>
+            {/* Modal Tabs */}
+            <div className="flex border-b border-[var(--border)] mb-2">
+              <button
+                type="button"
+                onClick={() => setActiveModalTab('form')}
+                className={`px-4 py-2 text-xs font-bold border-b-2 uppercase tracking-wider flex items-center gap-1.5 ${
+                  activeModalTab === 'form' ? 'border-amber-500 text-amber-500' : 'border-transparent text-[var(--text-secondary)]'
+                }`}
+              >
+                <Truck size={13} /> Update Status
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveModalTab('timeline')}
+                className={`px-4 py-2 text-xs font-bold border-b-2 uppercase tracking-wider flex items-center gap-1.5 ${
+                  activeModalTab === 'timeline' ? 'border-amber-500 text-amber-500' : 'border-transparent text-[var(--text-secondary)]'
+                }`}
+              >
+                <Clock size={13} /> Timeline & Audits
+              </button>
+            </div>
+
+            {activeModalTab === 'form' ? (
+              <form onSubmit={handleSaveFulfill} className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[var(--text-secondary)] mb-1 font-bold">Fulfillment Status</label>
+                    <select
+                      value={statusForm.status}
+                      onChange={(e) => setStatusForm({ ...statusForm, status: e.target.value })}
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-amber-500 font-bold outline-none focus:border-amber-500"
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="PROCESSING">PROCESSING</option>
+                      <option value="SHIPPED">SHIPPED</option>
+                      <option value="DELIVERED">DELIVERED</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                      <option value="RETURNED">RETURNED</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[var(--text-secondary)] mb-1 font-bold">Payment Status</label>
+                    <select
+                      value={statusForm.paymentStatus}
+                      onChange={(e) => setStatusForm({ ...statusForm, paymentStatus: e.target.value })}
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-emerald-500 font-bold outline-none focus:border-emerald-500"
+                    >
+                      <option value="PAID">PAID</option>
+                      <option value="PARTIALLY_PAID">PARTIALLY_PAID</option>
+                      <option value="UNPAID">UNPAID</option>
+                      <option value="REFUNDED">REFUNDED</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Payment Status</label>
-                  <select
-                    value={statusForm.paymentStatus}
-                    onChange={(e) => setStatusForm({ ...statusForm, paymentStatus: e.target.value })}
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-emerald-500 font-bold outline-none focus:border-emerald-500"
-                  >
-                    <option value="PAID">PAID</option>
-                    <option value="PARTIALLY_PAID">PARTIALLY_PAID</option>
-                    <option value="PENDING">PENDING</option>
-                    <option value="UNPAID">UNPAID</option>
-                    <option value="ABANDONED">ABANDONED</option>
-                  </select>
-                </div>
-              </div>
+                {/* Inspect Returned Stock Checklist if status is RETURNED */}
+                {statusForm.status === 'RETURNED' && (
+                  <div className="space-y-2 border border-dashed border-amber-500/30 rounded-xl p-3 bg-amber-500/5">
+                    <p className="font-bold text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wider">Inspect Returned Items</p>
+                    <p className="text-[9px] text-[var(--text-muted)] mb-2 font-medium">Toggle restockable items. Unchecked items are logged as damaged stock.</p>
+                    {selectedOrder.items?.map((item: any) => {
+                      const prodId = item.productId
+                      const isChecked = restockState[prodId] ?? false
+                      return (
+                        <label key={item.id} className="flex items-center gap-2.5 cursor-pointer py-0.5 select-none">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => setRestockState({ ...restockState, [prodId]: e.target.checked })}
+                            className="h-3.5 w-3.5 rounded border-[var(--border)] text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer"
+                          />
+                          <span className="text-[11px] text-[var(--text-primary)] font-bold">
+                            {item.product?.name || 'Fragrance'} x{item.quantity} (Mark Restockable)
+                          </span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-[var(--text-secondary)] mb-1 font-bold">Tracking Number / Waybill Receipt #</label>
-                <input
-                  value={statusForm.trackingNumber}
-                  onChange={(e) => setStatusForm({ ...statusForm, trackingNumber: e.target.value })}
-                  placeholder="e.g. OWR-PARK-8849"
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Courier / Transport Park</label>
+                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Tracking Number / Waybill Receipt #</label>
                   <input
-                    value={statusForm.courierName}
-                    onChange={(e) => setStatusForm({ ...statusForm, courierName: e.target.value })}
-                    placeholder="e.g. Peace Park or Kwik Rider"
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Driver / Rider Phone</label>
-                  <input
-                    value={statusForm.courierPhone}
-                    onChange={(e) => setStatusForm({ ...statusForm, courierPhone: e.target.value })}
-                    placeholder="e.g. +2348012345678"
+                    value={statusForm.trackingNumber}
+                    onChange={(e) => setStatusForm({ ...statusForm, trackingNumber: e.target.value })}
+                    placeholder="e.g. OWR-PARK-8849"
                     className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-[var(--text-secondary)] mb-1 font-bold">Dispatch / Waybill Notes</label>
-                <textarea
-                  value={statusForm.waybillNotes}
-                  onChange={(e) => setStatusForm({ ...statusForm, waybillNotes: e.target.value })}
-                  placeholder="Instructions for customer when picking up from park or rider..."
-                  rows={3}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 resize-none font-medium"
-                />
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[var(--text-secondary)] mb-1 font-bold">Courier / Transport Park</label>
+                    <input
+                      value={statusForm.courierName}
+                      onChange={(e) => setStatusForm({ ...statusForm, courierName: e.target.value })}
+                      placeholder="e.g. Peace Park or Kwik Rider"
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500"
+                    />
+                  </div>
 
-              <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
-                <button
-                  type="button"
-                  onClick={() => setSelectedOrder(null)}
-                  className="rounded-xl border border-[var(--border)] px-5 py-2.5 font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-xl bg-amber-500 px-6 py-2.5 font-bold text-stone-950 hover:bg-amber-400 transition"
-                >
-                  Save Dispatch Info
-                </button>
+                  <div>
+                    <label className="block text-[var(--text-secondary)] mb-1 font-bold">Driver / Rider Phone</label>
+                    <input
+                      value={statusForm.courierPhone}
+                      onChange={(e) => setStatusForm({ ...statusForm, courierPhone: e.target.value })}
+                      placeholder="e.g. +2348012345678"
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono"
+                  />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Dispatch / Waybill Notes</label>
+                  <textarea
+                    value={statusForm.waybillNotes}
+                    onChange={(e) => setStatusForm({ ...statusForm, waybillNotes: e.target.value })}
+                    placeholder="Instructions for customer when picking up from park or rider..."
+                    rows={2}
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 resize-none font-medium"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrder(null)}
+                    className="rounded-xl border border-[var(--border)] px-5 py-2.5 font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-amber-500 px-6 py-2.5 font-bold text-stone-950 hover:bg-amber-400 transition"
+                  >
+                    Save Dispatch Info
+                  </button>
+                </div>
+              </form>
+            ) : (
+              /* Timeline Tab */
+              <div className="space-y-4 text-xs max-h-96 overflow-y-auto">
+                {/* Custom price adjustment overrides */}
+                {selectedOrder.priceAdjustments && selectedOrder.priceAdjustments.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="font-bold text-[10px] text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-1.5">
+                      <FileText size={13} className="text-amber-500" /> Price Override Audit Logs
+                    </p>
+                    <div className="space-y-1.5">
+                      {selectedOrder.priceAdjustments.map((adj: any) => (
+                        <div key={adj.id} className="rounded-xl bg-[var(--bg-primary)] p-2.5 border border-[var(--border)] font-mono text-[10px] text-[var(--text-secondary)]">
+                          <strong className="text-[var(--text-primary)]">{adj.productName}</strong>: Original ₦{adj.originalPrice?.toLocaleString()} → Custom ₦{adj.customPrice?.toLocaleString()} (Diff: {adj.difference >= 0 ? '+' : ''}₦{adj.difference?.toLocaleString()})
+                          <p className="text-[9px] text-[var(--text-muted)] mt-0.5 font-sans">Reason: {adj.reason || 'Manual POS Override'}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Timeline activity stream */}
+                <div className="space-y-3">
+                  <p className="font-bold text-[10px] text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-1.5">
+                    <Clock size={13} className="text-amber-500" /> Activity Timeline Logs
+                  </p>
+                  
+                  {selectedOrder.timeline && selectedOrder.timeline.length > 0 ? (
+                    <div className="space-y-3 pl-1">
+                      {selectedOrder.timeline.map((item: any) => (
+                        <div key={item.id} className="border-l-2 border-amber-500/25 pl-3 py-0.5 space-y-0.5">
+                          <div className="flex justify-between items-baseline font-bold text-[11px] text-[var(--text-primary)]">
+                            <span>{item.eventType}</span>
+                            <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                              {new Date(item.createdAt).toLocaleDateString()} {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[var(--text-secondary)] font-medium">{item.message}</p>
+                          <p className="text-[9px] text-[var(--text-muted)]">By: {item.actorId}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[var(--text-muted)] py-4 text-center">No timeline records registered.</p>
+                  )}
+                </div>
               </div>
-            </form>
+            )}
           </div>
         </div>
       )}

@@ -2,9 +2,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, ShoppingBag, MessageCircle, ChevronDown, Sun, Moon } from 'lucide-react'
+import { Menu, X, ShoppingBag, MessageCircle, ChevronDown, Sun, Moon, Instagram } from 'lucide-react'
 import { useCart } from './CartProvider'
-import { wa } from '@/lib/site'
+import { site, wa } from '@/lib/site'
 
 const COLLECTIONS = [
   ['Oud & Amber', '/shop?cat=Oud+%26+Amber'],
@@ -248,6 +248,44 @@ export default function Header() {
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                 Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
               </button>
+
+              <div className="my-4 h-px bg-[var(--border)] mx-4" />
+
+              {/* Mobile Social Links */}
+              <div className="px-4 pt-1 pb-4">
+                <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase">Follow Us</p>
+                <div className="flex gap-3">
+                  <a
+                    href={site.instagram}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Instagram"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-amber-500 hover:text-amber-500 transition"
+                  >
+                    <Instagram size={17} />
+                  </a>
+                  <a
+                    href={site.tiktok}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="TikTok"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-amber-500 hover:text-amber-500 transition"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-5.2-1.74 2.89 2.89 0 0 1 2.31-2.83V7.64a6.34 6.34 0 0 0-5.1 6.2 6.34 6.34 0 0 0 10.84 4.49 6.27 6.27 0 0 0 1.81-4.43V9.11a8.16 8.16 0 0 0 4.56 1.4V7.06a4.85 4.85 0 0 1-2.00-.37z"/>
+                    </svg>
+                  </a>
+                  <a
+                    href={wa('Hello Jessy Luxury! I am visiting your mobile site.')}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="WhatsApp"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-emerald-500 hover:text-emerald-400 transition"
+                  >
+                    <MessageCircle size={17} />
+                  </a>
+                </div>
+              </div>
             </div>
           </aside>
         </div>

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft, Search, Plus, ShoppingBag, CheckCircle, MessageCircle,
@@ -21,7 +21,8 @@ export default function CreateManualOrderPage() {
   const [shippingAddress, setShippingAddress] = useState('')
   const [selectedZoneId, setSelectedZoneId] = useState<string>('')
 
-  const [cartItems, setCartItems] = useState<{ product: any; quantity: number }[]>([])
+  // Cart state has overridePrice
+  const [cartItems, setCartItems] = useState<{ product: any; quantity: number; overridePrice: number }[]>([])
   const [searchProd, setSearchProd] = useState('')
   const [couponCode, setCouponCode] = useState('')
   const [discountAmount, setDiscountAmount] = useState(0)
@@ -53,16 +54,18 @@ export default function CreateManualOrderPage() {
   const selectedZone = shippingZones.find((z) => z.id.toString() === selectedZoneId)
   const shippingFee = selectedZone ? selectedZone.fee : 0
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  const subtotal = cartItems.reduce((sum, item) => sum + item.overridePrice * item.quantity, 0)
   const total = Math.max(0, subtotal + shippingFee - discountAmount)
 
   function handleAddToCart(p: any) {
     const existing = cartItems.find((ci) => ci.product.id === p.id)
+    const initialPrice = p.salePrice !== null ? p.salePrice : p.price
     if (existing) {
       setCartItems(cartItems.map((ci) => ci.product.id === p.id ? { ...ci, quantity: ci.quantity + 1 } : ci))
     } else {
-      setCartItems([...cartItems, { product: p, quantity: 1 }])
+      setCartItems([...cartItems, { product: p, quantity: 1, overridePrice: initialPrice }])
     }
+    showToast(`${p.name} added to cart`)
   }
 
   function handleUpdateQty(id: number, delta: number) {
@@ -125,10 +128,11 @@ export default function CreateManualOrderPage() {
         total,
         paymentStatus,
         status: 'PENDING',
+        salesChannel: 'Physical',
         items: cartItems.map((ci) => ({
           productId: ci.product.id,
           quantity: ci.quantity,
-          price: ci.product.price,
+          price: ci.overridePrice, // Send validated override price
         })),
       }
 
@@ -139,11 +143,13 @@ export default function CreateManualOrderPage() {
       })
 
       const data = await res.json()
-      if (res.ok && data.id) {
+      if (res.status === 201 && data.id) {
         setCreatedOrder(data)
         showToast(`Manual Order #${data.orderNumber} recorded!`)
+      } else if (res.status === 409) {
+        showToast(data.error || 'Inventory conflict: stock already reserved', 'error')
       } else {
-        showToast('Failed to create manual order', 'error')
+        showToast(data.error || 'Failed to create manual order', 'error')
       }
     } catch {
       showToast('Error recording order', 'error')
@@ -215,6 +221,10 @@ export default function CreateManualOrderPage() {
                 setCartItems([])
                 setCustomerName('')
                 setCustomerPhone('')
+                setCustomerWhatsapp('')
+                setShippingAddress('')
+                setCouponCode('')
+                setDiscountAmount(0)
               }}
               className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-6 py-3 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 transition"
             >
@@ -294,24 +304,33 @@ export default function CreateManualOrderPage() {
               </div>
 
               <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
-                {filteredProducts.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 hover:border-amber-500 transition"
-                  >
-                    <div>
-                      <p className="font-bold text-xs text-[var(--text-primary)]">{p.name}</p>
-                      <p className="text-[10px] text-[var(--text-muted)] font-mono">{p.brand} · ₦{p.price?.toLocaleString('en-NG')}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleAddToCart(p)}
-                      className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500 hover:text-stone-950 transition flex items-center gap-1"
+                {filteredProducts.map((p) => {
+                  const availableStock = (p.stock || 0) - (p.reserved || 0)
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 hover:border-amber-500 transition"
                     >
-                      <Plus size={13} /> Add
-                    </button>
-                  </div>
-                ))}
+                      <div>
+                        <p className="font-bold text-xs text-[var(--text-primary)]">{p.name}</p>
+                        <p className="text-[10px] text-[var(--text-muted)] font-mono">
+                          {p.brand} · ₦{(p.salePrice !== null ? p.salePrice : p.price)?.toLocaleString('en-NG')}
+                          <span className="ml-2 px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-[9px] font-bold text-brand-gold">
+                            {availableStock > 0 ? `${availableStock} available` : 'Out of Stock'}
+                          </span>
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleAddToCart(p)}
+                        disabled={availableStock <= 0}
+                        className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500 hover:text-stone-950 transition flex items-center gap-1 disabled:opacity-50"
+                      >
+                        <Plus size={13} /> Add
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -332,7 +351,19 @@ export default function CreateManualOrderPage() {
                     <div key={ci.product.id} className="flex items-center justify-between text-xs border-b border-[var(--border)] pb-2 font-medium">
                       <div>
                         <p className="font-bold text-[var(--text-primary)]">{ci.product.name}</p>
-                        <p className="text-[10px] text-amber-500 font-mono">₦{ci.product.price?.toLocaleString('en-NG')}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-bold">₦</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={ci.overridePrice}
+                            onChange={(e) => {
+                              const val = Math.max(0, parseInt(e.target.value, 10) || 0)
+                              setCartItems(cartItems.map(item => item.product.id === ci.product.id ? { ...item, overridePrice: val } : item))
+                            }}
+                            className="w-20 rounded border border-[var(--border)] bg-[var(--bg-primary)] px-1 py-0.5 font-mono text-[10px] font-bold text-amber-500 text-right outline-none focus:border-amber-500"
+                          />
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
@@ -396,6 +427,7 @@ export default function CreateManualOrderPage() {
               <div>
                 <label className={lbl}>Payment Status</label>
                 <select
+                  id="payment-status-select"
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
                   className={`${inp} font-bold text-emerald-600 dark:text-emerald-400`}

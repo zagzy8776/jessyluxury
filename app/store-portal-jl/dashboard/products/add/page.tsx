@@ -29,7 +29,6 @@ function AddProductFormInner() {
     costPrice: '',
     badge: '',
     categoryId: '1',
-    volume: '100ml EDP',
     notes: '',
     topNotes: '',
     middleNotes: '',
@@ -42,6 +41,9 @@ function AddProductFormInner() {
     imageUrl: '',
   })
 
+  const [size, setSize] = useState('100ml')
+  const [concentration, setConcentration] = useState('EDP')
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -64,7 +66,6 @@ function AddProductFormInner() {
               costPrice: p.costPrice ? p.costPrice.toString() : '',
               badge: p.badge || '',
               categoryId: p.categoryId ? p.categoryId.toString() : '1',
-              volume: p.volume || '100ml EDP',
               notes: p.notes || '',
               topNotes: p.topNotes || '',
               middleNotes: p.middleNotes || '',
@@ -76,6 +77,17 @@ function AddProductFormInner() {
               gift: p.gift || false,
               imageUrl: img,
             })
+
+            const vol = p.volume || '100ml EDP'
+            const spaceIdx = vol.indexOf(' ')
+            if (spaceIdx !== -1) {
+              setSize(vol.slice(0, spaceIdx))
+              setConcentration(vol.slice(spaceIdx + 1).trim())
+            } else {
+              setSize(vol)
+              setConcentration('None')
+            }
+
             setImagePreview(img || null)
           }
         } catch {
@@ -91,21 +103,57 @@ function AddProductFormInner() {
   async function handleFileUpload(file: File) {
     if (!file) return
     setUploading(true)
+    setUploadProgress(0)
+
     try {
       const fd = new FormData()
       fd.append('file', file)
-      const res = await fetch('/api/upload', { method: 'POST', body: fd })
-      const data = await res.json()
-      if (data.url) {
-        setForm((f) => ({ ...f, imageUrl: data.url }))
-        setImagePreview(data.url)
-        showToast('Photo uploaded successfully!')
-      } else {
-        showToast(data.error || 'Upload failed', 'error')
+
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', '/api/upload', true)
+
+      // Listen to real upload progress events
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const percentage = Math.round((e.loaded / e.total) * 100)
+          setUploadProgress(percentage)
+        }
       }
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const data = JSON.parse(xhr.responseText)
+            if (data.url) {
+              setUploadProgress(100)
+              setForm((f) => ({ ...f, imageUrl: data.url }))
+              setImagePreview(data.url)
+              showToast('Photo uploaded successfully!')
+            } else {
+              showToast(data.error || 'Upload failed', 'error')
+            }
+          } catch {
+            showToast('Upload failed parsing response', 'error')
+          }
+        } else {
+          try {
+            const data = JSON.parse(xhr.responseText)
+            showToast(data.error || 'Upload failed', 'error')
+          } catch {
+            showToast('Upload failed', 'error')
+          }
+        }
+        setUploading(false)
+      }
+
+      xhr.onerror = () => {
+        showToast('Upload failed. Network error.', 'error')
+        setUploading(false)
+      }
+
+      xhr.send(fd)
     } catch {
-      showToast('Upload failed. Check Cloudinary settings.', 'error')
-    } finally {
+      showToast('Upload execution failed.', 'error')
       setUploading(false)
     }
   }
@@ -117,7 +165,7 @@ function AddProductFormInner() {
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    if (e) e.preventDefault()
     if (!form.name || !form.price) {
       showToast('Product name and retail price are required', 'error')
       return
@@ -131,6 +179,7 @@ function AddProductFormInner() {
       costPrice: form.costPrice ? Number(form.costPrice) : 0,
       stock: Number(form.stock) || 0,
       categoryId: Number(form.categoryId),
+      volume: `${size.trim()} ${concentration}`.trim(),
       images: form.imageUrl ? [form.imageUrl] : [],
     }
 
@@ -160,20 +209,51 @@ function AddProductFormInner() {
     }
   }
 
-  // Auto profit calculation
-  const retailPrice = Number(form.price) || 0
-  const costPrice = Number(form.costPrice) || 0
-  const profitMargin = retailPrice > 0 && costPrice > 0 ? Math.round(((retailPrice - costPrice) / retailPrice) * 100) : 0
+  // Auto profit & margin calculations with boundary guards
+  const rPrice = Number(form.price) || 0
+  const cPrice = Number(form.costPrice) || 0
+  const sPrice = Number(form.salePrice) || 0
 
-  const inp = 'w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3.5 text-[var(--text-primary)] text-xs outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 font-sans font-medium shadow-sm'
-  const lbl = 'block text-[11px] font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider'
+  const getMarginValuation = () => {
+    const activePrice = sPrice > 0 ? sPrice : rPrice
+    
+    if (rPrice <= 0) {
+      return { text: 'Enter retail price', isError: false, profit: 0, percentage: 0 }
+    }
+    if (sPrice > 0 && sPrice >= rPrice) {
+      return { text: 'Invalid sale price', isError: true, profit: 0, percentage: 0 }
+    }
+    if (cPrice < 0) {
+      return { text: 'Invalid cost price', isError: true, profit: 0, percentage: 0 }
+    }
+    if (cPrice === 0) {
+      return { text: `₦${activePrice.toLocaleString('en-NG')} · 100% margin`, isError: false, profit: activePrice, percentage: 100 }
+    }
+    if (cPrice > activePrice) {
+      return { text: 'Below cost', isError: true, profit: activePrice - cPrice, percentage: 0 }
+    }
+    
+    const profit = activePrice - cPrice
+    const pct = Math.round((profit / activePrice) * 100)
+    return {
+      text: `₦${profit.toLocaleString('en-NG')} · ${pct}% margin`,
+      isError: false,
+      profit,
+      percentage: pct
+    }
+  }
+
+  const marginVal = getMarginValuation()
+
+  const inp = 'w-full rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] text-xs outline-none transition placeholder:text-[var(--text-muted)] focus:border-brand-gold font-sans font-medium'
+  const lbl = 'block text-[10px] font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider'
 
   if (loadingEdit) {
     return <div className="py-24 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading product editor…</div>
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-10 px-2 sm:px-4">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
       {/* Page Header */}
@@ -181,95 +261,31 @@ function AddProductFormInner() {
         <div className="flex items-center gap-3">
           <Link
             href="/store-portal-jl/dashboard/products"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-amber-500 transition shadow-sm"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:text-brand-gold hover:border-brand-gold/45 transition shadow-xs"
           >
             <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-              {editId ? 'Edit Product Listing' : 'Add New Fragrance Listing'}
+            <h1 className="font-display text-3xl font-light tracking-tight text-[var(--text-primary)]">
+              {editId ? 'Edit Product' : 'Add New Fragrance'}
             </h1>
-            <p className="text-xs font-medium text-[var(--text-secondary)]">
-              Fill in product info, cost valuation, collection tags, and photo upload.
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Specify fragrance details, pricing margins, stock volumes and visuals.
             </p>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={saving}
-          className="rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10 disabled:opacity-60 flex items-center gap-2"
-        >
-          {saving ? <Loader2 size={16} className="animate-spin" /> : 'Save Fragrance'}
-        </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Photo Upload Section */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-sm space-y-3">
-          <label className={lbl}>Product Photo (Cloudinary)</label>
-          <div
-            onClick={() => !uploading && fileInputRef.current?.click()}
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            className={`relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition cursor-pointer overflow-hidden ${
-              uploading
-                ? 'border-amber-500 bg-amber-500/10'
-                : imagePreview
-                ? 'border-emerald-500/40 bg-[var(--bg-primary)]'
-                : 'border-[var(--border)] bg-[var(--bg-primary)] hover:border-amber-500'
-            }`}
-            style={{ minHeight: '200px' }}
-          >
-            {uploading ? (
-              <div className="flex flex-col items-center gap-3 py-8">
-                <Loader2 size={36} className="text-amber-500 animate-spin" />
-                <p className="text-xs text-amber-500 font-bold">Uploading to Cloudinary…</p>
-              </div>
-            ) : imagePreview ? (
-              <>
-                <img src={imagePreview} alt="Preview" className="h-56 w-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-                  <p className="text-white text-xs font-bold flex items-center gap-2">
-                    <Upload size={18} /> Change Photo
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-3 py-10 px-4 text-center">
-                <div className="rounded-full bg-[var(--card-bg)] p-4 border border-[var(--border)]">
-                  <Upload size={24} className="text-amber-500" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[var(--text-primary)]">Tap to upload photo from phone gallery or camera</p>
-                  <p className="text-[10px] text-[var(--text-muted)] mt-1">PNG, JPG, WEBP formats supported</p>
-                </div>
-              </div>
-            )}
+      <form onSubmit={handleSubmit} className="space-y-10">
+        {/* Section 1: Basic Information */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Basic Information
+            </h3>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) handleFileUpload(file)
-            }}
-          />
-          {imagePreview && !uploading && (
-            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-bold">
-              <CheckCircle size={14} /> Cloudinary image active — will display on customer storefront
-            </p>
-          )}
-        </div>
-
-        {/* General Info */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-3">Basic Information</h2>
-          <div className="grid grid-cols-2 gap-4">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={lbl}>Product Name *</label>
               <input
@@ -285,7 +301,7 @@ function AddProductFormInner() {
               <input
                 value={form.brand}
                 onChange={(e) => setForm({ ...form, brand: e.target.value })}
-                placeholder="e.g. Paris Corner / Lattafa"
+                placeholder="e.g. Paris Corner"
                 required
                 className={inp}
               />
@@ -293,18 +309,107 @@ function AddProductFormInner() {
           </div>
         </div>
 
-        {/* Valuation & Pricing */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Pricing & Profit Margin Valuation</h2>
-            {profitMargin > 0 && (
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                {profitMargin}% Estimated Profit Margin
-              </span>
+        {/* Section 2: Product Photo */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Product Photo
+            </h3>
+          </div>
+
+          <div
+            onClick={() => !uploading && fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            className={`relative flex flex-col items-center justify-center rounded-lg border border-dashed transition-all duration-300 cursor-pointer overflow-hidden ${
+              uploading
+                ? 'border-brand-gold bg-amber-500/5'
+                : imagePreview
+                ? 'border-[var(--border)] bg-[var(--bg-primary)]'
+                : 'border-[var(--border)] bg-[var(--bg-primary)] hover:border-brand-gold'
+            }`}
+            style={{ minHeight: '180px' }}
+          >
+            {uploading ? (
+              <div className="flex flex-col items-center gap-2 py-8 w-full max-w-xs px-6">
+                <Loader2 size={24} className="text-brand-gold animate-spin" />
+                <p className="text-[11px] text-[var(--text-secondary)] font-bold">Uploading image…</p>
+                <div className="w-full bg-[var(--border)] h-1 rounded-full overflow-hidden mt-2">
+                  <div
+                    className="bg-brand-gold h-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)] font-mono">{uploadProgress}%</p>
+              </div>
+            ) : imagePreview ? (
+              <div className="w-full p-2 space-y-3">
+                <img src={imagePreview} alt="Preview" className="h-56 w-full object-cover rounded-md border border-[var(--border)]" />
+                <div className="flex items-center justify-between px-1 text-xs">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                    <CheckCircle size={14} /> Image ready
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        fileInputRef.current?.click()
+                      }}
+                      className="font-bold text-[var(--text-primary)] hover:text-brand-gold transition-colors"
+                    >
+                      Replace photo
+                    </button>
+                    <span className="text-[var(--text-muted)] font-light">|</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setForm((f) => ({ ...f, imageUrl: '' }))
+                        setImagePreview(null)
+                      }}
+                      className="font-bold text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3 py-10 px-4 text-center">
+                <div className="rounded-lg border border-[var(--border)] p-3 text-[var(--text-secondary)]">
+                  <Upload size={20} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[var(--text-primary)]">Tap to upload photo from phone gallery or camera</p>
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1.5">PNG, JPG, WEBP formats supported</p>
+                </div>
+              </div>
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) handleFileUpload(file)
+            }}
+          />
+        </div>
+
+        {/* Section 3: Pricing & Margin */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Pricing & Margin
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className={lbl}>Retail Price (₦) *</label>
               <input
@@ -313,7 +418,7 @@ function AddProductFormInner() {
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
                 placeholder="36000"
                 required
-                className={`${inp} font-mono font-bold text-amber-500`}
+                className={`${inp} font-sans font-bold text-[var(--text-primary)]`}
               />
             </div>
 
@@ -324,7 +429,7 @@ function AddProductFormInner() {
                 value={form.costPrice}
                 onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
                 placeholder="22000"
-                className={`${inp} font-mono text-[var(--text-primary)]`}
+                className={inp}
               />
             </div>
 
@@ -335,17 +440,31 @@ function AddProductFormInner() {
                 value={form.salePrice}
                 onChange={(e) => setForm({ ...form, salePrice: e.target.value })}
                 placeholder="32000"
-                className={`${inp} font-mono text-emerald-600 dark:text-emerald-400 font-bold`}
+                className={inp}
               />
+            </div>
+
+            {/* Dynamic Profit Calculation Block */}
+            <div className="col-span-1 sm:col-span-3 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded-md flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">
+                {sPrice > 0 ? 'EXPECTED MARGIN' : 'GROSS MARGIN'}
+              </span>
+              <span className={`text-xs font-bold tabular-nums ${marginVal.isError ? 'text-red-500 font-bold' : 'text-brand-gold font-bold'}`}>
+                {marginVal.text}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Inventory & Collection Tagging */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-3">Stock & Collection Setup</h2>
+        {/* Section 4: Stock & Catalog */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Stock & Catalog
+            </h3>
+          </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <label className={lbl}>Stock Quantity *</label>
               <input
@@ -354,7 +473,7 @@ function AddProductFormInner() {
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
                 placeholder="10"
                 required
-                className={`${inp} font-mono font-bold`}
+                className={`${inp} font-sans font-bold`}
               />
             </div>
 
@@ -372,91 +491,159 @@ function AddProductFormInner() {
             </div>
 
             <div>
-              <label className={lbl}>Volume / Size</label>
+              <label className={lbl}>Size (Volume)</label>
               <input
-                value={form.volume}
-                onChange={(e) => setForm({ ...form, volume: e.target.value })}
-                placeholder="100ml EDP"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                placeholder="e.g. 100ml"
                 className={inp}
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-2">
             <div>
-              <label className={lbl}>Badge Tag</label>
+              <label className={lbl}>Concentration</label>
+              <select
+                value={concentration}
+                onChange={(e) => setConcentration(e.target.value)}
+                className={inp}
+              >
+                <option value="EDP">EDP (Eau de Parfum)</option>
+                <option value="EDT">EDT (Eau de Toilette)</option>
+                <option value="Extrait">Extrait de Parfum</option>
+                <option value="Oil">Perfume Oil</option>
+                <option value="None">None</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={lbl}>Storefront Badge</label>
               <select
                 value={form.badge}
                 onChange={(e) => setForm({ ...form, badge: e.target.value })}
                 className={inp}
               >
                 <option value="">None</option>
-                <option value="BEST">BEST</option>
-                <option value="NEW">NEW</option>
-                <option value="SALE">SALE</option>
-                <option value="OIL">OIL</option>
+                <option value="BEST">Best Seller</option>
+                <option value="NEW">New Arrival</option>
+                <option value="LIMITED">Limited Edition</option>
+                <option value="SALE">Special Sale</option>
+                <option value="OIL">Premium Oil</option>
               </select>
             </div>
 
+            <div>
+              <label className={lbl}>Bottle Aesthetic / Color</label>
+              <select
+                value={form.tone}
+                onChange={(e) => setForm({ ...form, tone: e.target.value })}
+                className={inp}
+              >
+                <option value="amber">Amber Glass</option>
+                <option value="pistachio">Pistachio Green</option>
+                <option value="smoke">Smoke Gray</option>
+                <option value="rose">Rose Pink</option>
+                <option value="oud">Oud Black</option>
+                <option value="fresh">Fresh Blue</option>
+                <option value="sweet">Sweet Peach</option>
+                <option value="musk">Musk White</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 5: Fragrance Details */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Fragrance Details
+            </h3>
+          </div>
+
+          <div className="space-y-4">
             <div>
               <label className={lbl}>Scent Notes Summary</label>
               <input
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                placeholder="Pistachio · Gelato · Vanilla"
+                placeholder="e.g. Pistachio · Gelato · Vanilla"
                 className={inp}
               />
             </div>
+
+            <div>
+              <div className="flex justify-between items-baseline mb-1.5">
+                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                  Product Description
+                </label>
+                <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                  {(form.description || '').length} / 500
+                </span>
+              </div>
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="Describe the fragrance, longevity, projection and key notes."
+                rows={4}
+                maxLength={500}
+                className={`${inp} resize-none`}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 6: Storefront Visibility */}
+        <div className="space-y-4">
+          <div className="border-b border-[var(--border)] pb-2">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+              Storefront Promotion
+            </h3>
           </div>
 
-          <div>
-            <label className={lbl}>Full Product Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Write a rich description of scent longevity, projection, and notes…"
-              rows={3}
-              className={`${inp} resize-none`}
-            />
-          </div>
-
-          <div className="flex gap-6 pt-2">
-            <label className="flex items-center gap-2 cursor-pointer">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 pt-1">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={form.featured}
                 onChange={(e) => setForm({ ...form, featured: e.target.checked })}
-                className="h-4 w-4 rounded accent-amber-500"
+                className="h-4 w-4 rounded border-[var(--border)] text-brand-gold focus:ring-brand-gold accent-brand-gold cursor-pointer"
               />
-              <span className="text-xs text-[var(--text-primary)] font-bold">Feature on Storefront Homepage</span>
+              <span className="text-xs text-[var(--text-primary)] font-bold">Feature on Homepage</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={form.gift}
                 onChange={(e) => setForm({ ...form, gift: e.target.checked })}
-                className="h-4 w-4 rounded accent-amber-500"
+                className="h-4 w-4 rounded border-[var(--border)] text-brand-gold focus:ring-brand-gold accent-brand-gold cursor-pointer"
               />
-              <span className="text-xs text-[var(--text-primary)] font-bold">Display in Gift Sets Category</span>
+              <span className="text-xs text-[var(--text-primary)] font-bold">Display in Gift Sets</span>
             </label>
           </div>
         </div>
 
-        {/* Submit Bar */}
-        <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
+        {/* Action Bar */}
+        <div className="flex justify-end items-center gap-4 border-t border-[var(--border)] pt-8">
           <Link
             href="/store-portal-jl/dashboard/products"
-            className="rounded-xl border border-[var(--border)] px-5 py-2.5 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+            className="text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase tracking-wider"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="rounded-xl bg-amber-500 px-7 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10 disabled:opacity-60 flex items-center gap-2"
+            className="rounded-lg bg-brand-gold px-8 py-3 text-xs font-bold text-stone-950 hover:bg-amber-400 active:scale-[0.98] transition shadow-md shadow-amber-500/5 disabled:opacity-60 flex items-center gap-2 uppercase tracking-wider"
           >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : 'Save Fragrance Listing'}
+            {saving ? (
+              <>
+                <Loader2 size={14} className="animate-spin" /> Saving…
+              </>
+            ) : editId ? (
+              'Save Changes →'
+            ) : (
+              'Add to Catalog →'
+            )}
           </button>
         </div>
       </form>
@@ -471,3 +658,4 @@ export default function AddProductPage() {
     </Suspense>
   )
 }
+

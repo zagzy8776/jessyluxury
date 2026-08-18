@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
+import { requireAdminAuth } from '@/lib/auth'
 
 export async function POST(request: Request) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null

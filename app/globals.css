@@ -4,8 +4,7 @@
 
 /* ========== LUXURY LIGHT THEME (default everywhere) ========== */
 :root,
-[data-theme="light"],
-[data-theme="dark"] {
+[data-theme="light"] {
   color-scheme: light;
   --bg-primary: #fcfaf7;       /* Smooth warm cashmere foundation background */
   --bg-secondary: #f5f1ea;     /* Silky nude tone */
@@ -21,6 +20,25 @@
   --table-row-hover: #fcfaf7;
   --scrollbar-track: #f5f1ea;
   --scrollbar-thumb: #d6d3d1;
+}
+
+/* ========== LUXURY DARK THEME ========== */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #0a0a0a;       /* Deep rich black */
+  --bg-secondary: #171717;     /* Subtle off-black */
+  --header-bg: #0a0a0a;        
+  --card-bg: #121212;          
+  --border: #262626;           /* Subtle dark border */
+  --border-hover: #d97706;     
+  --text-primary: #fafafa;     /* Clean off-white text */
+  --text-secondary: #a1a1aa;   /* Soft grey text */
+  --text-muted: #71717a;       
+  --input-bg: #121212;
+  --table-header-bg: #171717;
+  --table-row-hover: #1a1a1a;
+  --scrollbar-track: #0a0a0a;
+  --scrollbar-thumb: #3f3f46;
 }
 
 html {
@@ -98,3 +116,32 @@ body {
 .animate-slide-up {
   animation: slide-up 0.25s ease-out forwards;
 }
+
+/* Tabular numbers for numerical alignment without monospace look */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Extremely subtle breathing animation for live status dot */
+@keyframes live-pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #10b981; /* Muted green */
+  animation: live-pulse 2.5s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+}
+

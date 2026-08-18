@@ -58,11 +58,21 @@ export default function ContactPage() {
             { icon: Mail, t: 'Email', d: site.email, href: `mailto:${site.email}` },
             { icon: MapPin, t: 'Location', d: site.location },
             { icon: Clock, t: 'Hours', d: site.hours },
-            { icon: Instagram, t: 'Instagram', d: '@jessyluxury', href: site.instagram },
+            { icon: Instagram, t: 'Instagram', d: site.instagramHandle, href: site.instagram },
+            {
+              customIcon: (
+                <svg className="w-5 h-5 fill-current text-amber-500" viewBox="0 0 24 24">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-5.2-1.74 2.89 2.89 0 0 1 2.31-2.83V7.64a6.34 6.34 0 0 0-5.1 6.2 6.34 6.34 0 0 0 10.84 4.49 6.27 6.27 0 0 0 1.81-4.43V9.11a8.16 8.16 0 0 0 4.56 1.4V7.06a4.85 4.85 0 0 1-2.00-.37z"/>
+                </svg>
+              ),
+              t: 'TikTok',
+              d: site.tiktokHandle,
+              href: site.tiktok,
+            },
           ].map((c) => (
             <div key={c.t} className="flex items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
               <span className="rounded-full bg-amber-500/10 p-3 text-amber-500">
-                <c.icon size={19} />
+                {c.icon ? <c.icon size={19} /> : c.customIcon}
               </span>
               <div>
                 <p className="text-[10px] font-bold tracking-[0.18em] text-[var(--text-muted)] uppercase">{c.t}</p>

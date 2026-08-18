@@ -3,22 +3,36 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Eye, EyeOff } from 'lucide-react'
 
-const SESSION_KEY = 'jl_admin_session'
+
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [show, setShow] = useState(false)
   const [error, setError] = useState('')
+  const [infoMessage, setInfoMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const session = localStorage.getItem(SESSION_KEY)
-      if (session === 'authenticated') {
-        router.replace('/store-portal-jl/dashboard')
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('message') === 'changed') {
+        setInfoMessage('Password changed successfully. Please sign in again.')
       }
     }
+    
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/admin-auth')
+        const data = await res.json()
+        if (data.authenticated) {
+          router.replace('/store-portal-jl/dashboard')
+        }
+      } catch {
+        // ignore
+      }
+    }
+    checkAuth()
   }, [router])
 
   async function handleLogin(e: React.FormEvent) {
@@ -35,8 +49,10 @@ export default function AdminLoginPage() {
     })
 
     if (res.ok) {
-      localStorage.setItem(SESSION_KEY, 'authenticated')
       router.replace('/store-portal-jl/dashboard')
+    } else if (res.status === 429) {
+      setError('Too many login attempts. Please try again later.')
+      setLoading(false)
     } else {
       setError('Incorrect password. Try again.')
       setLoading(false)
@@ -62,6 +78,12 @@ export default function AdminLoginPage() {
             <Lock size={16} className="text-amber-500" />
             <h2 className="text-sm font-bold text-[var(--text-primary)]">Enter admin password</h2>
           </div>
+
+          {infoMessage && (
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 mb-4 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              {infoMessage}
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="relative">

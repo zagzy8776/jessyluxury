@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdminAuth } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -14,6 +15,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const body = await request.json()
     const zone = await prisma.shippingZone.create({
@@ -23,6 +27,7 @@ export async function POST(request: Request) {
         estimatedDays: body.estimatedDays || '1-2 days',
         description: body.description || null,
         active: body.active !== undefined ? Boolean(body.active) : true,
+        isPickup: body.isPickup !== undefined ? Boolean(body.isPickup) : false,
       },
     })
     return NextResponse.json(zone, { status: 201 })

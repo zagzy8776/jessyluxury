@@ -5,6 +5,7 @@ import CartProvider from '@/components/CartProvider'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartDrawer from '@/components/CartDrawer'
+import OneSignalInit from '@/components/OneSignalInit'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const display = Cormorant_Garamond({
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${display.variable}`}>
       <body>
+        <OneSignalInit />
         <CartProvider>
           <Header />
           {children}

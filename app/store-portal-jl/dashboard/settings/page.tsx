@@ -1,9 +1,10 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   Truck, Users, MapPin, Globe, CreditCard, DollarSign, Receipt,
-  Plus, Edit2, Save, Smartphone, Building,
+  Plus, Edit2, Save, Smartphone, Building, Lock, Eye, EyeOff
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
@@ -126,6 +127,7 @@ export default function StoreSettingsPage() {
             { id: 'locations', label: 'Store Locations', icon: MapPin },
             { id: 'general', label: 'General Info', icon: Globe },
             { id: 'apps', label: 'Connected Apps', icon: Smartphone },
+            { id: 'security', label: 'Security Settings', icon: Lock },
           ].map((sub) => (
             <button
               key={sub.id}
@@ -307,6 +309,11 @@ export default function StoreSettingsPage() {
         </div>
       )}
 
+      {/* SubTab: Security Settings */}
+      {activeSection === 'OPERATIONS' && activeSubTab === 'security' && (
+        <SecuritySettingsForm showToast={showToast} />
+      )}
+
       {/* ==================== FINANCE CONTENT ==================== */}
 
       {/* SubTab: Bank Details */}
@@ -402,3 +409,138 @@ export default function StoreSettingsPage() {
     </div>
   )
 }
+
+function SecuritySettingsForm({ showToast }: { showToast: (msg: string, type?: 'success' | 'error') => void }) {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showCurrent, setShowCurrent] = useState(false)
+  const [showNew, setShowNew] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  async function handlePasswordChange(e: React.FormEvent) {
+    e.preventDefault()
+    
+    if (newPassword !== confirmPassword) {
+      showToast('New passwords do not match', 'error')
+      return
+    }
+
+    if (newPassword.length < 12) {
+      showToast('Password must be at least 12 characters', 'error')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin-auth/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+      })
+
+      if (res.ok) {
+        showToast('Password changed successfully! Redirecting...', 'success')
+        setTimeout(() => {
+          router.replace('/store-portal-jl?message=changed')
+        }, 1500)
+      } else {
+        const data = await res.json()
+        showToast(data.error || 'Failed to update password', 'error')
+      }
+    } catch {
+      showToast('An unexpected error occurred', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inp = 'w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] py-3 pl-4 pr-12 text-[var(--text-primary)] text-xs outline-none transition focus:border-amber-500 font-sans font-medium shadow-sm'
+  const lbl = 'block text-[11px] font-bold text-[var(--text-secondary)] mb-1 uppercase tracking-wider'
+
+  return (
+    <form onSubmit={handlePasswordChange} className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm max-w-md">
+      <h3 className="text-sm font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-4">
+        Change Admin Password
+      </h3>
+
+      <div className="space-y-4">
+        <div>
+          <label className={lbl}>Current Password</label>
+          <div className="relative">
+            <input
+              type={showCurrent ? 'text' : 'password'}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className={inp}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowCurrent(!showCurrent)}
+              className="absolute right-3.5 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
+            >
+              {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className={lbl}>New Password</label>
+          <div className="relative">
+            <input
+              type={showNew ? 'text' : 'password'}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={inp}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowNew(!showNew)}
+              className="absolute right-3.5 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
+            >
+              {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          <p className="mt-1 text-[10px] text-[var(--text-muted)] font-medium">
+            Password must be at least 12 characters long.
+          </p>
+        </div>
+
+        <div>
+          <label className={lbl}>Confirm New Password</label>
+          <div className="relative">
+            <input
+              type={showConfirm ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={inp}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(!showConfirm)}
+              className="absolute right-3.5 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
+            >
+              {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/10 disabled:opacity-50"
+        >
+          <Save size={15} /> {loading ? 'Updating...' : 'Change Password'}
+        </button>
+      </div>
+    </form>
+  )
+}
+

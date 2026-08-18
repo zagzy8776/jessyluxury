@@ -14,6 +14,7 @@ export default function AdminShippingPage() {
     estimatedDays: '1-2 Days',
     description: '',
     active: true,
+    isPickup: false,
   })
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function AdminShippingPage() {
         estimatedDays: z.estimatedDays || '1-2 Days',
         description: z.description || '',
         active: z.active,
+        isPickup: z.isPickup || false,
       })
     } else {
       setEditingZone(null)
@@ -50,6 +52,7 @@ export default function AdminShippingPage() {
         estimatedDays: '1-2 Days',
         description: '',
         active: true,
+        isPickup: false,
       })
     }
     setShowModal(true)
@@ -124,13 +127,20 @@ export default function AdminShippingPage() {
               }`}
             >
               <div>
-                <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <span className="rounded-xl bg-amber-500/10 p-2.5 text-amber-500 border border-amber-500/20">
                       <Truck size={20} />
                     </span>
                     <div>
-                      <h3 className="font-display text-base font-bold text-[var(--text-primary)]">{z.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-base font-bold text-[var(--text-primary)]">{z.name}</h3>
+                        {z.isPickup && (
+                          <span className="bg-amber-500/10 text-amber-500 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-amber-500/20">
+                            PICKUP
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-amber-500 font-mono font-bold">
                         {z.fee === 0 ? 'FREE PICKUP' : `₦${z.fee.toLocaleString('en-NG')}`}
                       </p>
@@ -241,15 +251,28 @@ export default function AdminShippingPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="active"
-                  checked={form.active}
-                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                  className="h-4 w-4 rounded accent-amber-500"
-                />
-                <label htmlFor="active" className="text-[var(--text-primary)] font-bold">Active (Visible during checkout)</label>
+              <div className="flex items-center gap-6 pt-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="active"
+                    checked={form.active}
+                    onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                    className="h-4 w-4 rounded accent-amber-500"
+                  />
+                  <label htmlFor="active" className="text-[var(--text-primary)] font-bold">Active (Checkout Visible)</label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isPickup"
+                    checked={form.isPickup}
+                    onChange={(e) => setForm({ ...form, isPickup: e.target.checked })}
+                    className="h-4 w-4 rounded accent-amber-500"
+                  />
+                  <label htmlFor="isPickup" className="text-[var(--text-primary)] font-bold">Store Pickup Method</label>
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">

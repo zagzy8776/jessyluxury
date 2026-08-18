@@ -35,3 +35,14 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
+/prisma/schema.before-db-pull.prisma
+/prisma/schema.full-21models-backup.prisma
+/prisma/*.bak
+/prisma/*.log
+/prisma/*.sql
+/prisma/backup-*.json
+
+# logs and test results
+build.log
+test-results/
+playwright-report/

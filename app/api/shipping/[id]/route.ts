@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdminAuth } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const id = parseInt(params.id, 10)
     const body = await request.json()
@@ -17,6 +21,7 @@ export async function PUT(
         estimatedDays: body.estimatedDays,
         description: body.description,
         active: Boolean(body.active),
+        isPickup: body.isPickup !== undefined ? Boolean(body.isPickup) : undefined,
       },
     })
     return NextResponse.json(zone)
@@ -30,6 +35,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const authErr = await requireAdminAuth(request)
+  if (authErr) return authErr
+
   try {
     const id = parseInt(params.id, 10)
     await prisma.shippingZone.delete({ where: { id } })
