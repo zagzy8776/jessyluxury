@@ -73,3 +73,36 @@ export async function sendOneSignalPush(recipientId: string, title: string, mess
   const data = await response.json()
   return { id: data.id || 'onesignal-ok' }
 }
+
+export async function broadcastOneSignalPush(title: string, message: string, customUrl?: string): Promise<OneSignalResponse> {
+  const appId = process.env.ONESIGNAL_APP_ID
+  const apiKey = process.env.ONESIGNAL_API_KEY
+  if (!appId || !apiKey) {
+    throw new Error('ONESIGNAL_APP_ID or ONESIGNAL_API_KEY is not configured')
+  }
+
+  const response = await fetch('https://onesignal.com/api/v1/notifications', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${apiKey}`,
+    },
+    body: JSON.stringify({
+      app_id: appId,
+      included_segments: ['Subscribed Users'],
+      target_channel: 'push',
+      headings: { en: title },
+      contents: { en: message },
+      url: customUrl || undefined,
+    }),
+  })
+
+  if (!response.ok) {
+    const errText = await response.text()
+    throw new Error(`OneSignal API Error (${response.status}): ${errText}`)
+  }
+
+  const data = await response.json()
+  return { id: data.id || 'onesignal-ok' }
+}
+

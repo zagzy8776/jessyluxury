@@ -24,6 +24,21 @@ export default function OneSignalInit() {
             },
             allowLocalhostAsSecureOrigin: true, // Allow testing on localhost
           })
+
+          // Auto-prompt customers on the public storefront after 5 seconds if not yet opted in
+          if (!window.location.pathname.startsWith('/store-portal-jl')) {
+            setTimeout(async () => {
+              try {
+                // permission can be 'default', 'granted', or 'denied'
+                if (OneSignal.Notifications.permission === 'default') {
+                  console.log('[OneSignal] Triggering slidedown prompt for visitor subscription')
+                  await OneSignal.Slidedown.promptTrigger()
+                }
+              } catch (promptErr) {
+                console.warn('[OneSignal] Failed to trigger slidedown prompt:', promptErr)
+              }
+            }, 5000)
+          }
         } catch (err) {
           console.warn('[OneSignal] Initialization skipped or failed (common in local development):', err)
         }

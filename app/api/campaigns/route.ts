@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminAuth } from '@/lib/auth'
+import { broadcastOneSignalPush } from '@/lib/notifications/client'
 
 export async function GET(request: Request) {
   const authErr = await requireAdminAuth(request)
@@ -55,6 +56,20 @@ export async function POST(request: Request) {
         coupon: true,
       },
     })
+
+    // Broadcast push notification to all subscribed customers if channel is push/all and campaign is active
+    if (campaign.isActive && (campaign.channel === 'Push' || campaign.channel === 'All')) {
+      try {
+        const promoMsg = campaign.coupon
+          ? `${campaign.description || ''} Use promo code: ${campaign.coupon.code}`
+          : campaign.description || ''
+        broadcastOneSignalPush(campaign.name, promoMsg, `/store-portal-jl/dashboard/sales-marketing/campaigns`).catch((err) => {
+          console.error('Failed to broadcast campaign push notification:', err)
+        })
+      } catch (err) {
+        console.error('Failed to initiate campaign push broadcast:', err)
+      }
+    }
 
     await prisma.auditLog.create({
       data: {

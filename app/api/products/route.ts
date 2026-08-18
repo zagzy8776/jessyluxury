@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminAuth } from '@/lib/auth'
+import { broadcastOneSignalPush } from '@/lib/notifications/client'
 
 export async function GET(request: Request) {
   try {
@@ -101,6 +102,17 @@ export async function POST(request: Request) {
         images: Array.isArray(images) ? images : [],
       },
     })
+
+    // Broadcast push notification to all subscribed customers about the new product
+    try {
+      const priceStr = product.salePrice ? `N${product.salePrice}` : `N${product.price}`
+      const promoMsg = `Discover our new arrival: ${product.name} by ${product.brand}. notes: ${product.notes || 'delightful scents'}. Buy now for ${priceStr}!`
+      broadcastOneSignalPush(`New Scent Added! ✨`, promoMsg, `/products/${product.id}`).catch((err) => {
+        console.error('Failed to broadcast product push notification:', err)
+      })
+    } catch (err) {
+      console.error('Failed to initiate product push broadcast:', err)
+    }
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {
