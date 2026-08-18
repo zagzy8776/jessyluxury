@@ -15,14 +15,18 @@ export default function OneSignalInit() {
     script.onload = () => {
       ;(window as any).OneSignalDeferred = (window as any).OneSignalDeferred || []
       ;(window as any).OneSignalDeferred.push(async (OneSignal: any) => {
-        await OneSignal.init({
-          appId,
-          safari_web_id: undefined, // Add Safari Push ID if you have one
-          notifyButton: {
-            enable: false, // We control the bell ourselves in the admin UI
-          },
-          allowLocalhostAsSecureOrigin: true, // Allow testing on localhost
-        })
+        try {
+          await OneSignal.init({
+            appId,
+            safari_web_id: undefined, // Add Safari Push ID if you have one
+            notifyButton: {
+              enable: false, // We control the bell ourselves in the admin UI
+            },
+            allowLocalhostAsSecureOrigin: true, // Allow testing on localhost
+          })
+        } catch (err) {
+          console.warn('[OneSignal] Initialization skipped or failed (common in local development):', err)
+        }
       })
     }
     document.head.appendChild(script)
