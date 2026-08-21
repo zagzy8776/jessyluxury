@@ -31,6 +31,14 @@ export default function CartDrawer() {
   useEffect(() => {
     if (drawer) {
       fetchShippingZones()
+      // Auto-fill coupon code if one was set by the promo popup
+      try {
+        const pending = sessionStorage.getItem('jl_pending_coupon')
+        if (pending && !couponCode && !appliedCoupon) {
+          setCouponCode(pending)
+          sessionStorage.removeItem('jl_pending_coupon')
+        }
+      } catch { /* ignore */ }
     }
   }, [drawer])
 
