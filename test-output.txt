@@ -1,0 +1,145 @@
+
+🔧 [Global Setup] Starting test account provisioning...
+
+   Waiting for previous connections to close...
+   Creating/updating owner@jessy.test (Owner)...
+   Creating/updating manager@jessy.test (Manager)...
+   Creating/updating fulfillment@jessy.test (Fulfillment)...
+   Creating/updating catalog@jessy.test (Catalog)...
+   Creating/updating inactive@jessy.test (Manager)...
+
+✅ [Global Setup] All test accounts provisioned successfully
+
+✅ [Global Setup] Verified 5 test accounts exist
+
+[E2E Env Loader] Successfully loaded environment from .env
+
+Running 285 tests using 1 worker
+
+  x    1 [chromium] › e2e\000-smoke-test-accounts.spec.ts:44:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › owner@jessy.test can authenticate (55ms)
+  x    2 [chromium] › e2e\000-smoke-test-accounts.spec.ts:51:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › manager@jessy.test can authenticate (29ms)
+  x    3 [chromium] › e2e\000-smoke-test-accounts.spec.ts:58:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › fulfillment@jessy.test can authenticate (47ms)
+  x    4 [chromium] › e2e\000-smoke-test-accounts.spec.ts:65:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › catalog@jessy.test can authenticate (34ms)
+  x    5 [chromium] › e2e\000-smoke-test-accounts.spec.ts:72:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › inactive@jessy.test CANNOT authenticate (negative test) (68ms)
+✅ All test accounts have correct properties
+  ok   6 [chromium] › e2e\000-smoke-test-accounts.spec.ts:79:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › All test accounts have expected properties (19ms)
+✅ Test A created customer 131
+✅ Test A cleaned up customer 131
+  ok   7 [chromium] › e2e\001-isolation-verification.spec.ts:21:7 › 🔬 Isolation Verification › Isolation Test A: Create customer, verify, cleanup (8.2s)
+✅ Test B created customer 132
+✅ Test B cleaned up customer 132
+  ok   8 [chromium] › e2e\001-isolation-verification.spec.ts:64:7 › 🔬 Isolation Verification › Isolation Test B: Create customer with different ID, verify independence (2.4s)
+✅ Test C verified all isolation test data was cleaned up
+✅ Test C verified all 5 global staff accounts intact
+  ok   9 [chromium] › e2e\001-isolation-verification.spec.ts:119:7 › 🔬 Isolation Verification › Isolation Test C: Verify no test customers remain (1.5s)
+  x   10 [chromium] › e2e\analytics.spec.ts:107:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics (4.0s)
+  x   11 [chromium] › e2e\marketing.spec.ts:99:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should validate coupon constraints correctly (390ms)
+  x   12 [chromium] › e2e\marketing.spec.ts:147:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should enforce customer redemption limit and preserve usedCount on cancellation (388ms)
+  x   13 [chromium] › e2e\marketing.spec.ts:261:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should prevent double spend via atomic increment checks on concurrent transactions (501ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok  14 [chromium] › e2e\notifications.spec.ts:111:7 › Jessy Luxury Notifications outbox E2E Suite › should enforce idempotency, outbox claim locking, and credentials fallback mapping (21.8s)
+  x   15 [chromium] › e2e\notifications.spec.ts:245:7 › Jessy Luxury Notifications outbox E2E Suite › should enforce API session security checks (431ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   16 [chromium] › e2e\notifications.spec.ts:267:7 › Jessy Luxury Notifications outbox E2E Suite › should verify Phase 9 customer notification portal and engagement features (1.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   17 [chromium] › e2e\notifications.spec.ts:394:7 › Jessy Luxury Notifications outbox E2E Suite › should render an active StoreAnnouncement on the public storefront (6.0s)
+[E2E Env Loader] Successfully loaded environment from .env
+[Event Dispatcher] Emitting event: "order.shipped" {
+  timestamp: '2026-08-21T15:58:21.764Z',
+  payload: {
+    orderId: 24,
+    orderNumber: 'JL-TXNNOTIF_E2E_7006',
+    isAuthenticated: true
+  }
+}
+  ok  18 [chromium] › e2e\notifications.spec.ts:423:7 › Jessy Luxury Notifications outbox E2E Suite › should not suppress transactional order notifications when marketing is opted out (20.5s)
+  x   19 [chromium] › e2e\settings\authorization.spec.ts:115:7 › Authorization - Orders Routes › Unauthenticated request to orders returns 401 (15ms)
+  x   20 [chromium] › e2e\settings\authorization.spec.ts:120:7 › Authorization - Orders Routes › Manager with orders permission can access orders (40ms)
+  x   21 [chromium] › e2e\settings\authorization.spec.ts:128:7 › Authorization - Orders Routes › Catalog without orders permission cannot access orders (25ms)
+  x   22 [chromium] › e2e\settings\authorization.spec.ts:136:7 › Authorization - Orders Routes › Fulfillment with orders permission can access orders (26ms)
+  x   23 [chromium] › e2e\settings\authorization.spec.ts:144:7 › Authorization - Orders Routes › Owner can access orders (25ms)
+  x   24 [chromium] › e2e\settings\authorization.spec.ts:154:7 › Authorization - Products Routes › Manager with products permission can access products admin (24ms)
+  x   25 [chromium] › e2e\settings\authorization.spec.ts:168:7 › Authorization - Products Routes › Catalog with products permission can access products admin (24ms)
+  x   26 [chromium] › e2e\settings\authorization.spec.ts:182:7 › Authorization - Products Routes › Fulfillment without products permission cannot create products (25ms)
+  x   27 [chromium] › e2e\settings\authorization.spec.ts:196:7 › Authorization - Products Routes › Owner can create products (31ms)
+  x   28 [chromium] › e2e\settings\authorization.spec.ts:212:7 › Authorization - Customers Routes › Manager with customers permission can access customers (26ms)
+  x   29 [chromium] › e2e\settings\authorization.spec.ts:220:7 › Authorization - Customers Routes › Catalog without customers permission cannot access customers (26ms)
+  x   30 [chromium] › e2e\settings\authorization.spec.ts:228:7 › Authorization - Customers Routes › Fulfillment without customers permission cannot access customers (28ms)
+  x   31 [chromium] › e2e\settings\authorization.spec.ts:236:7 › Authorization - Customers Routes › Owner can access customers (27ms)
+  x   32 [chromium] › e2e\settings\authorization.spec.ts:246:7 › Authorization - Analytics Routes › Manager with analytics permission can access analytics (35ms)
+  x   33 [chromium] › e2e\settings\authorization.spec.ts:254:7 › Authorization - Analytics Routes › Catalog without analytics permission cannot access analytics (30ms)
+  x   34 [chromium] › e2e\settings\authorization.spec.ts:262:7 › Authorization - Analytics Routes › Fulfillment without analytics permission cannot access analytics (26ms)
+  x   35 [chromium] › e2e\settings\authorization.spec.ts:270:7 › Authorization - Analytics Routes › Owner can access analytics (45ms)
+  x   36 [chromium] › e2e\settings\authorization.spec.ts:280:7 › Authorization - Settings Routes › Manager without settings permission cannot access business profile (42ms)
+  x   37 [chromium] › e2e\settings\authorization.spec.ts:288:7 › Authorization - Settings Routes › Catalog without settings permission cannot access settings (27ms)
+  x   38 [chromium] › e2e\settings\authorization.spec.ts:296:7 › Authorization - Settings Routes › Fulfillment without settings permission cannot access settings (47ms)
+  x   39 [chromium] › e2e\settings\authorization.spec.ts:304:7 › Authorization - Settings Routes › Owner can access settings (implicit settings permission) (33ms)
+  x   40 [chromium] › e2e\settings\authorization.spec.ts:312:7 › Authorization - Settings Routes › Owner can update settings (38ms)
+  x   41 [chromium] › e2e\settings\authorization.spec.ts:329:7 › Authorization - Shipping Routes › Fulfillment with fulfillment permission can create shipping zone (63ms)
+  x   42 [chromium] › e2e\settings\authorization.spec.ts:341:7 › Authorization - Shipping Routes › Orders staff with orders permission can create shipping zone (27ms)
+  x   43 [chromium] › e2e\settings\authorization.spec.ts:356:7 › Authorization - Shipping Routes › Catalog cannot create shipping zone (no orders/fulfillment) (28ms)
+  x   44 [chromium] › e2e\settings\authorization.spec.ts:368:7 › Authorization - Shipping Routes › Owner can create shipping zone (27ms)
+  x   45 [chromium] › e2e\settings\authorization.spec.ts:382:7 › Authorization - Inactive Staff Accounts › Inactive staff account cannot authenticate (28ms)
+  x   46 [chromium] › e2e\settings\authorization.spec.ts:396:7 › Authorization - Inactive Staff Accounts › Inactive staff account rejected on protected resource (24ms)
+  x   47 [chromium] › e2e\settings\authorization.spec.ts:405:7 › Authorization - Public Routes Remain Public › Order tracking is public (no auth required) (26ms)
+  x   48 [chromium] › e2e\settings\authorization.spec.ts:414:7 › Authorization - Public Routes Remain Public › Product storefront is public (no auth required for GET) (25ms)
+  x   49 [chromium] › e2e\settings\authorization.spec.ts:420:7 › Authorization - Public Routes Remain Public › Shipping zones list is public (no auth required for GET) (25ms)
+  x   50 [chromium] › e2e\settings\authorization.spec.ts:428:7 › Authorization - Permission Enforcement on Multiple Actions › Staff can only modify their permitted resources (25ms)
+  x   51 [chromium] › e2e\settings\authorization.spec.ts:442:7 › Authorization - Permission Enforcement on Multiple Actions › Fulfillment can only access orders and fulfillment resources (26ms)
+  x   52 [chromium] › e2e\settings\authorization.spec.ts:465:7 › Authorization - Permission Enforcement on Multiple Actions › Catalog can only access products and catalog resources (29ms)
+  x   53 [chromium] › e2e\settings\authorization.spec.ts:490:7 › Authorization - Edge Cases › Expired session token returns 401 (30ms)
+  x   54 [chromium] › e2e\settings\authorization.spec.ts:496:7 › Authorization - Edge Cases › Malformed request header is handled gracefully (29ms)
+  x   55 [chromium] › e2e\settings\authorization.spec.ts:506:7 › Authorization - Edge Cases › Missing Content-Type still authenticates (42ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   56 [chromium] › e2e\settings\import-export.spec.ts:23:7 › Configuration Import/Export › should export all settings as JSON with masked secrets (473ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   57 [chromium] › e2e\settings\import-export.spec.ts:53:7 › Configuration Import/Export › should validate business profile data on import (475ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   58 [chromium] › e2e\settings\import-export.spec.ts:77:7 › Configuration Import/Export › should validate store locations on import (394ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   59 [chromium] › e2e\settings\import-export.spec.ts:97:7 › Configuration Import/Export › should validate staff accounts on import (392ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   60 [chromium] › e2e\settings\import-export.spec.ts:121:7 › Configuration Import/Export › should reject unmasked secrets in import (408ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   61 [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully (492ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   62 [chromium] › e2e\settings\import-export.spec.ts:182:7 › Configuration Import/Export › should enforce authorization on export (438ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   63 [chromium] › e2e\settings\import-export.spec.ts:190:7 › Configuration Import/Export › should enforce authorization on import (376ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   64 [chromium] › e2e\settings\import-export.spec.ts:199:7 › Configuration Import/Export › should maintain round-trip property for non-secret settings (394ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   65 [chromium] › e2e\settings\import-export.spec.ts:234:7 › Configuration Import/Export › should handle empty configuration export (368ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   66 [chromium] › e2e\settings\import-export.spec.ts:247:7 › Configuration Import/Export › should create audit log on successful import (398ms)
+  x   67 [chromium] › e2e\settings\notifications.spec.ts:133:7 › Notification Settings API - Secret Masking › GET returns masked secrets with correct format (29ms)
+  x   68 [chromium] › e2e\settings\notifications.spec.ts:181:7 › Notification Settings API - Secret Masking › PUT updates and returns masked secrets (39ms)
+  x   69 [chromium] › e2e\settings\notifications.spec.ts:218:7 › Notification Settings API - Secret Masking › Short secrets are fully masked (74ms)
+  x   70 [chromium] › e2e\settings\notifications.spec.ts:244:7 › Notification Settings API - Secret Masking › Empty secrets return empty string (39ms)
+  x   71 [chromium] › e2e\settings\notifications.spec.ts:274:7 › Notification Settings API - Audit Trail Security › Audit log does not contain secret values (58ms)
+  x   72 [chromium] › e2e\settings\notifications.spec.ts:325:7 › Notification Settings API - Authorization › Unauthorized request returns 401 (26ms)
+  x   73 [chromium] › e2e\settings\notifications.spec.ts:346:7 › Notification Settings API - Authorization › Staff without settings permission returns 403 (31ms)
+  x   74 [chromium] › e2e\settings\notifications.spec.ts:358:7 › Notification Settings API - Authorization › Staff with settings permission can access (27ms)
+  x   75 [chromium] › e2e\settings\notifications.spec.ts:375:7 › Notification Settings API - Authorization › Owner role has implicit access (23ms)
+  x   76 [chromium] › e2e\settings\notifications.spec.ts:393:7 › Notification Settings API - Data Persistence › Settings persist across requests (27ms)
+  x   77 [chromium] › e2e\settings\notifications.spec.ts:430:7 › Notification Settings API - Data Persistence › Partial updates preserve other fields (27ms)
+  x   78 [chromium] › e2e\settings\notifications.spec.ts:469:7 › Notification Settings API - Boolean Field Handling › emailEnabled and pushEnabled work correctly (27ms)
+  x   79 [chromium] › e2e\settings\payment.spec.ts:127:7 › Payment Settings API - Secret Masking › GET returns masked secrets with correct format (30ms)
+  x   80 [chromium] › e2e\settings\payment.spec.ts:175:7 › Payment Settings API - Secret Masking › PUT updates and returns masked secrets (36ms)
+  x   81 [chromium] › e2e\settings\payment.spec.ts:218:7 › Payment Settings API - Secret Masking › Masking algorithm correctness - first 2 + bullets + last 4 for long secrets (36ms)
+  x   82 [chromium] › e2e\settings\payment.spec.ts:249:7 › Payment Settings API - Secret Masking › Short secrets are fully masked with 6 bullets (27ms)
+  x   83 [chromium] › e2e\settings\payment.spec.ts:282:7 › Payment Settings API - Secret Masking › Empty secrets return empty string (28ms)
+  x   84 [chromium] › e2e\settings\payment.spec.ts:308:7 › Payment Settings API - Secret Masking › Masking preserves format across multiple lengths (31ms)
+  x   85 [chromium] › e2e\settings\payment.spec.ts:337:7 › Payment Settings API - Audit Trail Security › Audit log does not contain secret values (27ms)
+  x   86 [chromium] › e2e\settings\payment.spec.ts:395:7 › Payment Settings API - Audit Trail Security › Audit log filters sensitive field patterns (27ms)
+  x   87 [chromium] › e2e\settings\payment.spec.ts:446:7 › Payment Settings API - Authorization › Unauthorized request returns 401 (25ms)
+  x   88 [chromium] › e2e\settings\payment.spec.ts:461:7 › Payment Settings API - Authorization › Staff without settings permission returns 403 (26ms)
+  x   89 [chromium] › e2e\settings\payment.spec.ts:478:7 › Payment Settings API - Authorization › Catalog staff without settings permission returns 403 (24ms)
+  x   90 [chromium] › e2e\settings\payment.spec.ts:495:7 › Payment Settings API - Authorization › Owner with settings permission can access payment settings (26ms)
+  x   91 [chromium] › e2e\settings\payment.spec.ts:514:7 › Payment Settings API - Authorization › Invalid token returns 401 (24ms)
+  x   92 [chromium] › e2e\settings\payment.spec.ts:525:7 › Payment Settings API - Error Handling › No secrets leak through error paths (33ms)
+  x   93 [chromium] › e2e\settings\payment.spec.ts:565:7 › Payment Settings API - Error Handling › Validation errors do not expose secrets (25ms)
+  x   94 [chromium] › e2e\settings\payment.spec.ts:592:7 › Payment Settings API - Data Persistence › Settings persist across requests (28ms)
+  x   95 [chromium] › e2e\settings\payment.spec.ts:621:7 › Payment Settings API - Data Persistence › Partial updates preserve existing values (25ms)
+  x   96 [chromium] › e2e\settings\payment.spec.ts:656:7 › Payment Settings API - Data Persistence › Singleton pattern enforced - only one payment settings record (48ms)
+  x   97 [chromium] › e2e\settings\security.spec.ts:103:7 › Sessions & Security - Password Change › P11-T045-01: Owner can change password successfully (3.0m)

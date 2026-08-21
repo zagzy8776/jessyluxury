@@ -1,0 +1,745 @@
+ ⚠ Invalid next.config.mjs options detected: 
+ ⚠     Unrecognized key(s) in object: 'watchOptions'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+The user aborted a request.
+
+Retrying 1/3...
+The user aborted a request.
+
+Retrying 1/3...
+The user aborted a request.
+
+Retrying 1/3...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js', but to 'e:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js', but to 'e:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js', but to 'e:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected E:\jessy-luxury-website\jessy-luxury\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\handle-externals.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+Error creating transactional order: Error: You have reached the usage limit for this coupon code
+    at POST._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/route.ts:427:27)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async POST (webpack-internal:///(rsc)/./app/api/orders/route.ts:277:23)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)
+Error creating transactional order: Error: Coupon limit has been reached by another user
+    at POST._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/route.ts:436:27)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async POST (webpack-internal:///(rsc)/./app/api/orders/route.ts:277:23)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T16:21:17.972Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T16:21:20.086Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T16:21:23.444Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating shipping zone: PrismaClientKnownRequestError: 
+Invalid `prisma.shippingZone.create()` invocation:
+
+
+Unique constraint failed on the fields: (`name`)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7753)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/shipping/route.ts:34:22)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'P2002',
+  clientVersion: '5.20.0',
+  meta: { modelName: 'ShippingZone', target: [ 'name' ] }
+}
+Error creating shipping zone: PrismaClientKnownRequestError: 
+Invalid `prisma.shippingZone.create()` invocation:
+
+
+Unique constraint failed on the fields: (`name`)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7753)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/shipping/route.ts:34:22)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'P2002',
+  clientVersion: '5.20.0',
+  meta: { modelName: 'ShippingZone', target: [ 'name' ] }
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T16:22:26.307Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+[PAYMENT_SETTINGS] PUT error: SyntaxError: Unexpected token 'o', "not valid json {" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:6433:19)
+    at successSteps (node:internal/deps/undici/undici:6414:27)
+    at readAllBytes (node:internal/deps/undici/undici:5380:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Error updating order transactionally: Error: Cannot newly assign inactive shipping zone to this order
+    at PUT._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/[id]/route.ts:145:31)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async PUT (webpack-internal:///(rsc)/./app/api/orders/[id]/route.ts:122:30)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1576:40)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)
+Error creating transactional order: Error: You have reached the usage limit for this coupon code
+    at POST._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/route.ts:427:27)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async POST (webpack-internal:///(rsc)/./app/api/orders/route.ts:277:23)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)
+Error creating transactional order: Error: Coupon limit has been reached by another user
+    at POST._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/route.ts:436:27)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async POST (webpack-internal:///(rsc)/./app/api/orders/route.ts:277:23)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T17:25:33.282Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T17:25:34.932Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T17:25:38.203Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+Error creating shipping zone: PrismaClientKnownRequestError: 
+Invalid `prisma.shippingZone.create()` invocation:
+
+
+Unique constraint failed on the fields: (`name`)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7753)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/shipping/route.ts:34:22)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'P2002',
+  clientVersion: '5.20.0',
+  meta: { modelName: 'ShippingZone', target: [ 'name' ] }
+}
+Error creating shipping zone: PrismaClientKnownRequestError: 
+Invalid `prisma.shippingZone.create()` invocation:
+
+
+Unique constraint failed on the fields: (`name`)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7753)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/shipping/route.ts:34:22)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'P2002',
+  clientVersion: '5.20.0',
+  meta: { modelName: 'ShippingZone', target: [ 'name' ] }
+}
+Error creating product: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation:
+
+{
+  data: {
+    name: "Test",
+    brand: "Test",
+    price: 100,
+    salePrice: null,
+    costPrice: 0,
+    badge: undefined,
+    categoryId: 1,
+    volume: "100ml EDP",
+    topNotes: undefined,
+    middleNotes: undefined,
+    baseNotes: undefined,
+    description: undefined,
+    tone: "amber",
+    stock: 10,
+    featured: false,
+    gift: false,
+    images: [],
+    updatedAt: new Date("2026-08-21T17:26:41.875Z"),
++   notes: String
+  }
+}
+
+Argument `notes` is missing.
+    at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+    at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+    at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+    at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+    at async l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async POST (webpack-internal:///(rsc)/./app/api/products/route.ts:101:25)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  clientVersion: '5.20.0'
+}
+[PAYMENT_SETTINGS] PUT error: SyntaxError: Unexpected token 'o', "not valid json {" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parseJSONFromBytes (node:internal/deps/undici/undici:6433:19)
+    at successSteps (node:internal/deps/undici/undici:6414:27)
+    at readAllBytes (node:internal/deps/undici/undici:5380:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Error updating order transactionally: Error: Cannot newly assign inactive shipping zone to this order
+    at PUT._lib_prisma__WEBPACK_IMPORTED_MODULE_1__.prisma.$transaction.timeout (webpack-internal:///(rsc)/./app/api/orders/[id]/route.ts:145:31)
+    at async Proxy._transactionWithCallback (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:8000)
+    at async PUT (webpack-internal:///(rsc)/./app/api/orders/[id]/route.ts:122:30)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1576:40)
+    at async DevServer.renderToResponseWithComponentsImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\base-server.js:818:17)
+    at async e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (e:\jessy-luxury-website\jessy-luxury\node_modules\next\dist\server\lib\start-server.js:141:13)

@@ -59,213 +59,277 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
-      {/* Page Title & Action Buttons */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-            Catalog & Inventory Management
-          </h1>
-          <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Inventory</p>
+          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">Catalog & Stock</h1>
+          <p className="mt-1 text-xs font-medium text-[var(--admin-text-secondary)]">
             {products.length} total products · Retail and inventory valuation hub
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowImportModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] transition hover:border-amber-500 hover:text-amber-500 shadow-sm"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-4 py-2.5 text-xs font-bold transition hover:border-emerald-500 hover:text-emerald-600"
           >
-            <FileSpreadsheet size={16} className="text-emerald-500" /> Import Products
+            <FileSpreadsheet size={15} className="text-emerald-500" /> Import CSV
           </button>
           <Link
             href="/store-portal-jl/dashboard/products/add"
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)]"
           >
-            <Plus size={16} /> ADD NEW PRODUCT
+            <Plus size={15} /> Add Product
           </Link>
         </div>
       </div>
 
-      {/* Metric Blocks */}
-      <div className="grid gap-5 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
+      {/* Metric blocks */}
+      <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="admin-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Total Retail Value</span>
-            <span className="rounded-xl bg-amber-500/10 p-2.5 text-amber-500 border border-amber-500/20">
-              <TrendingUp size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Retail Value</span>
+            <span className="rounded-lg bg-[var(--accent-soft)] p-2 text-[var(--accent)]">
+              <TrendingUp size={16} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          <p className="mt-2.5 font-display text-xl font-bold tabular-nums sm:text-2xl">
             ₦{totalRetailValue.toLocaleString('en-NG')}
           </p>
-          <p className="mt-1 text-xs text-[var(--text-secondary)] font-medium">Gross sellable stock value</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[var(--admin-text-muted)]">Gross sellable stock value</p>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
+        <div className="admin-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Total Cost Value</span>
-            <span className="rounded-xl bg-emerald-500/10 p-2.5 text-emerald-500 border border-emerald-500/20">
-              <DollarSign size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Cost Value</span>
+            <span className="rounded-lg bg-emerald-500/10 p-2 text-emerald-600">
+              <DollarSign size={16} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          <p className="mt-2.5 font-display text-xl font-bold tabular-nums sm:text-2xl">
             ₦{totalInventoryValue.toLocaleString('en-NG')}
           </p>
-          <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Total cost price invested</p>
+          <p className="mt-0.5 text-[11px] font-medium text-emerald-600">Total cost price invested</p>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm transition hover:border-[var(--border-hover)]">
+        <div className="admin-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Out of Stock Count</span>
-            <span className="rounded-xl bg-red-500/10 p-2.5 text-red-500 border border-red-500/20">
-              <AlertCircle size={20} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Out of Stock</span>
+            <span className={`rounded-lg p-2 ${outOfStockCount > 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-600'}`}>
+              <AlertCircle size={16} />
             </span>
           </div>
-          <p className="mt-3 font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">{outOfStockCount}</p>
-          <p className="mt-1 text-xs text-red-500 font-semibold">Items requiring urgent restock</p>
+          <p className="mt-2.5 font-display text-xl font-bold tabular-nums sm:text-2xl">{outOfStockCount}</p>
+          <p className={`mt-0.5 text-[11px] font-medium ${outOfStockCount > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+            {outOfStockCount > 0 ? 'Items requiring urgent restock' : 'All stock levels healthy'}
+          </p>
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search size={16} className="absolute left-3.5 top-3 text-[var(--text-muted)]" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, brand, fragrance notes…"
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] py-2.5 pl-10 pr-4 text-xs font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 shadow-sm"
-          />
-        </div>
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)]" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name, brand, fragrance notes…"
+          className="admin-input pl-9 font-medium"
+        />
       </div>
 
-      {/* Products Table */}
+      {/* Table */}
       {loading ? (
-        <div className="py-20 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading catalog items…</div>
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="skeleton h-16 w-full" />
+          ))}
+        </div>
       ) : products.length === 0 ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] py-20 text-center text-xs font-medium text-[var(--text-muted)]">
-          No products found matching your filter.
+        <div className="admin-card py-16 text-center">
+          <Package size={30} className="mx-auto text-[var(--admin-text-muted)]" />
+          <p className="mt-3 font-display text-lg font-bold">No products found</p>
+          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">Try a different search or add your first product.</p>
+          <Link href="/store-portal-jl/dashboard/products/add" className="btn-primary mt-4 !rounded-lg !px-5 !py-2.5 !text-[11px]">
+            <Plus size={14} /> Add product
+          </Link>
         </div>
       ) : (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden shadow-sm">
-          <table className="w-full text-left text-xs text-[var(--text-primary)]">
-            <thead className="border-b border-[var(--border)] bg-[var(--table-header-bg)] uppercase tracking-wider text-[var(--text-secondary)] text-[11px] font-bold">
-              <tr>
-                <th className="py-3.5 px-4">Photo</th>
-                <th className="py-3.5 px-4">Product Details</th>
-                <th className="py-3.5 px-4 hidden md:table-cell">Category</th>
-                <th className="py-3.5 px-4">Retail Price (₦)</th>
-                <th className="py-3.5 px-4 hidden sm:table-cell">Cost Price (₦)</th>
-                <th className="py-3.5 px-4">Stock</th>
-                <th className="py-3.5 px-4 hidden lg:table-cell">Badge</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)]">
-              {products.map((p) => {
-                const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null
-                const cost = p.costPrice || 0
-                const margin = p.price ? Math.round(((p.price - cost) / p.price) * 100) : 0
-
-                return (
-                  <tr key={p.id} className="hover:bg-[var(--table-row-hover)] transition">
-                    <td className="py-3 px-4">
-                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-[var(--bg-secondary)] flex items-center justify-center shrink-0 border border-[var(--border)]">
-                        {img ? (
-                          <img src={img} alt={p.name} className="h-full w-full object-cover" />
-                        ) : (
-                          <ImageIcon size={18} className="text-[var(--text-muted)]" />
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="font-bold text-[var(--text-primary)]">{p.name}</p>
-                      <p className="text-[11px] text-[var(--text-muted)] font-mono">{p.brand} · {p.volume}</p>
-                    </td>
-                    <td className="py-3 px-4 hidden md:table-cell text-[var(--text-secondary)] font-medium">
-                      {p.category?.name || 'Uncategorized'}
-                    </td>
-                    <td className="py-3 px-4 font-mono">
-                      <p className="font-bold text-amber-500">₦{p.price?.toLocaleString('en-NG')}</p>
-                      {p.salePrice && (
-                        <p className="text-[10px] text-emerald-500 font-semibold">Sale: ₦{p.salePrice?.toLocaleString('en-NG')}</p>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 hidden sm:table-cell font-mono text-[var(--text-secondary)]">
-                      ₦{cost.toLocaleString('en-NG')}
-                      {margin > 0 && (
-                        <span className="ml-1 text-[10px] text-emerald-500 font-bold">({margin}% margin)</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`font-mono font-bold px-2.5 py-1 rounded-md text-[11px] ${
-                        p.stock === 0
-                          ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
-                          : p.stock <= 5
-                          ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                          : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)]'
-                      }`}>
-                        {p.stock === 0 ? 'Out of Stock' : `${p.stock} Qty`}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 hidden lg:table-cell">
-                      {p.badge ? (
-                        <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-500 border border-amber-500/30">
-                          {p.badge}
-                        </span>
+        <div className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] shadow-sm">
+          {/* Mobile cards */}
+          <div className="space-y-3 p-3 md:hidden">
+            {products.map((p) => {
+              const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null
+              return (
+                <div key={p.id} className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)]">
+                      {img ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={img} alt={p.name} className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-[var(--text-muted)]">—</span>
+                        <span className="flex h-full w-full items-center justify-center text-[var(--admin-text-muted)]">
+                          <ImageIcon size={18} />
+                        </span>
                       )}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/store-portal-jl/dashboard/products/add?edit=${p.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 hover:text-amber-500 transition"
-                        >
-                          <Edit2 size={13} /> Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(p.id)}
-                          className="inline-flex items-center gap-1 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition"
-                        >
-                          <Trash2 size={13} /> Del
-                        </button>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-bold">{p.name}</p>
+                      <p className="font-mono text-[10px] text-[var(--admin-text-muted)]">{p.brand} · {p.volume}</p>
+                      <p className="mt-1 font-mono text-xs font-bold text-[var(--accent)]">₦{p.price?.toLocaleString('en-NG')}</p>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <span className={`rounded px-2 py-0.5 text-[9px] font-bold ${
+                          p.stock === 0 ? 'bg-red-500/10 text-red-600' : p.stock <= 5 ? 'bg-[var(--champagne-soft)] text-[#7a5c22]' : 'bg-emerald-500/10 text-emerald-600'
+                        }`}>
+                          {p.stock === 0 ? 'OUT OF STOCK' : `${p.stock} in stock`}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex gap-2 border-t border-[var(--admin-border)] pt-2.5">
+                    <Link
+                      href={`/store-portal-jl/dashboard/products/add?edit=${p.id}`}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-3 py-2 text-[11px] font-bold transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                    >
+                      <Edit2 size={12} /> Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="flex items-center justify-center gap-1 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-[11px] font-bold text-red-500 transition hover:bg-red-500 hover:text-white"
+                    >
+                      <Trash2 size={12} /> Delete
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-[var(--admin-border)] bg-[var(--admin-table-header)] text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">
+                <tr>
+                  <th className="px-4 py-3">Product</th>
+                  <th className="hidden px-4 py-3 lg:table-cell">Category</th>
+                  <th className="px-4 py-3">Retail Price</th>
+                  <th className="hidden px-4 py-3 sm:table-cell">Cost / Margin</th>
+                  <th className="px-4 py-3">Stock</th>
+                  <th className="hidden px-4 py-3 lg:table-cell">Badge</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--admin-border)]">
+                {products.map((p) => {
+                  const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null
+                  const cost = p.costPrice || 0
+                  const margin = p.price ? Math.round(((p.price - cost) / p.price) * 100) : 0
+
+                  return (
+                    <tr key={p.id} className="transition hover:bg-[var(--admin-table-row-hover)]">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)]">
+                            {img ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={img} alt={p.name} className="h-full w-full object-cover" />
+                            ) : (
+                              <span className="flex h-full w-full items-center justify-center text-[var(--admin-text-muted)]">
+                                <ImageIcon size={16} />
+                              </span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate font-bold">{p.name}</p>
+                            <p className="font-mono text-[10px] text-[var(--admin-text-muted)]">{p.brand} · {p.volume}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="hidden px-4 py-3 font-medium text-[var(--admin-text-secondary)] lg:table-cell">
+                        {p.category?.name || 'Uncategorized'}
+                      </td>
+                      <td className="px-4 py-3 font-mono">
+                        <p className="font-bold text-[var(--accent)]">₦{p.price?.toLocaleString('en-NG')}</p>
+                        {p.salePrice && (
+                          <p className="text-[10px] font-semibold text-emerald-600">Sale: ₦{p.salePrice?.toLocaleString('en-NG')}</p>
+                        )}
+                      </td>
+                      <td className="hidden px-4 py-3 font-mono text-[var(--admin-text-secondary)] sm:table-cell">
+                        ₦{cost.toLocaleString('en-NG')}
+                        {margin > 0 && (
+                          <span className="ml-1 text-[10px] font-bold text-emerald-600">({margin}%)</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-md px-2.5 py-1 font-mono text-[11px] font-bold ${
+                          p.stock === 0
+                            ? 'border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400'
+                            : p.stock <= 5
+                            ? 'border border-[var(--champagne)]/40 bg-[var(--champagne-soft)] text-[#7a5c22]'
+                            : 'border border-[var(--admin-border)] bg-[var(--admin-bg)]'
+                        }`}>
+                          {p.stock === 0 ? 'Out of Stock' : `${p.stock} Qty`}
+                        </span>
+                      </td>
+                      <td className="hidden px-4 py-3 lg:table-cell">
+                        {p.badge ? (
+                          <span className="rounded-full border border-[var(--champagne)]/40 bg-[var(--champagne-soft)] px-2.5 py-0.5 text-[10px] font-bold text-[#7a5c22]">
+                            {p.badge}
+                          </span>
+                        ) : (
+                          <span className="text-[var(--admin-text-muted)]">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/store-portal-jl/dashboard/products/add?edit=${p.id}`}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] px-3 py-1.5 text-[11px] font-bold transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                          >
+                            <Edit2 size={12} /> Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(p.id)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-1.5 text-[11px] font-bold text-red-500 transition hover:bg-red-500 hover:text-white"
+                          >
+                            <Trash2 size={12} /> Del
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* CSV Import Modal */}
       {showImportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-              <h3 className="font-display text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <FileSpreadsheet className="text-emerald-500" size={20} /> Import Products (CSV)
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm">
+          <div className="w-full max-w-md space-y-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--admin-border)] pb-4">
+              <h3 className="flex items-center gap-2 font-display text-lg font-bold">
+                <FileSpreadsheet className="text-emerald-500" size={19} /> Import Products (CSV)
               </h3>
-              <button onClick={() => setShowImportModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                <X size={20} />
+              <button onClick={() => setShowImportModal(false)} className="text-[var(--admin-text-muted)] transition hover:text-[var(--admin-text-primary)]" aria-label="Close import dialog">
+                <X size={19} />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs text-[var(--text-secondary)] font-medium">
+            <div className="space-y-3 text-xs font-medium text-[var(--admin-text-secondary)]">
               <p>Upload your Bumpa or Shopify CSV catalog file to import products in bulk.</p>
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-primary)] p-8 text-center cursor-pointer hover:border-amber-500 transition"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--admin-border)] bg-[var(--admin-bg)] p-8 text-center transition hover:border-[var(--accent)]"
               >
-                <Upload size={28} className="text-amber-500 mb-2" />
-                <p className="font-bold text-[var(--text-primary)]">Click or drag CSV file here</p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1">Supports Bumpa CSV, Shopify CSV, or custom format</p>
+                <Upload size={26} className="mb-2 text-[var(--accent)]" />
+                <p className="font-bold text-[var(--admin-text-primary)]">Click or drag CSV file here</p>
+                <p className="mt-1 text-[10px] text-[var(--admin-text-muted)]">Supports Bumpa CSV, Shopify CSV, or custom format</p>
               </div>
               <input
                 ref={fileInputRef}
@@ -279,11 +343,11 @@ export default function AdminProductsPage() {
               />
             </div>
 
-            <div className="flex justify-end gap-2 border-t border-[var(--border)] pt-4">
+            <div className="flex justify-end gap-2 border-t border-[var(--admin-border)] pt-4">
               <button
                 type="button"
                 onClick={() => setShowImportModal(false)}
-                className="rounded-xl border border-[var(--border)] px-4 py-2 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="rounded-lg border border-[var(--admin-border)] px-4 py-2 text-xs font-bold text-[var(--admin-text-secondary)] transition hover:text-[var(--admin-text-primary)]"
               >
                 Cancel
               </button>

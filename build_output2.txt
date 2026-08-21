@@ -1,0 +1,52 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GΓ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 962ms
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 302ms
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/notifications/route.ts:35:9
+Type error: Object literal may only specify known properties, and 'deliveries' does not exist in type 'NotificationInclude<DefaultArgs>'.
+
+  33 |       where,
+  34 |       include: {
+> 35 |         deliveries: {
+     |         ^
+  36 |           select: {
+  37 |             channel: true,
+  38 |             provider: true,
+Next.js build worker exited with code: 1 and signal: null

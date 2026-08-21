@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 import {
   type AnalyticsRange,
   type AnalyticsPayload,
@@ -26,7 +26,7 @@ async function getSalesMetrics(start: Date | null, end: Date, range: AnalyticsRa
       total: true,
       discountAmount: true,
       createdAt: true,
-      items: {
+      OrderItem: {
         select: {
           price: true,
           unitCost: true,
@@ -45,7 +45,7 @@ async function getSalesMetrics(start: Date | null, end: Date, range: AnalyticsRa
   let grossProductProfit: number | null = null
   let profitKnownCount = 0
   for (const o of orders) {
-    for (const item of (o as any).items) {
+    for (const item of (o as any).OrderItem) {
       if (item.unitCost !== null && item.unitCost !== undefined) {
         if (grossProductProfit === null) grossProductProfit = 0
         grossProductProfit += (item.price - item.unitCost) * item.quantity
@@ -103,10 +103,10 @@ async function getProductMetrics(start: Date | null, end: Date) {
   // Aggregate item-level data for completed orders in the period
   const items = await prisma.orderItem.findMany({
     where: {
-      order: { ...completedOrderWhere, createdAt },
+      Order: { ...completedOrderWhere, createdAt },
     },
     include: {
-      product: { select: { id: true, name: true, brand: true, category: { select: { name: true } }, stock: true } },
+      Product: { select: { id: true, name: true, brand: true, Category: { select: { name: true } }, stock: true } },
     },
   })
 
@@ -118,9 +118,9 @@ async function getProductMetrics(start: Date | null, end: Date) {
 
   for (const item of items) {
     const pid = item.productId
-    const name = item.productNameSnapshot ?? item.product?.name ?? `Product #${pid}`
-    const brand = item.brandSnapshot ?? item.product?.brand ?? 'Unknown'
-    const category = item.product?.category?.name ?? 'Uncategorised'
+    const name = item.productNameSnapshot ?? item.Product?.name ?? `Product #${pid}`
+    const brand = item.brandSnapshot ?? item.Product?.brand ?? 'Unknown'
+    const category = item.Product?.Category?.name ?? 'Uncategorised'
     if (!productMap[pid]) {
       productMap[pid] = { productId: pid, name, brand, category, unitsSold: 0, revenue: 0, grossProfit: null, profitKnown: false }
     }
@@ -202,7 +202,7 @@ async function getCustomerMetrics(start: Date | null, end: Date) {
     select: { customerId: true, total: true, createdAt: true },
   })
 
-    const customerIdsInRange = Array.from(new Set(ordersInRange.map((o) => o.customerId!)))
+  const customerIdsInRange = Array.from(new Set(ordersInRange.map((o) => o.customerId!)))
 
   // New customers: first completed order falls within range
   let newCustomers = 0
@@ -341,10 +341,104 @@ async function getMarketingMetrics(start: Date | null, end: Date) {
   }
 }
 
+// ─── Wholesale Metrics ─────────────────────────────────────────────────────────
+
+async function getWholesaleMetrics(start: Date | null, end: Date) {
+  const createdAt = dateFilter(start, end)
+
+  // Get all completed orders in the period with wholesale snapshots
+  const orders = await prisma.order.findMany({
+    where: { ...completedOrderWhere, createdAt },
+    select: {
+      id: true,
+      total: true,
+      isWholesaleOrderSnapshot: true,
+      OrderItem: {
+        select: {
+          productId: true,
+          price: true,
+          quantity: true,
+          unitCost: true,
+          productNameSnapshot: true,
+          brandSnapshot: true,
+        },
+      },
+    },
+  })
+
+  // Separate wholesale vs retail orders
+  const wholesaleOrders = orders.filter((o) => o.isWholesaleOrderSnapshot === true)
+  const retailOrders = orders.filter((o) => o.isWholesaleOrderSnapshot !== true)
+
+  const wholesaleRevenue = wholesaleOrders.reduce((sum, order) => sum + order.total, 0)
+  const retailRevenue = retailOrders.reduce((sum, order) => sum + order.total, 0)
+  const totalRevenue = wholesaleRevenue + retailRevenue
+
+  // Calculate wholesale units sold and top products
+  const wholesaleProductMap: Record<number, {
+    productId: number; name: string; brand: string
+    unitsSold: number; revenue: number; grossProfit: number | null; profitKnown: boolean
+  }> = {}
+
+  let wholesaleUnitsSold = 0
+
+  for (const order of wholesaleOrders) {
+    for (const item of order.OrderItem) {
+      const pid = item.productId
+      const name = item.productNameSnapshot ?? `Product #${pid}`
+      const brand = item.brandSnapshot ?? 'Unknown'
+
+      if (!wholesaleProductMap[pid]) {
+        wholesaleProductMap[pid] = {
+          productId: pid, name, brand,
+          unitsSold: 0, revenue: 0, grossProfit: null, profitKnown: false
+        }
+      }
+
+      wholesaleProductMap[pid].unitsSold += item.quantity
+      wholesaleProductMap[pid].revenue += item.price * item.quantity
+      wholesaleUnitsSold += item.quantity
+
+      if (item.unitCost !== null && item.unitCost !== undefined) {
+        if (wholesaleProductMap[pid].grossProfit === null) {
+          wholesaleProductMap[pid].grossProfit = 0
+        }
+        wholesaleProductMap[pid].grossProfit! += (item.price - item.unitCost) * item.quantity
+        wholesaleProductMap[pid].profitKnown = true
+      }
+    }
+  }
+
+  const topWholesaleProducts = Object.values(wholesaleProductMap)
+    .sort((a, b) => b.unitsSold - a.unitsSold)
+    .slice(0, 20)
+    .map(({ productId, name, brand, unitsSold, revenue, grossProfit }) => ({
+      productId, name, brand, unitsSold, revenue, grossProfit,
+    }))
+
+  return {
+    wholesaleOrders: wholesaleOrders.length,
+    wholesaleRevenue,
+    wholesaleUnitsSold,
+    averageWholesaleOrderValue: wholesaleOrders.length > 0 ? Math.round(wholesaleRevenue / wholesaleOrders.length) : 0,
+    topWholesaleProducts,
+    wholesaleVsRetailRevenue: {
+      wholesaleRevenue,
+      retailRevenue,
+      wholesaleShare: totalRevenue > 0 ? Math.round((wholesaleRevenue / totalRevenue) * 100) : 0,
+    },
+    wholesaleVsRetailOrderCount: {
+      wholesaleOrders: wholesaleOrders.length,
+      retailOrders: retailOrders.length,
+      wholesaleShare: orders.length > 0 ? Math.round((wholesaleOrders.length / orders.length) * 100) : 0,
+    },
+  }
+}
+
 // ─── Route Handler ────────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'analytics')
   if (authErr) return authErr
 
   const { searchParams } = new URL(request.url)
@@ -361,12 +455,13 @@ export async function GET(request: Request) {
     // Warm up Neon connection before heavy aggregations
     await prisma.$queryRaw`SELECT 1`
 
-    const [sales, products, customers, channels, marketing] = await Promise.all([
+    const [sales, products, customers, channels, marketing, wholesale] = await Promise.all([
       getSalesMetrics(start, end, range),
       getProductMetrics(start, end),
       getCustomerMetrics(start, end),
       getChannelMetrics(start, end),
       getMarketingMetrics(start, end),
+      getWholesaleMetrics(start, end),
     ])
 
     const payload: AnalyticsPayload = {
@@ -377,6 +472,7 @@ export async function GET(request: Request) {
       customers,
       channels,
       marketing,
+      wholesale,
     }
 
     return NextResponse.json(payload)

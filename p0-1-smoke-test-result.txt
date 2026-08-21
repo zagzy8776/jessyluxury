@@ -1,0 +1,58 @@
+
+≡ƒöº [Global Setup] Starting test account provisioning...
+
+   Creating/updating owner@jessy.test (Owner)...
+   Creating/updating manager@jessy.test (Manager)...
+   Creating/updating fulfillment@jessy.test (Fulfillment)...
+   Creating/updating catalog@jessy.test (Catalog)...
+   Creating/updating inactive@jessy.test (Manager)...
+
+Γ£à [Global Setup] All test accounts provisioned successfully
+
+Γ£à [Global Setup] Verified 5 test accounts exist
+
+
+Running 6 tests using 1 worker
+
+Γ£à owner@jessy.test authenticated successfully
+  ok 1 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:44:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ owner@jessy.test can authenticate (11.2s)
+Γ£à manager@jessy.test authenticated successfully
+  ok 2 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:51:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ manager@jessy.test can authenticate (910ms)
+Γ£à fulfillment@jessy.test authenticated successfully
+  ok 3 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:58:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ fulfillment@jessy.test can authenticate (1.5s)
+Γ£à catalog@jessy.test authenticated successfully
+  ok 4 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:65:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ catalog@jessy.test can authenticate (889ms)
+  x  5 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:72:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ inactive@jessy.test CANNOT authenticate (negative test) (851ms)
+Γ£à All test accounts have correct properties
+  ok 6 [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:79:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ All test accounts have expected properties (19ms)
+
+
+  1) [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:72:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ inactive@jessy.test CANNOT authenticate (negative test) 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 401
+    Received: 403
+
+      73 |     const result = await authenticate(TEST_ACCOUNTS.inactive.email, TEST_ACCOUNTS.inactive.password)
+      74 |     expect(result.success, 'inactive@jessy.test should NOT be able to authenticate').toBe(false)
+    > 75 |     expect(result.status).toBe(401)
+         |                           ^
+      76 |     console.log(`Γ£à inactive@jessy.test correctly rejected (401)`)
+      77 |   })
+      78 |
+        at E:\jessy-luxury-website\jessy-luxury\e2e\000-smoke-test-accounts.spec.ts:75:27
+
+    Error Context: test-results\000-smoke-test-accounts-≡ƒöÑ-a21e4-authenticate-negative-test--chromium\error-context.md
+
+    attachment #2: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\000-smoke-test-accounts-≡ƒöÑ-a21e4-authenticate-negative-test--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\000-smoke-test-accounts-≡ƒöÑ-a21e4-authenticate-negative-test--chromium\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  1 failed
+    [chromium] ΓÇ║ e2e\000-smoke-test-accounts.spec.ts:72:7 ΓÇ║ ≡ƒöÑ CRITICAL: Test Account Provisioning Smoke Test ΓÇ║ inactive@jessy.test CANNOT authenticate (negative test) 
+  5 passed (27.5s)

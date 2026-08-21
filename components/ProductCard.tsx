@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
+import { Heart, ShoppingBag, Star } from 'lucide-react'
 import { useCart } from './CartProvider'
 import Bottle from './Bottle'
 import type { Product } from '@/lib/products'
@@ -18,101 +18,152 @@ function getFirstImage(p: any): string | null {
   return null
 }
 
+function getRating(p: any): { avg: number; count: number } | null {
+  const reviews = Array.isArray(p.reviews) ? p.reviews : []
+  if (reviews.length === 0) return null
+  const avg = reviews.reduce((s: number, r: any) => s + (r.rating || 0), 0) / reviews.length
+  return { avg: Math.round(avg * 10) / 10, count: reviews.length }
+}
+
 export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd?: boolean }) {
   const { add, wishlist, toggleWish, setDrawer } = useCart()
   const wished = wishlist.includes(p.id)
-  const price = p.salePrice ?? p.price
+  const hasSale = p.salePrice != null && p.salePrice < p.price
+  const price = (p as any).displayPrice ?? p.salePrice ?? p.price
+  const save = hasSale ? p.price - (p.salePrice as number) : 0
   const imageUrl = getFirstImage(p as any)
-
-  const badgeColor =
-    p.badge === 'SALE'
-      ? 'bg-red-600 text-white'
-      : p.badge === 'BEST'
-      ? 'bg-amber-500 text-stone-950'
-      : p.badge === 'NEW'
-      ? 'bg-green-600 text-white'
-      : 'bg-amber-100 text-stone-900 border border-amber-300'
-
+  const rating = getRating(p)
   const outOfStock = (p as any).stock === 0
 
+  const badge =
+    p.badge === 'SALE'
+      ? { label: 'SALE', cls: 'bg-[#b3372f] text-white' }
+      : p.badge === 'BEST'
+      ? { label: 'BEST SELLER', cls: 'bg-[var(--champagne)] text-[#241a08]' }
+      : p.badge === 'NEW'
+      ? { label: 'NEW', cls: 'bg-[var(--accent)] text-white' }
+      : p.badge
+      ? { label: p.badge, cls: 'bg-[var(--champagne-soft)] text-[#7a5c22] border border-[var(--champagne)]/40' }
+      : null
+
   return (
-    <article className="group">
-      <div className="relative overflow-hidden rounded-2xl luxury-card">
-        <Link
-          href={`/shop/${p.id}`}
-          className="relative flex aspect-[4/5] items-center justify-center bg-[var(--bg-secondary)] cursor-pointer block"
-        >
-          <div className="grain absolute inset-0 opacity-30" />
+    <article className="group flex h-full flex-col">
+      <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)] shadow-card transition duration-300 group-hover:-translate-y-1 group-hover:shadow-card-hover">
+        <Link href={`/shop/${p.id}`} className="relative block aspect-[4/5] cursor-pointer" aria-label={p.name}>
           {p.badge && (
             <span
-              className={`absolute left-3 top-3 z-10 rounded-full px-2.5 py-1 text-[9px] font-bold tracking-[0.18em] ${badgeColor}`}
+              className={`absolute left-3 top-3 z-10 rounded-full px-2.5 py-1 text-[9px] font-bold tracking-[0.16em] ${badge!.cls}`}
             >
-              {p.badge}
+              {badge!.label}
             </span>
           )}
-          {outOfStock && (
-            <span className="absolute right-3 bottom-3 z-10 rounded-full bg-[var(--card-bg)] px-2.5 py-1 text-[9px] font-bold tracking-wider text-red-600 border border-red-200 shadow-sm">
-              OUT OF STOCK
-            </span>
-          )}
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              toggleWish(p.id)
-            }}
-            aria-label="Wishlist"
-            className="absolute right-3 top-3 z-10 rounded-full bg-white border border-stone-200 p-2 shadow-xs transition hover:scale-110"
-          >
-            <Heart size={15} className={wished ? 'fill-amber-500 text-amber-500' : 'text-stone-600'} />
-          </button>
 
           {imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imageUrl}
               alt={p.name}
-              className="h-full w-full object-cover rounded-xl"
+              className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
               loading="lazy"
             />
           ) : (
-            <div className="scale-90 transition duration-700 group-hover:scale-100">
-              <Bottle tone={p.tone} />
-            </div>
+            <span className="flex h-full w-full items-center justify-center">
+              <span className="block scale-90 transition duration-700 group-hover:scale-100">
+                <Bottle tone={p.tone} />
+              </span>
+            </span>
+          )}
+
+          {outOfStock && (
+            <span className="absolute inset-x-0 bottom-0 z-10 bg-stone-950/70 py-2 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+              Sold out
+            </span>
           )}
         </Link>
 
+        {/* Wishlist */}
+        <button
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            toggleWish(p.id)
+          }}
+          aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
+          className="absolute right-3 top-3 z-10 rounded-full border border-[var(--border)] bg-white/90 p-2 shadow-sm backdrop-blur transition hover:scale-110"
+        >
+          <Heart size={15} className={wished ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-stone-600'} />
+        </button>
+
+        {/* Desktop hover add-to-cart */}
         {showAdd && !outOfStock && (
-          <div className="absolute inset-x-3 bottom-3 z-10 flex translate-y-2 flex-col gap-2 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="absolute inset-x-3 bottom-3 z-10 hidden translate-y-2 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
             <button
               onClick={() => {
                 add(p)
                 setDrawer(true)
               }}
-              className="w-full rounded-xl bg-amber-500 py-3 text-[10px] font-bold tracking-[0.16em] text-stone-950 transition hover:bg-amber-400 shadow-md"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-white shadow-plum transition hover:bg-[var(--accent-strong)]"
             >
-              ADD TO CART
+              <ShoppingBag size={13} /> Add to cart
             </button>
           </div>
         )}
       </div>
 
-      <div className="pt-4">
-        <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-muted)] font-bold">
+      {/* Info */}
+      <div className="flex flex-1 flex-col px-0.5 pt-3.5">
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {p.brand} · {p.volume}
         </p>
         <Link
           href={`/shop/${p.id}`}
-          className="mt-1 font-display text-base font-bold text-[var(--text-primary)] hover:text-amber-600 transition block"
+          className="mt-1 block font-display text-lg font-bold leading-snug text-[var(--text-primary)] transition hover:text-[var(--accent)]"
         >
           {p.name}
         </Link>
-        <p className="mt-0.5 text-xs text-[var(--text-secondary)] font-medium">{p.notes}</p>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-sm font-bold text-amber-600">{formatNaira(price)}</span>
-          {p.salePrice != null && p.salePrice < p.price && (
-            <span className="text-xs text-[var(--text-muted)] line-through">{formatNaira(p.price)}</span>
+
+        {rating ? (
+          <p className="mt-1 flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+            <Star size={12} className="fill-[var(--champagne)] text-[var(--champagne)]" />
+            <span className="font-bold text-[var(--text-secondary)]">{rating.avg}</span>
+            <span>({rating.count})</span>
+          </p>
+        ) : (
+          <p className="mt-1 truncate text-xs font-medium text-[var(--text-secondary)]">{p.notes}</p>
+        )}
+
+        <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="text-base font-bold tabular-nums text-[var(--accent)]">
+                {formatNaira(price)}
+              </span>
+              {hasSale && (
+                <span className="text-xs tabular-nums text-[var(--text-muted)] line-through">
+                  {formatNaira(p.price)}
+                </span>
+              )}
+            </div>
+            {hasSale && (
+              <span className="mt-1 inline-block rounded-full bg-[var(--champagne-soft)] px-2 py-0.5 text-[9px] font-bold tracking-[0.08em] text-[#7a5c22]">
+                SAVE {formatNaira(save)}
+              </span>
+            )}
+          </div>
+
+          {/* Mobile quick add — always visible on touch */}
+          {showAdd && !outOfStock && (
+            <button
+              onClick={() => {
+                add(p)
+                setDrawer(true)
+              }}
+              aria-label={`Add ${p.name} to cart`}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-plum transition active:scale-95 sm:hidden"
+            >
+              <ShoppingBag size={16} />
+            </button>
           )}
-          {outOfStock && <span className="text-[10px] text-red-500 font-bold">Sold Out</span>}
         </div>
       </div>
     </article>

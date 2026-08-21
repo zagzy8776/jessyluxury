@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isCompletedOrder } from '@/lib/analytics/domain'
+import { couponAudienceError, getActiveWholesaleGroupId } from '@/lib/wholesale/pricing'
 
 /**
  * Normalise phone number to raw digits for matching
@@ -30,6 +31,12 @@ export async function POST(request: Request) {
     // 2. Validate Active Status
     if (!coupon.isActive) {
       return NextResponse.json({ error: 'This coupon is currently disabled' }, { status: 400 })
+    }
+
+    const wholesaleGroupId = customerId ? await getActiveWholesaleGroupId(Number(customerId)) : null
+    const audienceError = couponAudienceError(Boolean(coupon.wholesaleEligible), wholesaleGroupId != null)
+    if (audienceError) {
+      return NextResponse.json({ error: audienceError }, { status: 400 })
     }
 
     // 3. Validate Date Boundaries (Africa/Lagos = UTC+1)

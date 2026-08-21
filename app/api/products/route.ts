@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
 import { broadcastOneSignalPush } from '@/lib/notifications/client'
+import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
+import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
@@ -38,15 +40,28 @@ export async function GET(request: Request) {
     const products = await prisma.product.findMany({
       where,
       include: {
-        category: true,
-        reviews: true,
+        Category: true,
+        Review: true,
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
 
-    return NextResponse.json(products)
+    let customerId = await isCustomerAuthenticated(request)
+    const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
+    if (isStaff) {
+      const forCustomerId = Number(searchParams.get('forCustomerId'))
+      if (!isNaN(forCustomerId) && forCustomerId > 0) customerId = forCustomerId
+    }
+
+    const decorated = await decorateProductsWithWholesale(products, customerId)
+    // Prisma exposes these relations capitalized; remap to the lowercase public contract
+    const normalized = decorated.map((p: any) => {
+      const { Category, Review, ...rest } = p
+      return { ...rest, category: Category ?? null, reviews: Review ?? [] }
+    })
+    return NextResponse.json(normalized)
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
@@ -54,7 +69,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'products')
   if (authErr) return authErr
 
   try {
@@ -100,6 +115,7 @@ export async function POST(request: Request) {
         featured: Boolean(featured),
         gift: Boolean(gift),
         images: Array.isArray(images) ? images : [],
+        updatedAt: new Date(),
       },
     })
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 import {
   canTransitionFulfillment,
   canTransitionPayment,
@@ -21,7 +21,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const authError = await requireAdminAuth(request)
+    const authError = await requireStaffAuth(request, 'orders')
     if (authError) return authError
 
     const orderId = parseInt(params.id, 10)
@@ -32,17 +32,17 @@ export async function GET(
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        items: {
+        OrderItem: {
           include: {
-            product: true,
+            Product: true,
           },
         },
-        shippingZone: true,
-        customer: true,
-        timeline: {
+        ShippingZone: true,
+        Customer: true,
+        OrderTimeline: {
           orderBy: { createdAt: 'desc' },
         },
-        priceAdjustments: true,
+        PriceAdjustmentLog: true,
       },
     })
 
@@ -61,7 +61,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'orders')
   if (authErr) return authErr
 
   try {
@@ -72,7 +72,7 @@ export async function PUT(
 
     const currentOrder = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: true },
+      include: { OrderItem: true },
     })
 
     if (!currentOrder) {
@@ -157,12 +157,12 @@ export async function PUT(
 
         if ((oldPay === 'UNPAID' || oldPay === 'PARTIALLY_PAID') && targetPaymentStatus === 'PAID') {
           // Convert reserved stock -> sold
-          for (const item of currentOrder.items) {
+          for (const item of currentOrder.OrderItem) {
             await consumeReservation(tx, item.productId, item.quantity, actor)
           }
         } else if ((oldPay === 'UNPAID' || oldPay === 'PARTIALLY_PAID') && targetPaymentStatus === 'REFUNDED') {
           // Release reservation
-          for (const item of currentOrder.items) {
+          for (const item of currentOrder.OrderItem) {
             await releaseReservation(tx, item.productId, item.quantity, actor)
           }
         } else if (oldPay === 'PAID' && targetPaymentStatus === 'REFUNDED') {
@@ -187,7 +187,7 @@ export async function PUT(
         if (targetStatus === 'CANCELLED') {
           // Revert stock allocations depending on payment status
           const isPaid = currentOrder.paymentStatus === 'PAID'
-          for (const item of currentOrder.items) {
+          for (const item of currentOrder.OrderItem) {
             if (isPaid) {
               await cancelPaidSale(tx, item.productId, item.quantity, actor)
             } else {
@@ -223,7 +223,7 @@ export async function PUT(
             }
           }
 
-          for (const item of currentOrder.items) {
+          for (const item of currentOrder.OrderItem) {
             const restockChoice = restockMap.get(item.productId) || { isRestockable: false, reason: 'Returned item (not restocked)' }
             await processReturnItem(tx, item.productId, item.quantity, restockChoice.isRestockable, actor, restockChoice.reason)
           }
@@ -305,7 +305,7 @@ export async function PUT(
           total: finalTotal,
         },
         include: {
-          items: true,
+          OrderItem: true,
         },
       })
 

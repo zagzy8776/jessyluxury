@@ -1,0 +1,946 @@
+
+🔧 [Global Setup] Starting test account provisioning...
+
+   Waiting for previous connections to close...
+   Creating/updating owner@jessy.test (Owner)...
+   Creating/updating manager@jessy.test (Manager)...
+   Creating/updating fulfillment@jessy.test (Fulfillment)...
+   Creating/updating catalog@jessy.test (Catalog)...
+   Creating/updating inactive@jessy.test (Manager)...
+
+✅ [Global Setup] All test accounts provisioned successfully
+
+✅ [Global Setup] Verified 5 test accounts exist
+
+[E2E Env Loader] Successfully loaded environment from .env
+
+Running 285 tests using 1 worker
+
+✅ owner@jessy.test authenticated successfully
+  ok   1 [chromium] › e2e\000-smoke-test-accounts.spec.ts:44:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › owner@jessy.test can authenticate (17.2s)
+✅ manager@jessy.test authenticated successfully
+  ok   2 [chromium] › e2e\000-smoke-test-accounts.spec.ts:51:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › manager@jessy.test can authenticate (872ms)
+✅ fulfillment@jessy.test authenticated successfully
+  ok   3 [chromium] › e2e\000-smoke-test-accounts.spec.ts:58:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › fulfillment@jessy.test can authenticate (905ms)
+✅ catalog@jessy.test authenticated successfully
+  ok   4 [chromium] › e2e\000-smoke-test-accounts.spec.ts:65:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › catalog@jessy.test can authenticate (831ms)
+✅ inactive@jessy.test correctly rejected (403)
+  ok   5 [chromium] › e2e\000-smoke-test-accounts.spec.ts:72:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › inactive@jessy.test CANNOT authenticate (negative test) (793ms)
+✅ All test accounts have correct properties
+  ok   6 [chromium] › e2e\000-smoke-test-accounts.spec.ts:79:7 › 🔥 CRITICAL: Test Account Provisioning Smoke Test › All test accounts have expected properties (15ms)
+✅ Test A created customer 150
+✅ Test A cleaned up customer 150
+  ok   7 [chromium] › e2e\001-isolation-verification.spec.ts:21:7 › 🔬 Isolation Verification › Isolation Test A: Create customer, verify, cleanup (6.0s)
+✅ Test B created customer 151
+✅ Test B cleaned up customer 151
+  ok   8 [chromium] › e2e\001-isolation-verification.spec.ts:64:7 › 🔬 Isolation Verification › Isolation Test B: Create customer with different ID, verify independence (2.5s)
+✅ Test C verified all isolation test data was cleaned up
+✅ Test C verified all 5 global staff accounts intact
+  ok   9 [chromium] › e2e\001-isolation-verification.spec.ts:119:7 › 🔬 Isolation Verification › Isolation Test C: Verify no test customers remain (1.7s)
+  x   10 [chromium] › e2e\analytics.spec.ts:107:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics (1.1m)
+  ok  11 [chromium] › e2e\marketing.spec.ts:99:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should validate coupon constraints correctly (8.0s)
+  ok  12 [chromium] › e2e\marketing.spec.ts:147:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should enforce customer redemption limit and preserve usedCount on cancellation (1.3m)
+  ok  13 [chromium] › e2e\marketing.spec.ts:261:7 › Jessy Luxury Sales & Marketing Engine E2E Test › should prevent double spend via atomic increment checks on concurrent transactions (21.5s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok  14 [chromium] › e2e\notifications.spec.ts:111:7 › Jessy Luxury Notifications outbox E2E Suite › should enforce idempotency, outbox claim locking, and credentials fallback mapping (24.7s)
+  ok  15 [chromium] › e2e\notifications.spec.ts:245:7 › Jessy Luxury Notifications outbox E2E Suite › should enforce API session security checks (3.2s)
+  ok  16 [chromium] › e2e\notifications.spec.ts:267:7 › Jessy Luxury Notifications outbox E2E Suite › should verify Phase 9 customer notification portal and engagement features (24.2s)
+  ok  17 [chromium] › e2e\notifications.spec.ts:394:7 › Jessy Luxury Notifications outbox E2E Suite › should render an active StoreAnnouncement on the public storefront (4.2s)
+[Event Dispatcher] Emitting event: "order.shipped" {
+  timestamp: '2026-08-21T16:20:50.474Z',
+  payload: {
+    orderId: 34,
+    orderNumber: 'JL-TXNNOTIF_E2E_4079',
+    isAuthenticated: true
+  }
+}
+  ok  18 [chromium] › e2e\notifications.spec.ts:423:7 › Jessy Luxury Notifications outbox E2E Suite › should not suppress transactional order notifications when marketing is opted out (16.9s)
+  ok  19 [chromium] › e2e\settings\authorization.spec.ts:115:7 › Authorization - Orders Routes › Unauthenticated request to orders returns 401 (394ms)
+  ok  20 [chromium] › e2e\settings\authorization.spec.ts:120:7 › Authorization - Orders Routes › Manager with orders permission can access orders (4.0s)
+  ok  21 [chromium] › e2e\settings\authorization.spec.ts:128:7 › Authorization - Orders Routes › Catalog without orders permission cannot access orders (1.6s)
+  ok  22 [chromium] › e2e\settings\authorization.spec.ts:136:7 › Authorization - Orders Routes › Fulfillment with orders permission can access orders (2.1s)
+  ok  23 [chromium] › e2e\settings\authorization.spec.ts:144:7 › Authorization - Orders Routes › Owner can access orders (2.1s)
+  ok  24 [chromium] › e2e\settings\authorization.spec.ts:154:7 › Authorization - Products Routes › Manager with products permission can access products admin (2.1s)
+  ok  25 [chromium] › e2e\settings\authorization.spec.ts:168:7 › Authorization - Products Routes › Catalog with products permission can access products admin (1.7s)
+  ok  26 [chromium] › e2e\settings\authorization.spec.ts:182:7 › Authorization - Products Routes › Fulfillment without products permission cannot create products (1.7s)
+  ok  27 [chromium] › e2e\settings\authorization.spec.ts:196:7 › Authorization - Products Routes › Owner can create products (1.7s)
+  ok  28 [chromium] › e2e\settings\authorization.spec.ts:212:7 › Authorization - Customers Routes › Manager with customers permission can access customers (6.6s)
+  ok  29 [chromium] › e2e\settings\authorization.spec.ts:220:7 › Authorization - Customers Routes › Catalog without customers permission cannot access customers (1.6s)
+  ok  30 [chromium] › e2e\settings\authorization.spec.ts:228:7 › Authorization - Customers Routes › Fulfillment without customers permission cannot access customers (1.6s)
+  ok  31 [chromium] › e2e\settings\authorization.spec.ts:236:7 › Authorization - Customers Routes › Owner can access customers (4.4s)
+  ok  32 [chromium] › e2e\settings\authorization.spec.ts:246:7 › Authorization - Analytics Routes › Manager with analytics permission can access analytics (6.7s)
+  ok  33 [chromium] › e2e\settings\authorization.spec.ts:254:7 › Authorization - Analytics Routes › Catalog without analytics permission cannot access analytics (3.3s)
+  ok  34 [chromium] › e2e\settings\authorization.spec.ts:262:7 › Authorization - Analytics Routes › Fulfillment without analytics permission cannot access analytics (1.7s)
+  ok  35 [chromium] › e2e\settings\authorization.spec.ts:270:7 › Authorization - Analytics Routes › Owner can access analytics (4.0s)
+  ok  36 [chromium] › e2e\settings\authorization.spec.ts:280:7 › Authorization - Settings Routes › Manager without settings permission cannot access business profile (3.1s)
+  ok  37 [chromium] › e2e\settings\authorization.spec.ts:288:7 › Authorization - Settings Routes › Catalog without settings permission cannot access settings (2.1s)
+  ok  38 [chromium] › e2e\settings\authorization.spec.ts:296:7 › Authorization - Settings Routes › Fulfillment without settings permission cannot access settings (1.7s)
+  ok  39 [chromium] › e2e\settings\authorization.spec.ts:304:7 › Authorization - Settings Routes › Owner can access settings (implicit settings permission) (2.5s)
+  ok  40 [chromium] › e2e\settings\authorization.spec.ts:312:7 › Authorization - Settings Routes › Owner can update settings (2.9s)
+  ok  41 [chromium] › e2e\settings\authorization.spec.ts:329:7 › Authorization - Shipping Routes › Fulfillment with fulfillment permission can create shipping zone (2.8s)
+  ok  42 [chromium] › e2e\settings\authorization.spec.ts:341:7 › Authorization - Shipping Routes › Orders staff with orders permission can create shipping zone (1.6s)
+  ok  43 [chromium] › e2e\settings\authorization.spec.ts:356:7 › Authorization - Shipping Routes › Catalog cannot create shipping zone (no orders/fulfillment) (1.7s)
+  ok  44 [chromium] › e2e\settings\authorization.spec.ts:368:7 › Authorization - Shipping Routes › Owner can create shipping zone (2.6s)
+  ok  45 [chromium] › e2e\settings\authorization.spec.ts:382:7 › Authorization - Inactive Staff Accounts › Inactive staff account cannot authenticate (811ms)
+  ok  46 [chromium] › e2e\settings\authorization.spec.ts:396:7 › Authorization - Inactive Staff Accounts › Inactive staff account rejected on protected resource (32ms)
+  ok  47 [chromium] › e2e\settings\authorization.spec.ts:405:7 › Authorization - Public Routes Remain Public › Order tracking is public (no auth required) (343ms)
+  ok  48 [chromium] › e2e\settings\authorization.spec.ts:414:7 › Authorization - Public Routes Remain Public › Product storefront is public (no auth required for GET) (836ms)
+  ok  49 [chromium] › e2e\settings\authorization.spec.ts:420:7 › Authorization - Public Routes Remain Public › Shipping zones list is public (no auth required for GET) (788ms)
+  ok  50 [chromium] › e2e\settings\authorization.spec.ts:428:7 › Authorization - Permission Enforcement on Multiple Actions › Staff can only modify their permitted resources (3.3s)
+  ok  51 [chromium] › e2e\settings\authorization.spec.ts:442:7 › Authorization - Permission Enforcement on Multiple Actions › Fulfillment can only access orders and fulfillment resources (3.6s)
+  ok  52 [chromium] › e2e\settings\authorization.spec.ts:465:7 › Authorization - Permission Enforcement on Multiple Actions › Catalog can only access products and catalog resources (3.3s)
+  ok  53 [chromium] › e2e\settings\authorization.spec.ts:490:7 › Authorization - Edge Cases › Expired session token returns 401 (22ms)
+  ok  54 [chromium] › e2e\settings\authorization.spec.ts:496:7 › Authorization - Edge Cases › Malformed request header is handled gracefully (19ms)
+  ok  55 [chromium] › e2e\settings\authorization.spec.ts:506:7 › Authorization - Edge Cases › Missing Content-Type still authenticates (2.4s)
+  ok  56 [chromium] › e2e\settings\import-export.spec.ts:23:7 › Configuration Import/Export › should export all settings as JSON with masked secrets (2.0s)
+  ok  57 [chromium] › e2e\settings\import-export.spec.ts:53:7 › Configuration Import/Export › should validate business profile data on import (784ms)
+  ok  58 [chromium] › e2e\settings\import-export.spec.ts:77:7 › Configuration Import/Export › should validate store locations on import (420ms)
+  ok  59 [chromium] › e2e\settings\import-export.spec.ts:97:7 › Configuration Import/Export › should validate staff accounts on import (470ms)
+  ok  60 [chromium] › e2e\settings\import-export.spec.ts:121:7 › Configuration Import/Export › should reject unmasked secrets in import (419ms)
+  x   61 [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully (1.7s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok  62 [chromium] › e2e\settings\import-export.spec.ts:182:7 › Configuration Import/Export › should enforce authorization on export (96ms)
+  ok  63 [chromium] › e2e\settings\import-export.spec.ts:190:7 › Configuration Import/Export › should enforce authorization on import (39ms)
+  ok  64 [chromium] › e2e\settings\import-export.spec.ts:199:7 › Configuration Import/Export › should maintain round-trip property for non-secret settings (3.2s)
+  ok  65 [chromium] › e2e\settings\import-export.spec.ts:234:7 › Configuration Import/Export › should handle empty configuration export (2.0s)
+  ok  66 [chromium] › e2e\settings\import-export.spec.ts:247:7 › Configuration Import/Export › should create audit log on successful import (3.2s)
+  ok  67 [chromium] › e2e\settings\notifications.spec.ts:133:7 › Notification Settings API - Secret Masking › GET returns masked secrets with correct format (4.4s)
+  ok  68 [chromium] › e2e\settings\notifications.spec.ts:181:7 › Notification Settings API - Secret Masking › PUT updates and returns masked secrets (2.4s)
+  ok  69 [chromium] › e2e\settings\notifications.spec.ts:218:7 › Notification Settings API - Secret Masking › Short secrets are fully masked (2.8s)
+  ok  70 [chromium] › e2e\settings\notifications.spec.ts:244:7 › Notification Settings API - Secret Masking › Empty secrets return empty string (2.8s)
+  ok  71 [chromium] › e2e\settings\notifications.spec.ts:274:7 › Notification Settings API - Audit Trail Security › Audit log does not contain secret values (5.9s)
+  ok  72 [chromium] › e2e\settings\notifications.spec.ts:325:7 › Notification Settings API - Authorization › Unauthorized request returns 401 (54ms)
+  ok  73 [chromium] › e2e\settings\notifications.spec.ts:346:7 › Notification Settings API - Authorization › Staff without settings permission returns 403 (1.7s)
+Skipping: Test account with settings permission not found
+  -   74 [chromium] › e2e\settings\notifications.spec.ts:358:7 › Notification Settings API - Authorization › Staff with settings permission can access
+  ok  75 [chromium] › e2e\settings\notifications.spec.ts:375:7 › Notification Settings API - Authorization › Owner role has implicit access (4.0s)
+  ok  76 [chromium] › e2e\settings\notifications.spec.ts:393:7 › Notification Settings API - Data Persistence › Settings persist across requests (4.0s)
+  ok  77 [chromium] › e2e\settings\notifications.spec.ts:430:7 › Notification Settings API - Data Persistence › Partial updates preserve other fields (4.5s)
+  ok  78 [chromium] › e2e\settings\notifications.spec.ts:469:7 › Notification Settings API - Boolean Field Handling › emailEnabled and pushEnabled work correctly (7.1s)
+  ok  79 [chromium] › e2e\settings\payment.spec.ts:127:7 › Payment Settings API - Secret Masking › GET returns masked secrets with correct format (4.7s)
+  ok  80 [chromium] › e2e\settings\payment.spec.ts:175:7 › Payment Settings API - Secret Masking › PUT updates and returns masked secrets (3.6s)
+  ok  81 [chromium] › e2e\settings\payment.spec.ts:218:7 › Payment Settings API - Secret Masking › Masking algorithm correctness - first 2 + bullets + last 4 for long secrets (2.8s)
+  ok  82 [chromium] › e2e\settings\payment.spec.ts:249:7 › Payment Settings API - Secret Masking › Short secrets are fully masked with 6 bullets (2.5s)
+  ok  83 [chromium] › e2e\settings\payment.spec.ts:282:7 › Payment Settings API - Secret Masking › Empty secrets return empty string (2.4s)
+  ok  84 [chromium] › e2e\settings\payment.spec.ts:308:7 › Payment Settings API - Secret Masking › Masking preserves format across multiple lengths (11.2s)
+  ok  85 [chromium] › e2e\settings\payment.spec.ts:337:7 › Payment Settings API - Audit Trail Security › Audit log does not contain secret values (4.5s)
+  ok  86 [chromium] › e2e\settings\payment.spec.ts:395:7 › Payment Settings API - Audit Trail Security › Audit log filters sensitive field patterns (4.1s)
+  ok  87 [chromium] › e2e\settings\payment.spec.ts:446:7 › Payment Settings API - Authorization › Unauthorized request returns 401 (51ms)
+  ok  88 [chromium] › e2e\settings\payment.spec.ts:461:7 › Payment Settings API - Authorization › Staff without settings permission returns 403 (2.5s)
+  ok  89 [chromium] › e2e\settings\payment.spec.ts:478:7 › Payment Settings API - Authorization › Catalog staff without settings permission returns 403 (2.5s)
+  ok  90 [chromium] › e2e\settings\payment.spec.ts:495:7 › Payment Settings API - Authorization › Owner with settings permission can access payment settings (4.0s)
+  ok  91 [chromium] › e2e\settings\payment.spec.ts:514:7 › Payment Settings API - Authorization › Invalid token returns 401 (19ms)
+  ok  92 [chromium] › e2e\settings\payment.spec.ts:525:7 › Payment Settings API - Error Handling › No secrets leak through error paths (5.3s)
+  ok  93 [chromium] › e2e\settings\payment.spec.ts:565:7 › Payment Settings API - Error Handling › Validation errors do not expose secrets (3.6s)
+  ok  94 [chromium] › e2e\settings\payment.spec.ts:592:7 › Payment Settings API - Data Persistence › Settings persist across requests (4.0s)
+  ok  95 [chromium] › e2e\settings\payment.spec.ts:621:7 › Payment Settings API - Data Persistence › Partial updates preserve existing values (5.8s)
+  ok  96 [chromium] › e2e\settings\payment.spec.ts:656:7 › Payment Settings API - Data Persistence › Singleton pattern enforced - only one payment settings record (7.1s)
+  ok  97 [chromium] › e2e\settings\security.spec.ts:103:7 › Sessions & Security - Password Change › P11-T045-01: Owner can change password successfully (9.1s)
+  ok  98 [chromium] › e2e\settings\security.spec.ts:145:7 › Sessions & Security - Password Change › P11-T045-02: Manager cannot change password (returns 403) (2.9s)
+  ok  99 [chromium] › e2e\settings\security.spec.ts:165:7 › Sessions & Security - Password Change › P11-T045-03: Invalid current password rejected (3.4s)
+  ok 100 [chromium] › e2e\settings\security.spec.ts:185:7 › Sessions & Security - Password Change › P11-T045-04: New password validation - min 12 characters (2.9s)
+  ok 101 [chromium] › e2e\settings\security.spec.ts:206:7 › Sessions & Security - Password Change › P11-T045-05: New password validation - confirmPassword must match (2.5s)
+  ok 102 [chromium] › e2e\settings\security.spec.ts:226:7 › Sessions & Security - Password Change › P11-T045-06: Session version incremented atomically (6.6s)
+  ok 103 [chromium] › e2e\settings\security.spec.ts:251:7 › Sessions & Security - Password Change › P11-T045-07: Old authentication tokens rejected after password change (401) (6.1s)
+  ok 104 [chromium] › e2e\settings\security.spec.ts:288:7 › Sessions & Security - Password Change › P11-T045-08: New authentication succeeds with new password (13.9s)
+  ok 105 [chromium] › e2e\settings\security.spec.ts:323:7 › Sessions & Security - Password Change › P11-T045-09: Audit log created with ADMIN_PASSWORD_CHANGED action (6.7s)
+  ok 106 [chromium] › e2e\settings\security.spec.ts:362:7 › Sessions & Security - Password Change › P11-T045-10: Transaction atomicity - both password and session version updated together (7.7s)
+  ok 107 [chromium] › e2e\settings\security.spec.ts:400:7 › Sessions & Security - Password Change › P11-T045-11: Unauthenticated password change returns 401 (876ms)
+  ok 108 [chromium] › e2e\settings\security.spec.ts:415:7 › Sessions & Security - Password Change › P11-T045-12: Catalog role cannot change password (returns 403) (2.5s)
+  x  109 [chromium] › e2e\settings\shell-integration.spec.ts:6:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI (24.9s)
+  x  110 [chromium] › e2e\settings\shell-integration.spec.ts:19:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page (2.5s)
+  x  111 [chromium] › e2e\settings\shell-integration.spec.ts:33:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact (18.9s)
+  x  112 [chromium] › e2e\settings\shell-integration.spec.ts:48:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation (1.9s)
+  x  113 [chromium] › e2e\settings\shell-integration.spec.ts:62:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional (17.3s)
+  x  114 [chromium] › e2e\settings\shell.spec.ts:6:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully (17.3s)
+  x  115 [chromium] › e2e\settings\shell.spec.ts:14:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible (17.5s)
+  x  116 [chromium] › e2e\settings\shell.spec.ts:24:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs (17.6s)
+  ok 117 [chromium] › e2e\settings\shell.spec.ts:46:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All tab content areas are rendered (2.1s)
+  ok 118 [chromium] › e2e\settings\shell.spec.ts:71:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Owner can see Change Password button (2.0s)
+  x  119 [chromium] › e2e\settings\shell.spec.ts:83:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout (17.4s)
+  ok 120 [chromium] › e2e\settings\shell.spec.ts:100:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T053: Settings link accessible from admin dashboard (1.3s)
+  x  121 [chromium] › e2e\settings\shell.spec.ts:115:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) (17.5s)
+  x  122 [chromium] › e2e\settings\shell.spec.ts:131:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation (31.1s)
+  x  123 [chromium] › e2e\settings\shell.spec.ts:151:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning (2.3s)
+  ok 124 [chromium] › e2e\settings\system-defaults.spec.ts:96:7 › System Defaults API - CRUD Operations › GET returns system defaults with expected structure (2.9s)
+  ok 125 [chromium] › e2e\settings\system-defaults.spec.ts:119:7 › System Defaults API - CRUD Operations › PUT updates system defaults successfully (4.2s)
+  ok 126 [chromium] › e2e\settings\system-defaults.spec.ts:156:7 › System Defaults API - CRUD Operations › PUT supports partial updates (4.5s)
+  ok 127 [chromium] › e2e\settings\system-defaults.spec.ts:194:7 › System Defaults API - CRUD Operations › PUT can set null values for optional fields (3.3s)
+  ok 128 [chromium] › e2e\settings\system-defaults.spec.ts:219:7 › System Defaults API - Audit Trail › Audit log created on update with changed fields (9.6s)
+  ok 129 [chromium] › e2e\settings\system-defaults.spec.ts:271:7 › System Defaults API - Audit Trail › Audit log includes all changed fields (3.6s)
+  ok 130 [chromium] › e2e\settings\system-defaults.spec.ts:318:7 › System Defaults API - Authorization › Unauthorized request returns 401 (61ms)
+  ok 131 [chromium] › e2e\settings\system-defaults.spec.ts:333:7 › System Defaults API - Authorization › Staff without settings permission returns 403 (2.9s)
+  ok 132 [chromium] › e2e\settings\system-defaults.spec.ts:350:7 › System Defaults API - Authorization › Catalog staff without settings permission returns 403 (2.4s)
+  ok 133 [chromium] › e2e\settings\system-defaults.spec.ts:367:7 › System Defaults API - Authorization › Owner with settings permission can access system defaults (3.6s)
+  ok 134 [chromium] › e2e\settings\system-defaults.spec.ts:385:7 › System Defaults API - Authorization › Invalid token returns 401 (15ms)
+  ok 135 [chromium] › e2e\settings\system-defaults.spec.ts:396:7 › System Defaults API - Data Integrity › Singleton pattern enforced - only one system defaults record (6.7s)
+  ok 136 [chromium] › e2e\settings\system-defaults.spec.ts:420:7 › System Defaults API - Data Integrity › Default values are returned when no settings exist (2.4s)
+  ok 137 [chromium] › e2e\settings\system-defaults.spec.ts:438:7 › System Defaults API - Data Integrity › Values persist across multiple updates (7.2s)
+  ok 138 [chromium] › e2e\settings\system-defaults.spec.ts:485:7 › System Defaults API - Shipping Zone Deletion Protection (Req 28) › Cannot delete shipping zone set as system default (10.9s)
+  ok 139 [chromium] › e2e\settings\system-defaults.spec.ts:551:7 › System Defaults API - Shipping Zone Deletion Protection (Req 28) › Can delete non-default shipping zone (5.9s)
+  ok 140 [chromium] › e2e\settings\system-defaults.spec.ts:605:7 › System Defaults API - Shipping Zone Deletion Protection (Req 28) › Changing default shipping zone allows deletion of previous default (12.4s)
+  ok 141 [chromium] › e2e\settings\system-defaults.spec.ts:699:7 › System Defaults API - Response Format › Response includes timestamps in ISO format (2.1s)
+  ok 142 [chromium] › e2e\settings\system-defaults.spec.ts:715:7 › System Defaults API - Response Format › PUT response matches GET response structure (3.6s)
+  ok 143 [chromium] › e2e\settings\system-defaults.spec.ts:734:7 › System Defaults API - Response Format › Response does not contain sensitive data or internal fields (2.0s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 144 [chromium] › e2e\settings-business-profile.spec.ts:94:7 › Phase 11 Domain 1: Business Profile Settings › 1. Unauthenticated GET returns 401 (1.2s)
+  ok 145 [chromium] › e2e\settings-business-profile.spec.ts:101:7 › Phase 11 Domain 1: Business Profile Settings › 2. Authenticated GET returns the profile (1.2s)
+  ok 146 [chromium] › e2e\settings-business-profile.spec.ts:118:7 › Phase 11 Domain 1: Business Profile Settings › 3. Valid PUT updates the profile (2.4s)
+  ok 147 [chromium] › e2e\settings-business-profile.spec.ts:161:7 › Phase 11 Domain 1: Business Profile Settings › 4. Invalid/missing required business name returns 400 (470ms)
+  ok 148 [chromium] › e2e\settings-business-profile.spec.ts:180:7 › Phase 11 Domain 1: Business Profile Settings › 5. Invalid email returns 400 (447ms)
+  ok 149 [chromium] › e2e\settings-business-profile.spec.ts:200:7 › Phase 11 Domain 1: Business Profile Settings › 6. Missing required phone/address returns 400 (1.3s)
+  ok 150 [chromium] › e2e\settings-business-profile.spec.ts:256:7 › Phase 11 Domain 1: Business Profile Settings › 7. Successful update creates exactly one BUSINESS_PROFILE_UPDATED audit entry (3.6s)
+  ok 151 [chromium] › e2e\settings-business-profile.spec.ts:319:7 › Phase 11 Domain 1: Business Profile Settings › 8. Returned response never exposes unrelated secrets/configuration (808ms)
+  ok 152 [chromium] › e2e\settings-business-profile.spec.ts:343:7 › Phase 11 Domain 1: Business Profile Settings › 9. Updating Business Profile does not modify existing Order/Customer historical snapshot (7.5s)
+  ok 153 [chromium] › e2e\settings-business-profile.spec.ts:414:7 › Phase 11 Domain 1: Business Profile Settings › 10. Repeated valid updates remain consistent (4.4s)
+  ok 154 [chromium] › e2e\settings-expenses.spec.ts:76:7 › Phase 11 - Expenses List API with Pagination and Filtering › 1. Unauthenticated GET request is rejected with 401 (289ms)
+  ok 155 [chromium] › e2e\settings-expenses.spec.ts:83:7 › Phase 11 - Expenses List API with Pagination and Filtering › 2. Authenticated GET request succeeds with 200 (2.4s)
+  ok 156 [chromium] › e2e\settings-expenses.spec.ts:95:7 › Phase 11 - Expenses List API with Pagination and Filtering › 3. GET response has correct pagination metadata (1.2s)
+  ok 157 [chromium] › e2e\settings-expenses.spec.ts:113:7 › Phase 11 - Expenses List API with Pagination and Filtering › 4. Default pagination returns pageSize=20 and page=1 (1.2s)
+  ok 158 [chromium] › e2e\settings-expenses.spec.ts:126:7 › Phase 11 - Expenses List API with Pagination and Filtering › 5. Custom pagination parameters are respected (1.2s)
+  ok 159 [chromium] › e2e\settings-expenses.spec.ts:141:7 › Phase 11 - Expenses List API with Pagination and Filtering › 6. startDate filter works correctly (2.0s)
+  ok 160 [chromium] › e2e\settings-expenses.spec.ts:163:7 › Phase 11 - Expenses List API with Pagination and Filtering › 7. endDate filter works correctly (2.0s)
+  ok 161 [chromium] › e2e\settings-expenses.spec.ts:186:7 › Phase 11 - Expenses List API with Pagination and Filtering › 8. startDate and endDate filters work together (2.0s)
+  ok 162 [chromium] › e2e\settings-expenses.spec.ts:211:7 › Phase 11 - Expenses List API with Pagination and Filtering › 9. Invalid startDate returns 400 error (439ms)
+  ok 163 [chromium] › e2e\settings-expenses.spec.ts:225:7 › Phase 11 - Expenses List API with Pagination and Filtering › 10. Invalid endDate returns 400 error (433ms)
+  ok 164 [chromium] › e2e\settings-expenses.spec.ts:240:7 › Phase 11 - Expenses List API with Pagination and Filtering › 11. Expenses are ordered by date descending (1.2s)
+  ok 165 [chromium] › e2e\settings-expenses.spec.ts:260:7 › Phase 11 - Expenses List API with Pagination and Filtering › 12. POST with valid data creates expense (3.1s)
+  ok 166 [chromium] › e2e\settings-expenses.spec.ts:288:7 › Phase 11 - Expenses List API with Pagination and Filtering › 13. POST without category returns 400 error (412ms)
+  ok 167 [chromium] › e2e\settings-expenses.spec.ts:306:7 › Phase 11 - Expenses List API with Pagination and Filtering › 14. POST with invalid category returns 400 error (425ms)
+  ok 168 [chromium] › e2e\settings-expenses.spec.ts:325:7 › Phase 11 - Expenses List API with Pagination and Filtering › 15. POST without description returns 400 error (423ms)
+  ok 169 [chromium] › e2e\settings-expenses.spec.ts:343:7 › Phase 11 - Expenses List API with Pagination and Filtering › 16. POST without amount returns 400 error (451ms)
+  ok 170 [chromium] › e2e\settings-expenses.spec.ts:361:7 › Phase 11 - Expenses List API with Pagination and Filtering › 17. POST with amount <= 0 returns 400 error (431ms)
+  ok 171 [chromium] › e2e\settings-expenses.spec.ts:380:7 › Phase 11 - Expenses List API with Pagination and Filtering › 18. POST with negative amount returns 400 error (413ms)
+  ok 172 [chromium] › e2e\settings-expenses.spec.ts:399:7 › Phase 11 - Expenses List API with Pagination and Filtering › 19. POST with valid date uses provided date (1.6s)
+  ok 173 [chromium] › e2e\settings-expenses.spec.ts:426:7 › Phase 11 - Expenses List API with Pagination and Filtering › 20. POST with invalid date returns 400 error (417ms)
+  ok 174 [chromium] › e2e\settings-expenses.spec.ts:447:7 › Phase 11 - Expenses List API with Pagination and Filtering › 21. POST creates audit log entry (3.5s)
+  ok 175 [chromium] › e2e\settings-expenses.spec.ts:489:7 › Phase 11 - Expenses List API with Pagination and Filtering › 22. All valid categories are accepted (8.7s)
+  ok 176 [chromium] › e2e\settings-expenses.spec.ts:521:7 › Phase 11 - Expenses List API with Pagination and Filtering › 23. Unauthenticated POST is rejected with 401 (30ms)
+  ok 177 [chromium] › e2e\settings-expenses.spec.ts:540:7 › Phase 11 - Expenses List API with Pagination and Filtering › 24. Total count reflects actual number of expenses (1.3s)
+  ok 178 [chromium] › e2e\settings-expenses.spec.ts:554:7 › Phase 11 - Expenses List API with Pagination and Filtering › 25. pageSize is capped at 100 (1.3s)
+  ok 179 [chromium] › e2e\settings-expenses.spec.ts:567:7 › Phase 11 - Expenses List API with Pagination and Filtering › 26. pageSize is at least 1 (1.2s)
+  ok 180 [chromium] › e2e\settings-expenses.spec.ts:582:7 › Phase 11 - Expenses List API with Pagination and Filtering › 27. GET /api/settings/expenses/:id returns single expense (1.9s)
+  ok 181 [chromium] › e2e\settings-expenses.spec.ts:597:7 › Phase 11 - Expenses List API with Pagination and Filtering › 28. GET /api/settings/expenses/:id with invalid ID returns 400 (429ms)
+  ok 182 [chromium] › e2e\settings-expenses.spec.ts:608:7 › Phase 11 - Expenses List API with Pagination and Filtering › 29. GET /api/settings/expenses/:id with non-existent ID returns 404 (822ms)
+  ok 183 [chromium] › e2e\settings-expenses.spec.ts:620:7 › Phase 11 - Expenses List API with Pagination and Filtering › 30. PUT /api/settings/expenses/:id updates expense (3.5s)
+  ok 184 [chromium] › e2e\settings-expenses.spec.ts:662:7 › Phase 11 - Expenses List API with Pagination and Filtering › 31. PUT /api/settings/expenses/:id with invalid ID returns 400 (433ms)
+  ok 185 [chromium] › e2e\settings-expenses.spec.ts:679:7 › Phase 11 - Expenses List API with Pagination and Filtering › 32. PUT /api/settings/expenses/:id with non-existent ID returns 404 (832ms)
+  ok 186 [chromium] › e2e\settings-expenses.spec.ts:696:7 › Phase 11 - Expenses List API with Pagination and Filtering › 33. PUT without category returns 400 (1.2s)
+  ok 187 [chromium] › e2e\settings-expenses.spec.ts:715:7 › Phase 11 - Expenses List API with Pagination and Filtering › 34. PUT with invalid category returns 400 (856ms)
+  ok 188 [chromium] › e2e\settings-expenses.spec.ts:735:7 › Phase 11 - Expenses List API with Pagination and Filtering › 35. PUT without description returns 400 (822ms)
+  ok 189 [chromium] › e2e\settings-expenses.spec.ts:754:7 › Phase 11 - Expenses List API with Pagination and Filtering › 36. PUT without amount returns 400 (809ms)
+  ok 190 [chromium] › e2e\settings-expenses.spec.ts:773:7 › Phase 11 - Expenses List API with Pagination and Filtering › 37. PUT with zero amount returns 400 (816ms)
+  ok 191 [chromium] › e2e\settings-expenses.spec.ts:793:7 › Phase 11 - Expenses List API with Pagination and Filtering › 38. PUT with negative amount returns 400 (802ms)
+  ok 192 [chromium] › e2e\settings-expenses.spec.ts:813:7 › Phase 11 - Expenses List API with Pagination and Filtering › 39. PUT with invalid date returns 400 (830ms)
+  ok 193 [chromium] › e2e\settings-expenses.spec.ts:834:7 › Phase 11 - Expenses List API with Pagination and Filtering › 40. PUT creates audit log entry (4.7s)
+  ok 194 [chromium] › e2e\settings-expenses.spec.ts:885:7 › Phase 11 - Expenses List API with Pagination and Filtering › 41. DELETE /api/settings/expenses/:id removes expense (4.0s)
+  ok 195 [chromium] › e2e\settings-expenses.spec.ts:926:7 › Phase 11 - Expenses List API with Pagination and Filtering › 42. DELETE with invalid ID returns 400 (412ms)
+  ok 196 [chromium] › e2e\settings-expenses.spec.ts:937:7 › Phase 11 - Expenses List API with Pagination and Filtering › 43. DELETE with non-existent ID returns 404 (816ms)
+  ok 197 [chromium] › e2e\settings-expenses.spec.ts:948:7 › Phase 11 - Expenses List API with Pagination and Filtering › 44. DELETE creates audit log entry (4.3s)
+  ok 198 [chromium] › e2e\settings-expenses.spec.ts:992:7 › Phase 11 - Expenses List API with Pagination and Filtering › 45. Unauthenticated GET individual expense is rejected with 401 (69ms)
+  ok 199 [chromium] › e2e\settings-expenses.spec.ts:997:7 › Phase 11 - Expenses List API with Pagination and Filtering › 46. Unauthenticated PUT is rejected with 401 (24ms)
+  ok 200 [chromium] › e2e\settings-expenses.spec.ts:1014:7 › Phase 11 - Expenses List API with Pagination and Filtering › 47. Unauthenticated DELETE is rejected with 401 (26ms)
+  ok 201 [chromium] › e2e\settings-locations-ui.spec.ts:40:7 › Phase 11 - Store Locations UI Component › 1. UI - Component integrates with API correctly (2.6s)
+  ok 202 [chromium] › e2e\settings-locations-ui.spec.ts:66:7 › Phase 11 - Store Locations UI Component › 2. UI - Create location via API integration (3.1s)
+  ok 203 [chromium] › e2e\settings-locations-ui.spec.ts:86:7 › Phase 11 - Store Locations UI Component › 3. UI - Edit location via API integration (3.4s)
+  ok 204 [chromium] › e2e\settings-locations-ui.spec.ts:114:7 › Phase 11 - Store Locations UI Component › 4. UI - Set default action via API (5.4s)
+  ok 205 [chromium] › e2e\settings-locations-ui.spec.ts:157:7 › Phase 11 - Store Locations UI Component › 5. UI - Protected delete returns 409 (1.2s)
+  ok 206 [chromium] › e2e\settings-locations-ui.spec.ts:181:7 › Phase 11 - Store Locations UI Component › 6. UI - Unused location can be deleted (7.0s)
+  ok 207 [chromium] › e2e\settings-locations-ui.spec.ts:209:7 › Phase 11 - Store Locations UI Component › 7. UI - Reload preserves state (data persistence) (1.6s)
+  ok 208 [chromium] › e2e\settings-locations-ui.spec.ts:237:7 › Phase 11 - Store Locations UI Component › 8. UI - Component handles validation errors (425ms)
+  ok 209 [chromium] › e2e\settings-locations-ui.spec.ts:256:7 › Phase 11 - Store Locations UI Component › 9. UI - Component handles duplicate names (1.6s)
+  ok 210 [chromium] › e2e\settings-locations-ui.spec.ts:287:7 › Phase 11 - Store Locations UI Component › 10. UI - Empty state handled gracefully (2.1s)
+  ok 211 [chromium] › e2e\settings-locations.spec.ts:76:7 › Phase 11 - Store Locations List API › 1. Unauthenticated GET request is rejected with 401 (38ms)
+  ok 212 [chromium] › e2e\settings-locations.spec.ts:83:7 › Phase 11 - Store Locations List API › 2. Authenticated GET request succeeds with 200 (1.2s)
+  ok 213 [chromium] › e2e\settings-locations.spec.ts:94:7 › Phase 11 - Store Locations List API › 3. Returned structure is correct with pagination metadata (808ms)
+  ok 214 [chromium] › e2e\settings-locations.spec.ts:118:7 › Phase 11 - Store Locations List API › 4. Multiple locations returned with correct field structure (862ms)
+  ok 215 [chromium] › e2e\settings-locations.spec.ts:168:7 › Phase 11 - Store Locations List API › 5. Locations returned in deterministic order (isDefault DESC, name ASC) (1.3s)
+  ok 216 [chromium] › e2e\settings-locations.spec.ts:200:7 › Phase 11 - Store Locations List API › 6. Pagination works correctly with page and pageSize parameters (1.6s)
+  ok 217 [chromium] › e2e\settings-locations.spec.ts:242:7 › Phase 11 - Store Locations List API › 7. No mutation occurs - GET is read-only (3.2s)
+  ok 218 [chromium] › e2e\settings-locations.spec.ts:285:7 › Phase 11 - Store Locations List API › 8. Returns clean empty array when no locations exist (edge case) (824ms)
+  ok 219 [chromium] › e2e\settings-locations.spec.ts:302:7 › Phase 11 - Store Locations List API › 9. Invalid page/pageSize parameters are handled gracefully (2.5s)
+  ok 220 [chromium] › e2e\settings-locations.spec.ts:334:7 › Phase 11 - Store Locations List API › 10. Response does not expose unrelated sensitive data (861ms)
+  ok 221 [chromium] › e2e\settings-locations.spec.ts:404:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 11. POST - Valid create succeeds with 200 and returns created location (2.7s)
+  ok 222 [chromium] › e2e\settings-locations.spec.ts:440:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 12. POST - Invalid create with missing name returns 400 (436ms)
+  ok 223 [chromium] › e2e\settings-locations.spec.ts:457:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 13. POST - Invalid create with missing address returns 400 (432ms)
+  ok 224 [chromium] › e2e\settings-locations.spec.ts:474:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 14. POST - Invalid create with missing city returns 400 (463ms)
+  ok 225 [chromium] › e2e\settings-locations.spec.ts:491:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 15. POST - Duplicate name returns 409 (2.4s)
+  ok 226 [chromium] › e2e\settings-locations.spec.ts:524:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 16. POST - Creating as default atomically switches default (8.2s)
+  ok 227 [chromium] › e2e\settings-locations.spec.ts:573:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 17. POST - Unauthenticated request returns 401 (29ms)
+  ok 228 [chromium] › e2e\settings-locations.spec.ts:589:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 18. GET /:id - Valid ID returns location with 200 (1.2s)
+  ok 229 [chromium] › e2e\settings-locations.spec.ts:607:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 19. GET /:id - Nonexistent ID returns 404 (1.2s)
+  ok 230 [chromium] › e2e\settings-locations.spec.ts:619:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 20. GET /:id - Invalid ID format returns 400 (437ms)
+  ok 231 [chromium] › e2e\settings-locations.spec.ts:632:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 21. PUT - Valid update succeeds with 200 (3.2s)
+  ok 232 [chromium] › e2e\settings-locations.spec.ts:668:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 22. PUT - Partial update (only name) succeeds (2.4s)
+  ok 233 [chromium] › e2e\settings-locations.spec.ts:691:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 23. PUT - Setting as default atomically switches default (8.6s)
+  ok 234 [chromium] › e2e\settings-locations.spec.ts:750:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 24. PUT - Duplicate name (different location) returns 409 (4.8s)
+  ok 235 [chromium] › e2e\settings-locations.spec.ts:795:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 25. PUT - Updating own name (no change) succeeds (4.0s)
+  ok 236 [chromium] › e2e\settings-locations.spec.ts:828:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 26. PUT - Nonexistent ID returns 404 (814ms)
+  ok 237 [chromium] › e2e\settings-locations.spec.ts:844:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 27. PUT - Invalid field value returns 400 (835ms)
+  ok 238 [chromium] › e2e\settings-locations.spec.ts:866:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 28. DELETE - Default location returns 409 (protection) (3.5s)
+  ok 239 [chromium] › e2e\settings-locations.spec.ts:894:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 29. DELETE - Location referenced by coupon returns 409 (protection) (6.3s)
+  ok 240 [chromium] › e2e\settings-locations.spec.ts:941:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 30. DELETE - Location set as system default returns 409 (protection) (5.6s)
+  ok 241 [chromium] › e2e\settings-locations.spec.ts:987:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 31. DELETE - Unused non-default location succeeds with 200 (7.1s)
+  ok 242 [chromium] › e2e\settings-locations.spec.ts:1031:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 32. DELETE - Nonexistent ID returns 404 (1.2s)
+  ok 243 [chromium] › e2e\settings-locations.spec.ts:1043:7 › Phase 11 - Store Locations Individual API (POST/PUT/DELETE) › 33. DELETE - Unauthenticated request returns 401 (1.7s)
+  ok 244 [chromium] › e2e\settings-locations.spec.ts:1107:7 › Phase 11 - Store Locations Historical Integrity & Concurrency › 34. Historical integrity - updating location does not rewrite Coupon.storeLocation history (6.7s)
+  x  245 [chromium] › e2e\settings-locations.spec.ts:1170:7 › Phase 11 - Store Locations Historical Integrity & Concurrency › 35. Concurrency - simultaneous default-switch requests leave exactly one default (11.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 246 [chromium] › e2e\settings-staff-accounts.spec.ts:47:9 › Staff Accounts API - P11-T019 › Authorization › should return 401 when listing staff without auth token (355ms)
+  ok 247 [chromium] › e2e\settings-staff-accounts.spec.ts:57:9 › Staff Accounts API - P11-T019 › Authorization › should return 401 when creating staff without auth token (32ms)
+  ok 248 [chromium] › e2e\settings-staff-accounts.spec.ts:76:9 › Staff Accounts API - P11-T019 › List Staff › should list all staff accounts with admin auth (1.7s)
+  ok 249 [chromium] › e2e\settings-staff-accounts.spec.ts:108:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 400 when name is missing (428ms)
+  ok 250 [chromium] › e2e\settings-staff-accounts.spec.ts:127:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 400 when email is missing (425ms)
+  ok 251 [chromium] › e2e\settings-staff-accounts.spec.ts:146:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 400 when email format is invalid (430ms)
+  ok 252 [chromium] › e2e\settings-staff-accounts.spec.ts:166:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 409 when email already exists (3.8s)
+  ok 253 [chromium] › e2e\settings-staff-accounts.spec.ts:209:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 400 when role is invalid (458ms)
+  ok 254 [chromium] › e2e\settings-staff-accounts.spec.ts:229:9 › Staff Accounts API - P11-T019 › Create Staff - Validation › should return 400 when permissions array contains invalid permission (459ms)
+  ok 255 [chromium] › e2e\settings-staff-accounts.spec.ts:251:9 › Staff Accounts API - P11-T019 › Create Staff - Success › should create staff account with Owner role (5.8s)
+  ok 256 [chromium] › e2e\settings-staff-accounts.spec.ts:293:9 › Staff Accounts API - P11-T019 › Create Staff - Success › should create staff account with Manager role (2.9s)
+  ok 257 [chromium] › e2e\settings-staff-accounts.spec.ts:325:9 › Staff Accounts API - P11-T019 › Create Staff - Success › should create staff account with Fulfillment role (2.8s)
+  ok 258 [chromium] › e2e\settings-staff-accounts.spec.ts:357:9 › Staff Accounts API - P11-T019 › Create Staff - Success › should create staff account with Catalog role (2.4s)
+  ok 259 [chromium] › e2e\settings-staff-accounts.spec.ts:389:9 › Staff Accounts API - P11-T019 › Create Staff - Success › should create staff account with active=false (2.5s)
+  ok 260 [chromium] › e2e\settings-staff-accounts.spec.ts:423:9 › Staff Accounts API - P11-T019 › Audit Logging › should create audit log with correct details on staff creation (3.2s)
+  ok 261 [chromium] › e2e\settings-staff-accounts.spec.ts:474:9 › Staff Accounts API - P11-T019 › Inactive Staff Authentication › should verify inactive staff cannot authenticate (from existing staff-auth middleware) (3.2s)
+  ok 262 [chromium] › e2e\settings-staff-accounts.spec.ts:560:9 › Staff Account Individual API - P11-T020 › GET Individual Staff Account › should retrieve staff account by ID (5.5s)
+  ok 263 [chromium] › e2e\settings-staff-accounts.spec.ts:607:9 › Staff Account Individual API - P11-T020 › GET Individual Staff Account › should return 404 when staff not found (820ms)
+  ok 264 [chromium] › e2e\settings-staff-accounts.spec.ts:620:9 › Staff Account Individual API - P11-T020 › GET Individual Staff Account › should return 401 without authentication (30ms)
+  ok 265 [chromium] › e2e\settings-staff-accounts.spec.ts:630:9 › Staff Account Individual API - P11-T020 › PUT Individual Staff Account - Validation › should update staff name (5.3s)
+  ok 266 [chromium] › e2e\settings-staff-accounts.spec.ts:675:9 › Staff Account Individual API - P11-T020 › PUT Individual Staff Account - Validation › should return 400 when email format is invalid (3.6s)
+  ok 267 [chromium] › e2e\settings-staff-accounts.spec.ts:718:9 › Staff Account Individual API - P11-T020 › PUT Individual Staff Account - Validation › should return 409 when email already exists (6.6s)
+  ok 268 [chromium] › e2e\settings-staff-accounts.spec.ts:780:9 › Staff Account Individual API - P11-T020 › PUT Individual Staff Account - Validation › should return 400 when role is invalid (3.2s)
+  ok 269 [chromium] › e2e\settings-staff-accounts.spec.ts:823:9 › Staff Account Individual API - P11-T020 › PUT Individual Staff Account - Validation › should return 400 when permissions contain invalid permission (3.2s)
+  ok 270 [chromium] › e2e\settings-staff-accounts.spec.ts:868:9 › Staff Account Individual API - P11-T020 › Self-Escalation Prevention - CRITICAL SECURITY › should prevent Manager from granting themselves Owner role (2.8s)
+  ok 271 [chromium] › e2e\settings-staff-accounts.spec.ts:906:9 › Staff Account Individual API - P11-T020 › Self-Escalation Prevention - CRITICAL SECURITY › should prevent Manager from granting themselves additional permissions (2.8s)
+  ok 272 [chromium] › e2e\settings-staff-accounts.spec.ts:937:9 › Staff Account Individual API - P11-T020 › Self-Escalation Prevention - CRITICAL SECURITY › should prevent Manager from activating own inactive account (2.4s)
+  ok 273 [chromium] › e2e\settings-staff-accounts.spec.ts:968:9 › Staff Account Individual API - P11-T020 › Self-Escalation Prevention - CRITICAL SECURITY › should allow staff to modify own non-security fields (name, email) (4.4s)
+  ok 274 [chromium] › e2e\settings-staff-accounts.spec.ts:1018:9 › Staff Account Individual API - P11-T020 › Owner Privilege Tests › should allow Owner to modify other staff role (5.7s)
+  ok 275 [chromium] › e2e\settings-staff-accounts.spec.ts:1073:9 › Staff Account Individual API - P11-T020 › Owner Privilege Tests › should allow Owner to modify other staff permissions (5.2s)
+  ok 276 [chromium] › e2e\settings-staff-accounts.spec.ts:1130:9 › Staff Account Individual API - P11-T020 › DELETE Staff Account › should delete staff account successfully (5.6s)
+  ok 277 [chromium] › e2e\settings-staff-accounts.spec.ts:1187:9 › Staff Account Individual API - P11-T020 › DELETE Staff Account › should return 404 when deleting non-existent staff (820ms)
+  ok 278 [chromium] › e2e\settings-staff-accounts.spec.ts:1200:9 › Staff Account Individual API - P11-T020 › DELETE Staff Account › should prevent self-deletion (2ms)
+  ok 279 [chromium] › e2e\settings-staff-accounts.spec.ts:1211:9 › Staff Account Individual API - P11-T020 › Audit Logging - Security Events › should log STAFF_PERMISSIONS_CHANGED when role changes (5.2s)
+  ok 280 [chromium] › e2e\settings-staff-accounts.spec.ts:1265:9 › Staff Account Individual API - P11-T020 › Audit Logging - Security Events › should log STAFF_ACCOUNT_DELETED with no secrets (4.5s)
+  ok 281 [chromium] › e2e\shipping.spec.ts:125:7 › Jessy Luxury Shipping & Delivery Engine E2E Test › should enforce money recalculations, state machine rules, and public privacy on tracking (1.1m)
+  x  282 [chromium] › e2e\smoke.spec.ts:116:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM (1.0m)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 283 [chromium] › e2e\wholesale.spec.ts:127:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should correctly apply tiered pricing and handle overrides (2.1m)
+  x  284 [chromium] › e2e\wholesale.spec.ts:186:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should handle mixed carts and preserve historical prices (24.6s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 285 [chromium] › e2e\wholesale.spec.ts:233:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should isolate retail and wholesale coupons by customer group (15.0s)
+
+
+  1) [chromium] › e2e\analytics.spec.ts:107:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics 
+
+    TimeoutError: page.waitForSelector: Timeout 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Search catalog to add..."]') to be visible
+
+
+      121 |     // Go to POS create order page
+      122 |     await page.goto('http://localhost:3000/store-portal-jl/dashboard/orders/create')
+    > 123 |     await page.waitForSelector('input[placeholder="Search catalog to add..."]', { timeout: 60000 })
+          |                ^
+      124 |
+      125 |     // Wait for product catalog to load
+      126 |     await page.waitForFunction(
+        at e:\jessy-luxury-website\jessy-luxury\e2e\analytics.spec.ts:123:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\error-context.md
+
+    Error Context: test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      175 |     })
+      176 |
+    > 177 |     expect(response.status()).toBe(200)
+          |                               ^
+      178 |     const result = await response.json()
+      179 |     expect(result.success).toBe(true)
+      180 |   })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\import-export.spec.ts:177:31
+
+    Error Context: test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e\settings\shell-integration.spec.ts:6:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "Settings"
+    Received string:    "Discover YourSignature Scent"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for locator('h1')
+        33 × locator resolved to <h1 class="fade-up mt-6 font-display text-[2.75rem] font-bold leading-[1.02] text-white sm:text-6xl lg:text-7xl">…</h1>
+           - unexpected value "Discover YourSignature Scent"
+
+
+      14 |     // Check that the settings page title is visible
+      15 |     const title = page.locator('h1')
+    > 16 |     await expect(title).toContainText('Settings')
+         |                         ^
+      17 |   })
+      18 |
+      19 |   test('All 7 settings tabs are present on the page', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:16:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e\settings\shell-integration.spec.ts:19:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 7
+    Received:    0
+
+      28 |     
+      29 |     // Should have at least 7 tabs
+    > 30 |     expect(count).toBeGreaterThanOrEqual(7)
+         |                   ^
+      31 |   })
+      32 |
+      33 |   test('Tab navigation structure is intact', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:30:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e\settings\shell-integration.spec.ts:33:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[role="tablist"]')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('[role="tablist"]')
+
+
+      41 |     const tabPanels = page.locator('[role="tabpanel"]')
+      42 |     
+    > 43 |     await expect(tabList).toBeVisible()
+         |                           ^
+      44 |     const panelCount = await tabPanels.count()
+      45 |     expect(panelCount).toBeGreaterThan(0)
+      46 |   })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:43:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e\settings\shell-integration.spec.ts:48:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      57 |     // It should exist in the page
+      58 |     const exists = await settingsLink.count().then(c => c > 0)
+    > 59 |     expect(exists).toBe(true)
+         |                    ^
+      60 |   })
+      61 |
+      62 |   test('P11-T054: Settings shell integration is complete and functional', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:59:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e\settings\shell-integration.spec.ts:62:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('div.min-h-screen')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('div.min-h-screen')
+
+
+      69 |     // Verify the page structure
+      70 |     const mainContent = page.locator('div.min-h-screen')
+    > 71 |     await expect(mainContent).toBeVisible()
+         |                               ^
+      72 |     
+      73 |     // Verify title exists
+      74 |     const title = page.locator('h1:has-text("Settings")')
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:71:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › e2e\settings\shell.spec.ts:6:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+       8 |     
+       9 |     // Check for main page title
+    > 10 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+         |                                                           ^
+      11 |     await expect(page.locator('text=Manage your business configuration and preferences')).toBeVisible()
+      12 |   })
+      13 |
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:10:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › e2e\settings\shell.spec.ts:14:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('button:has-text("Profile")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('button:has-text("Profile")')
+
+
+      18 |     const tabs = ['Profile', 'Locations', 'Staff', 'Payment', 'Notifications', 'System', 'Expenses']
+      19 |     for (const tab of tabs) {
+    > 20 |       await expect(page.locator(`button:has-text("${tab}")`)).toBeVisible()
+         |                                                               ^
+      21 |     }
+      22 |   })
+      23 |
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:20:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › e2e\settings\shell.spec.ts:24:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h2:has-text("Business Profile")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h2:has-text("Business Profile")')
+
+
+      26 |     
+      27 |     // Default should be on Profile tab
+    > 28 |     await expect(page.locator('h2:has-text("Business Profile")')).toBeVisible()
+         |                                                                   ^
+      29 |     
+      30 |     // Click on Locations tab
+      31 |     await page.locator('button:has-text("Locations")').click()
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:28:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › e2e\settings\shell.spec.ts:83:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+      85 |     await page.setViewportSize({ width: 1920, height: 1080 })
+      86 |     await page.goto('/admin/settings')
+    > 87 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+         |                                                           ^
+      88 |     
+      89 |     // Test on tablet
+      90 |     await page.setViewportSize({ width: 768, height: 1024 })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:87:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › e2e\settings\shell.spec.ts:115:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+      118 |     
+      119 |     // Verify page loaded successfully
+    > 120 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+          |                                                           ^
+      121 |     
+      122 |     // Verify all main structural elements are present
+      123 |     await expect(page.locator('[role="tablist"]')).toBeVisible()  // Tab list
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:120:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › e2e\settings\shell.spec.ts:131:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('button:has-text("Staff")')
+
+
+      133 |     
+      134 |     // Navigate to Staff tab
+    > 135 |     await page.locator('button:has-text("Staff")').click()
+          |                                                    ^
+      136 |     await page.waitForSelector('h2:has-text("Staff Accounts")')
+      137 |     
+      138 |     // Verify we're on Staff tab
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:135:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [chromium] › e2e\settings\shell.spec.ts:151:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 7
+    Received:    0
+
+      160 |     const tabButtons = page.locator('button[role="tab"]')
+      161 |     const count = await tabButtons.count()
+    > 162 |     expect(count).toBeGreaterThanOrEqual(7)  // At least 7 tabs
+          |                   ^
+      163 |     
+      164 |     // Verify each tab is clickable
+      165 |     for (let i = 0; i < Math.min(count, 7); i++) {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:162:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [chromium] › e2e\settings-locations.spec.ts:1170:7 › Phase 11 - Store Locations Historical Integrity & Concurrency › 35. Concurrency - simultaneous default-switch requests leave exactly one default 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+      1249 |       where: { isDefault: true },
+      1250 |     })
+    > 1251 |     expect(defaultsAfter.length).toBe(1)
+           |                                  ^
+      1252 |
+      1253 |     // The default should be either loc1 or loc2 (whichever won the race)
+      1254 |     const defaultId = defaultsAfter[0].id
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings-locations.spec.ts:1251:34
+
+    Error Context: test-results\settings-locations-Phase-1-ff04b-s-leave-exactly-one-default-chromium\error-context.md
+
+    Error Context: test-results\settings-locations-Phase-1-ff04b-s-leave-exactly-one-default-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-locations-Phase-1-ff04b-s-leave-exactly-one-default-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-locations-Phase-1-ff04b-s-leave-exactly-one-default-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [chromium] › e2e\smoke.spec.ts:116:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM 
+
+    TimeoutError: page.waitForSelector: Timeout 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Search catalog to add..."]') to be visible
+
+
+      130 |     // Navigate directly to create order page
+      131 |     await page.goto('http://localhost:3000/store-portal-jl/dashboard/orders/create')
+    > 132 |     await page.waitForSelector('input[placeholder="Search catalog to add..."]', { timeout: 60000 })
+          |                ^
+      133 |
+      134 |     // ── 2. Add seeded product to POS cart ─────────────────────────────────
+      135 |     // Wait for product catalog to load from /api/products before searching
+        at e:\jessy-luxury-website\jessy-luxury\e2e\smoke.spec.ts:132:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17) [chromium] › e2e\wholesale.spec.ts:186:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should handle mixed carts and preserve historical prices › Mixed Cart Test › Historical Price Preservation Test 
+
+    PrismaClientValidationError: 
+    Invalid `prisma.order.findUnique()` invocation in
+    e:\jessy-luxury-website\jessy-luxury\e2e\wholesale.spec.ts:223:50
+
+      220 })
+      221 
+      222 // Re-fetch the original mixed cart order
+    → 223 const historicOrder = await prisma.order.findUnique({
+            where: {
+              id: 42
+            },
+            include: {
+              items: true,
+              ~~~~~
+          ?   CouponRedemption?: true,
+          ?   Customer?: true,
+          ?   ShippingZone?: true,
+          ?   OrderItem?: true,
+          ?   OrderTimeline?: true,
+          ?   PriceAdjustmentLog?: true
+            }
+          })
+
+    Unknown field `items` for include statement on model `Order`. Available options are marked with ?.
+
+      221 |
+      222 |         // Re-fetch the original mixed cart order
+    > 223 |         const historicOrder = await prisma.order.findUnique({
+          |                                                  ^
+      224 |           where: { id: mixedCartOrder.id },
+      225 |           include: { items: true },
+      226 |         })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\wholesale.spec.ts:223:50
+        at Dn (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+        at Mn.handleRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+        at Mn.handleAndLogRequestError (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+        at Mn.request (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+        at l (e:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+        at e:\jessy-luxury-website\jessy-luxury\e2e\wholesale.spec.ts:223:31
+        at e:\jessy-luxury-website\jessy-luxury\e2e\wholesale.spec.ts:215:7
+        at e:\jessy-luxury-website\jessy-luxury\e2e\wholesale.spec.ts:190:5
+
+    Error Context: test-results\wholesale-Jessy-Luxury-Who-b6d5d--preserve-historical-prices-chromium\error-context.md
+
+    Error Context: test-results\wholesale-Jessy-Luxury-Who-b6d5d--preserve-historical-prices-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\wholesale-Jessy-Luxury-Who-b6d5d--preserve-historical-prices-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\wholesale-Jessy-Luxury-Who-b6d5d--preserve-historical-prices-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17 failed
+    [chromium] › e2e\analytics.spec.ts:107:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics 
+    [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully 
+    [chromium] › e2e\settings\shell-integration.spec.ts:6:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI 
+    [chromium] › e2e\settings\shell-integration.spec.ts:19:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page 
+    [chromium] › e2e\settings\shell-integration.spec.ts:33:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact 
+    [chromium] › e2e\settings\shell-integration.spec.ts:48:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation 
+    [chromium] › e2e\settings\shell-integration.spec.ts:62:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional 
+    [chromium] › e2e\settings\shell.spec.ts:6:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully 
+    [chromium] › e2e\settings\shell.spec.ts:14:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible 
+    [chromium] › e2e\settings\shell.spec.ts:24:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs 
+    [chromium] › e2e\settings\shell.spec.ts:83:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout 
+    [chromium] › e2e\settings\shell.spec.ts:115:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) 
+    [chromium] › e2e\settings\shell.spec.ts:131:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation 
+    [chromium] › e2e\settings\shell.spec.ts:151:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning 
+    [chromium] › e2e\settings-locations.spec.ts:1170:7 › Phase 11 - Store Locations Historical Integrity & Concurrency › 35. Concurrency - simultaneous default-switch requests leave exactly one default 
+    [chromium] › e2e\smoke.spec.ts:116:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM 
+    [chromium] › e2e\wholesale.spec.ts:186:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should handle mixed carts and preserve historical prices 
+  1 skipped
+  267 passed (27.7m)

@@ -1,9 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { Search, Truck, Phone, AlertCircle } from 'lucide-react'
+import Link from 'next/link'
+import { Search, Truck, AlertCircle, ShieldCheck } from 'lucide-react'
 
 export default function TrackOrderPage() {
-    const [orderNumber, setOrderNumber] = useState('')
+  const [orderNumber, setOrderNumber] = useState('')
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -52,55 +53,78 @@ export default function TrackOrderPage() {
   }
 
   return (
-    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-[80vh]">
+    <main className="min-h-[80vh] bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <section className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--card-bg)]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,163,93,0.14),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(79,45,127,0.10),transparent_60%)]" />
         <div className="grain absolute inset-0 opacity-30" />
-        <div className="relative mx-auto max-w-4xl px-6 py-16 text-center lg:px-8 lg:py-20">
-          <p className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] text-amber-500">
-            <Truck size={14} /> LIVE ORDER TRACKING
+        <div className="relative mx-auto max-w-3xl px-6 py-16 text-center lg:py-20">
+          <p className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/25 bg-[var(--accent-soft)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+            <Truck size={13} /> Live order tracking
           </p>
-          <h1 className="mt-4 font-display text-5xl font-bold text-[var(--text-primary)] sm:text-6xl">Track Your Order</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[var(--text-secondary)] font-medium">
-            Enter your Order Number and Customer Phone Number to verify ownership and retrieve secure shipment tracking milestones.
+          <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl">Track Your Order</h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-[var(--text-secondary)]">
+            Enter your order number and the phone number used at checkout to see live delivery milestones.
           </p>
 
-          <form onSubmit={handleSearch} className="mx-auto mt-8 flex flex-col sm:flex-row max-w-lg items-stretch sm:items-center gap-3">
-            <div className="relative flex-1">
-              <input
-                value={orderNumber}
-                onChange={(e) => setOrderNumber(e.target.value)}
-                placeholder="Order Number (e.g. JL-123456) or Token"
-                required
-                className="w-full rounded-full border border-[var(--border)] bg-[var(--bg-primary)] py-3 px-5 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 font-mono shadow-sm"
-              />
-            </div>
-            <div className="relative flex-1">
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Phone Number (e.g. +234...)"
-                className="w-full rounded-full border border-[var(--border)] bg-[var(--bg-primary)] py-3 px-5 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 font-mono shadow-sm"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-full bg-amber-500 px-6 py-3 text-xs font-bold tracking-wider text-stone-950 transition hover:bg-amber-400 disabled:opacity-50 shrink-0 shadow-md shadow-amber-500/10"
-            >
-              {loading ? 'TRACKING…' : 'SEARCH'}
+          <form onSubmit={handleSearch} className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
+            <input
+              value={orderNumber}
+              onChange={(e) => setOrderNumber(e.target.value)}
+              placeholder="Order number (e.g. JL-123456)"
+              required
+              className="field-input flex-1 rounded-full font-mono !py-3.5"
+            />
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone number"
+              className="field-input flex-1 rounded-full font-mono !py-3.5"
+            />
+            <button type="submit" disabled={loading} className="btn-primary shrink-0 !px-7 !py-3.5">
+              <Search size={15} /> {loading ? 'Tracking…' : 'Track'}
             </button>
           </form>
+
+          {error && (
+            <div className="mx-auto mt-6 flex max-w-xl items-start gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-left text-sm font-semibold text-[var(--danger)]">
+              <AlertCircle size={18} className="mt-0.5 shrink-0" />
+              <p>{error}</p>
+            </div>
+          )}
         </div>
       </section>
 
       <section className="mx-auto max-w-3xl px-6 py-12">
-        {error && (
-          <div className="flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-5 text-red-600 dark:text-red-400 text-sm font-bold">
-            <AlertCircle size={20} className="shrink-0" />
-            <p>{error}</p>
-          </div>
-        )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[
+            {
+              icon: ShieldCheck,
+              t: 'Private by design',
+              d: 'Only you can view your shipment — verification is tied to your phone number.',
+            },
+            {
+              icon: Truck,
+              t: 'Live milestones',
+              d: 'From payment confirmation to doorstep delivery, follow every step.',
+            },
+          ].map((c) => (
+            <div key={c.t} className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-card">
+              <c.icon size={19} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+              <div>
+                <p className="text-sm font-bold">{c.t}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">{c.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-8 text-center text-xs text-[var(--text-muted)]">
+          Lost your order number?{' '}
+          <Link href="/contact" className="font-bold text-[var(--accent)] hover:underline">
+            Contact us
+          </Link>{' '}
+          and we&apos;ll locate it for you.
+        </p>
       </section>
     </main>
   )

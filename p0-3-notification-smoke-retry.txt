@@ -1,0 +1,183 @@
+
+≡ƒöº [Global Setup] Starting test account provisioning...
+
+   Waiting for previous connections to close...
+   Creating/updating owner@jessy.test (Owner)...
+   Creating/updating manager@jessy.test (Manager)...
+   Creating/updating fulfillment@jessy.test (Fulfillment)...
+   Creating/updating catalog@jessy.test (Catalog)...
+   Creating/updating inactive@jessy.test (Manager)...
+
+Γ£à [Global Setup] All test accounts provisioned successfully
+
+Γ£à [Global Setup] Verified 5 test accounts exist
+
+[E2E Env Loader] Successfully loaded environment from .env
+
+Running 6 tests using 1 worker
+
+[E2E Env Loader] Successfully loaded environment from .env
+  x  1 [chromium] ΓÇ║ e2e\notifications.spec.ts:108:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce idempotency, outbox claim locking, and credentials fallback mapping (0ms)
+  -  2 [chromium] ΓÇ║ e2e\notifications.spec.ts:242:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce API session security checks
+  -  3 [chromium] ΓÇ║ e2e\notifications.spec.ts:264:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should verify Phase 9 customer notification portal and engagement features
+  -  4 [chromium] ΓÇ║ e2e\notifications.spec.ts:389:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should render an active StoreAnnouncement on the public storefront
+  -  5 [chromium] ΓÇ║ e2e\notifications.spec.ts:417:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should not suppress transactional order notifications when marketing is opted out
+  x  6 [chromium] ΓÇ║ e2e\smoke.spec.ts:115:7 ΓÇ║ Jessy Luxury CRM & POS E2E Smoke Test ΓÇ║ checkout POS order and navigate through CRM (0ms)
+
+
+  1) [chromium] ΓÇ║ e2e\notifications.spec.ts:108:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce idempotency, outbox claim locking, and credentials fallback mapping 
+
+    PrismaClientValidationError: 
+    Invalid `prisma.systemConfig.upsert()` invocation in
+    E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:42:46
+
+      39 originalOneSignalKey = process.env.ONESIGNAL_API_KEY
+      40 
+      41 // Ensure SystemConfig record exists so requireAdminAuth doesn't fail
+    ΓåÆ 42 const config = await prisma.systemConfig.upsert({
+           where: {
+             id: 1
+           },
+           update: {},
+           create: {
+             id: 1,
+             sessionVersion: 1,
+         +   updatedAt: DateTime
+           }
+         })
+
+    Argument `updatedAt` is missing.
+
+      40 |
+      41 |     // Ensure SystemConfig record exists so requireAdminAuth doesn't fail
+    > 42 |     const config = await prisma.systemConfig.upsert({
+         |                                              ^
+      43 |       where: { id: 1 },
+      44 |       update: {},
+      45 |       create: { id: 1, sessionVersion: 1 },
+        at E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:42:46
+        at Dn (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+        at Mn.handleRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+        at Mn.handleAndLogRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+        at Mn.request (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+        at l (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+        at E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:42:20
+
+    PrismaClientValidationError: 
+    Invalid `prisma.notificationDelivery.deleteMany()` invocation in
+    E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:85:39
+
+      82 if (originalOneSignalKey !== undefined) process.env.ONESIGNAL_API_KEY = originalOneSignalKey
+      83 
+      84 // Clean up
+    ΓåÆ 85 await prisma.notificationDelivery.deleteMany({
+           where: {
+             notification: {
+             ~~~~~~~~~~~~
+               eventKey: {
+                 startsWith: "notif_test:NOTIF_E2E_4316"
+               }
+             },
+         ?   AND?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[],
+         ?   OR?: NotificationDeliveryWhereInput[],
+         ?   NOT?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[],
+         ?   id?: IntFilter | Int,
+         ?   notificationId?: IntFilter | Int,
+         ?   channel?: StringFilter | String,
+         ?   provider?: StringFilter | String,
+         ?   status?: StringFilter | String,
+         ?   providerId?: StringNullableFilter | String | Null,
+         ?   attempts?: IntFilter | Int,
+         ?   errorMessage?: StringNullableFilter | String | Null,
+         ?   nextAttemptAt?: DateTimeNullableFilter | DateTime | Null,
+         ?   claimedAt?: DateTimeNullableFilter | DateTime | Null,
+         ?   claimedBy?: StringNullableFilter | String | Null,
+         ?   sentAt?: DateTimeNullableFilter | DateTime | Null,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   Notification?: NotificationRelationFilter | NotificationWhereInput
+           }
+         })
+
+    Unknown argument `notification`. Did you mean `Notification`? Available options are marked with ?.
+
+      83 |
+      84 |     // Clean up
+    > 85 |     await prisma.notificationDelivery.deleteMany({
+         |                                       ^
+      86 |       where: {
+      87 |         notification: {
+      88 |           eventKey: { startsWith: `notif_test:${namespace}` },
+        at E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:85:39
+        at Dn (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+        at Mn.handleRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+        at Mn.handleAndLogRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+        at Mn.request (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+        at l (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+        at E:\jessy-luxury-website\jessy-luxury\e2e\notifications.spec.ts:85:5
+
+    Error Context: test-results\notifications-Jessy-Luxury-38be2-redentials-fallback-mapping-chromium\error-context.md
+
+    Error Context: test-results\notifications-Jessy-Luxury-38be2-redentials-fallback-mapping-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\notifications-Jessy-Luxury-38be2-redentials-fallback-mapping-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\notifications-Jessy-Luxury-38be2-redentials-fallback-mapping-chromium\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  2) [chromium] ΓÇ║ e2e\smoke.spec.ts:115:7 ΓÇ║ Jessy Luxury CRM & POS E2E Smoke Test ΓÇ║ checkout POS order and navigate through CRM 
+
+    PrismaClientValidationError: 
+    Invalid `prisma.category.upsert()` invocation in
+    E:\jessy-luxury-website\jessy-luxury\e2e\smoke.spec.ts:48:42
+
+      45 
+      46 test.beforeAll(async () => {
+      47   // 1. Seed a test product directly in the database
+    ΓåÆ 48   testCategory = await prisma.category.upsert({
+             where: {
+               name: "Smoke Test Category"
+             },
+             update: {},
+             create: {
+               name: "Smoke Test Category",
+               slug: "smoke-test-cat-2601",
+           +   updatedAt: DateTime
+             }
+           })
+
+    Argument `updatedAt` is missing.
+
+      46 |   test.beforeAll(async () => {
+      47 |     // 1. Seed a test product directly in the database
+    > 48 |     testCategory = await prisma.category.upsert({
+         |                                          ^
+      49 |       where: { name: 'Smoke Test Category' },
+      50 |       update: {},
+      51 |       create: { name: 'Smoke Test Category', slug: `smoke-test-cat-${runId}` },
+        at E:\jessy-luxury-website\jessy-luxury\e2e\smoke.spec.ts:48:42
+        at Dn (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:114:8082)
+        at Mn.handleRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7396)
+        at Mn.handleAndLogRequestError (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:7061)
+        at Mn.request (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:121:6745)
+        at l (E:\jessy-luxury-website\jessy-luxury\node_modules\@prisma\client\runtime\library.js:130:9633)
+        at E:\jessy-luxury-website\jessy-luxury\e2e\smoke.spec.ts:48:20
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  2 failed
+    [chromium] ΓÇ║ e2e\notifications.spec.ts:108:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce idempotency, outbox claim locking, and credentials fallback mapping 
+    [chromium] ΓÇ║ e2e\smoke.spec.ts:115:7 ΓÇ║ Jessy Luxury CRM & POS E2E Smoke Test ΓÇ║ checkout POS order and navigate through CRM 
+  4 did not run

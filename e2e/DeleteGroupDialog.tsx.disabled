@@ -1,0 +1,50 @@
+'use client'
+
+import { useState } from 'react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui'
+
+interface Props {
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => Promise<boolean>
+  groupName: string
+}
+
+export function DeleteGroupDialog({ isOpen, onClose, onConfirm, groupName }: Props) {
+  const [isSubmitting, setSubmitting] = useState(false)
+
+  const handleConfirm = async () => {
+    setSubmitting(true)
+    const success = await onConfirm()
+    setSubmitting(false)
+    if (success) {
+      onClose()
+    }
+  }
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the <strong>{groupName}</strong> group.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onClose} disabled={isSubmitting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} disabled={isSubmitting}>{isSubmitting ? 'Deleting...' : 'Delete'}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}

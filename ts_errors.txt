@@ -1,0 +1,2 @@
+app/store-portal-jl/dashboard/settings/components/NotificationSettingsForm.tsx(243,30): error TS1005: ')' expected.
+app/store-portal-jl/dashboard/settings/components/NotificationSettingsForm.tsx(244,10): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?

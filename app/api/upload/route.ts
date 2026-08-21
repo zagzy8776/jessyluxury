@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuthOr } from '@/lib/staff-auth'
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuthOr(request, ['products', 'catalog', 'settings', 'marketing'])
   if (authErr) return authErr
 
   try {

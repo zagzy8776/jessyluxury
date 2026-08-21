@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function GET() {
   try {
@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'fulfillment')
   if (authErr) return authErr
 
   try {
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
         description: body.description || null,
         active: body.active !== undefined ? Boolean(body.active) : true,
         isPickup: body.isPickup !== undefined ? Boolean(body.isPickup) : false,
+        updatedAt: new Date(),
       },
     })
     return NextResponse.json(zone, { status: 201 })

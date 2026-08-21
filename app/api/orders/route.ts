@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
+import { isCustomerAuthenticated } from '@/lib/auth'
 import { InventoryConflictError, reserveStock, sellStockDirect } from '@/lib/orders/inventory'
 import { validateAndLogPricing } from '@/lib/orders/pricing'
 import { publishBusinessEvent } from '@/lib/orders/events'
 import { normalizePhoneNumber } from '@/lib/orders/phone'
 import { updateCustomerStats } from '@/lib/orders/customer-stats'
+import { couponAudienceError } from '@/lib/wholesale/pricing'
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'orders')
   if (authErr) return authErr
+
+  const customerId = await isCustomerAuthenticated(request)
 
   try {
     const body = await request.json()
@@ -96,6 +100,13 @@ export async function POST(request: Request) {
     const cleanWhatsapp = normalizePhoneNumber(customerWhatsapp || customerPhone)
     const orderNumber = `JL-${Math.floor(100000 + Math.random() * 900000)}`
 
+    const existingCustomer = await prisma.customer.findUnique({
+      where: { phone: cleanPhone },
+      include: { CustomerGroup: true },
+    })
+    const isWholesaleBuyer = Boolean(existingCustomer?.CustomerGroup?.isActive)
+    const customerGroupId = isWholesaleBuyer ? existingCustomer!.customerGroupId : null
+
     // Pre-fetch product snapshot data (cost, name, brand) BEFORE the transaction
     // so we capture immutable historical values at the time of sale
             const productIds = Array.from(new Set(items.map((i: any) => Number(i.productId))))
@@ -113,7 +124,7 @@ export async function POST(request: Request) {
       const codeUpper = couponCode.toUpperCase().trim()
       const dbCoupon = await prisma.coupon.findUnique({
         where: { code: codeUpper },
-        include: { campaigns: { where: { isActive: true }, take: 1 } },
+        include: { Campaign: { where: { isActive: true }, take: 1 } },
       })
 
       if (!dbCoupon) {
@@ -121,6 +132,11 @@ export async function POST(request: Request) {
       }
       if (!dbCoupon.isActive) {
         return NextResponse.json({ error: 'Coupon code is disabled' }, { status: 400 })
+      }
+
+      const audienceError = couponAudienceError(Boolean(dbCoupon.wholesaleEligible), isWholesaleBuyer)
+      if (audienceError) {
+        return NextResponse.json({ error: audienceError }, { status: 400 })
       }
 
       // Timezone boundary check (Africa/Lagos = UTC+1)
@@ -200,6 +216,7 @@ export async function POST(request: Request) {
       // Create or update Customer profile
       let customer = await tx.customer.findUnique({
         where: { phone: cleanPhone },
+        include: { CustomerGroup: true },
       })
 
       if (customer) {
@@ -210,9 +227,10 @@ export async function POST(request: Request) {
             whatsapp: cleanWhatsapp,
             address: shippingAddress || customer.address,
           },
+          include: { CustomerGroup: true },
         })
       } else {
-        customer = await tx.customer.create({
+        customer = (await tx.customer.create({
           data: {
             name: customerName,
             phone: cleanPhone,
@@ -221,8 +239,14 @@ export async function POST(request: Request) {
             acquisitionSource: source || 'Manual',
             totalSpent: 0,
             ordersCount: 0,
+            updatedAt: new Date(),
           },
-        })
+          include: { CustomerGroup: true },
+        })) as any
+      }
+
+      if (!customer) {
+        throw new Error('Failed to create or update customer')
       }
 
       // Create Order record
@@ -248,13 +272,19 @@ export async function POST(request: Request) {
           paymentStatus,
           status: 'PENDING',
           salesChannel,
-          items: {
+          // Historical wholesale classification snapshot
+          customerGroupIdSnapshot: customer.customerGroupId,
+          customerGroupCodeSnapshot: customer.CustomerGroup?.code ?? null,
+          customerGroupNameSnapshot: customer.CustomerGroup?.name ?? null,
+          isWholesaleOrderSnapshot: Boolean(customer.CustomerGroup?.isActive),
+          updatedAt: new Date(),
+          OrderItem: {
             create: items.map((item: any) => {
               const snap = snapshotMap[Number(item.productId)]
               return {
                 productId: Number(item.productId),
                 quantity: Number(item.quantity),
-                price: Number(item.price),
+                price: Number(item.price), // Initially use client's submitted price
                 // Historical snapshots — immutable at sale time
                 unitCost: snap?.costPrice ?? null,
                 productNameSnapshot: snap?.name ?? null,
@@ -263,27 +293,38 @@ export async function POST(request: Request) {
             }),
           },
         },
-        include: {
-          items: true,
-        },
-      })
+      });
 
-      // Update cached customer summary statistics using shared state machine transition
-      await updateCustomerStats(
-        tx,
-        customer.id,
-        null, // No previous order state exists
-        { paymentStatus, status: 'PENDING', total: finalTotal }
-      )
-
+      // Re-fetch the order with items so the response includes them
+      const newOrderWithItems = await tx.order.findUnique({
+        where: { id: newOrder.id },
+        include: { OrderItem: true },
+      });
+      
       // Validate pricing overrides and manage stock level allocations
+      let actualTotalAfterPriceEnforcement = Number(subtotal) - finalDiscount + calculatedShippingFee; // Start with client's total
       for (const item of items) {
         const productId = Number(item.productId)
         const quantity = Number(item.quantity)
-        const price = Number(item.price)
+        const clientSubmittedPrice = Number(item.price);
 
         // Log manual POS override adjustments
-        await validateAndLogPricing(tx, newOrder.id, productId, quantity, price, 'Admin')
+        // This call will now also update the OrderItem.price in the DB if tampering is detected
+        const enforcedPrice = await validateAndLogPricing(
+          tx,
+          newOrder.id,
+          productId,
+          quantity,
+          clientSubmittedPrice, // Pass client's price for validation
+          'Admin',
+          'Manual POS price adjustment',
+          customerGroupId
+        );
+        
+        // If price was enforced (changed from clientSubmittedPrice), adjust the total
+        if (enforcedPrice !== clientSubmittedPrice) {
+            actualTotalAfterPriceEnforcement += (enforcedPrice - clientSubmittedPrice) * quantity;
+        }
 
         // Enforce stock adjustments
         if (paymentStatus === 'PAID') {
@@ -294,6 +335,24 @@ export async function POST(request: Request) {
           await reserveStock(tx, productId, quantity, 'Admin')
         }
       }
+      
+      // After all items are processed and prices enforced, update the order's total if it changed
+      if (actualTotalAfterPriceEnforcement !== finalTotal) {
+          await tx.order.update({
+              where: { id: newOrder.id },
+              data: { total: actualTotalAfterPriceEnforcement }
+          });
+          newOrder.total = actualTotalAfterPriceEnforcement; // Update the object for response
+      }
+
+      // Update cached customer summary statistics using shared state machine transition
+      // This must happen AFTER all item prices have been enforced and newOrder.total is finalized.
+      await updateCustomerStats(
+        tx,
+        customer.id,
+        null, // No previous order state exists
+        { paymentStatus, status: 'PENDING', total: newOrder.total } // Use the potentially updated newOrder.total
+      );
 
       // Update coupon usage if applicable
       if (verifiedCoupon) {
@@ -321,7 +380,7 @@ export async function POST(request: Request) {
         }
 
         // Record singular CouponRedemption map (with campaign attribution)
-        const activeCampaign = verifiedCoupon.campaigns?.[0]
+        const activeCampaign = verifiedCoupon.Campaign?.[0]
         await tx.couponRedemption.create({
           data: {
             couponId: verifiedCoupon.id,
@@ -362,16 +421,16 @@ export async function POST(request: Request) {
         },
       })
 
-      return newOrder
+      return newOrderWithItems || newOrder
     }, {
       timeout: 30000, // 30s transaction timeout for Neon cold-start
       maxWait: 15000, // 15s max time waiting to acquire transaction connection
     })
 
     // 4. Publish business events POST-COMMIT
-    await publishBusinessEvent('order.created', { orderId: order.id, orderNumber: order.orderNumber, total: order.total })
+    await publishBusinessEvent('order.created', { orderId: order.id, orderNumber: order.orderNumber, total: order.total, isAuthenticated: !!customerId })
     if (order.paymentStatus === 'PAID') {
-      await publishBusinessEvent('order.paid', { orderId: order.id, orderNumber: order.orderNumber, total: order.total })
+      await publishBusinessEvent('order.paid', { orderId: order.id, orderNumber: order.orderNumber, total: order.total, isAuthenticated: !!customerId })
     }
 
     return NextResponse.json(order, { status: 201 })
@@ -386,7 +445,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const authError = await requireAdminAuth(request)
+    const authError = await requireStaffAuth(request, 'orders')
     if (authError) return authError
 
     const { searchParams } = new URL(request.url)
@@ -416,17 +475,17 @@ export async function GET(request: Request) {
     const orders = await prisma.order.findMany({
       where,
       include: {
-        items: {
+        OrderItem: {
           include: {
-            product: true,
+            Product: true,
           },
         },
-        shippingZone: true,
-        customer: true,
-        timeline: {
+        ShippingZone: true,
+        Customer: true,
+        OrderTimeline: {
           orderBy: { createdAt: 'desc' },
         },
-        priceAdjustments: true,
+        PriceAdjustmentLog: true,
       },
       orderBy: {
         createdAt: 'desc',

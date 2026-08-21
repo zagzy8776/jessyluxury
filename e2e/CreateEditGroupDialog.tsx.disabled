@@ -1,0 +1,99 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Switch,
+} from '@/components/ui'
+import { CustomerGroup } from '@prisma/client'
+
+interface Props {
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (values: Partial<CustomerGroup>) => Promise<boolean>
+  group?: CustomerGroup | null
+}
+
+export function CreateEditGroupDialog({ isOpen, onClose, onSubmit, group }: Props) {
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [isActive, setIsActive] = useState(true)
+  const [isSubmitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (group) {
+      setName(group.name)
+      setDescription(group.description || '')
+      setIsActive(group.isActive)
+    } else {
+      setName('')
+      setDescription('')
+      setIsActive(true)
+    }
+  }, [group, isOpen])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+    const success = await onSubmit({ name, description, isActive })
+    setSubmitting(false)
+    if (success) {
+      onClose()
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{group ? 'Edit Customer Group' : 'Create New Customer Group'}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Group Name</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., Wholesale, VIP"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description (Optional)</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="A short description of this group's purpose."
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="isActive"
+              checked={isActive}
+              onCheckedChange={setIsActive}
+            />
+            <Label htmlFor="isActive">Active</Label>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Group'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}

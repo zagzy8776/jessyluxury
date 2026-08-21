@@ -37,7 +37,7 @@ async function main() {
   // Get all items that haven't been backfilled (productNameSnapshot is null)
   const items = await prisma.orderItem.findMany({
     where: { productNameSnapshot: null },
-    include: { product: true },
+    include: { Product: true },
   })
 
   console.log(`Found ${items.length} OrderItems to backfill.`)
@@ -46,13 +46,13 @@ async function main() {
   let nulled = 0
 
   for (const item of items) {
-    if (item.product) {
+    if (item.Product) {
       await prisma.orderItem.update({
         where: { id: item.id },
         data: {
-          unitCost: item.product.costPrice ?? null,
-          productNameSnapshot: item.product.name,
-          brandSnapshot: item.product.brand,
+          unitCost: item.Product.costPrice ?? null,
+          productNameSnapshot: item.Product.name,
+          brandSnapshot: item.Product.brand,
         },
       })
       filled++

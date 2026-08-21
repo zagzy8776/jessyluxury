@@ -26,7 +26,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
     const config = await prisma.systemConfig.upsert({
       where: { id: 1 },
       update: {},
-      create: { id: 1, sessionVersion: 1 },
+      create: { id: 1, sessionVersion: 1, updatedAt: new Date() },
     })
     const sessionVersion = config.sessionVersion
     authToken = await generateAdminToken(sessionVersion)
@@ -36,6 +36,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
       data: {
         name: `Shipping Cat ${namespace}`,
         slug: `shipping-cat-${namespace.toLowerCase()}`,
+        updatedAt: new Date(),
       },
     })
 
@@ -48,6 +49,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
         costPrice: 15000,
         stock: 50,
         categoryId: testCategory.id,
+        updatedAt: new Date(),
       },
     })
 
@@ -57,6 +59,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
         name: `Shipment Cust ${namespace}`,
         phone: `+234803333${runId}`,
         whatsapp: `+234803333${runId}`,
+        updatedAt: new Date(),
       },
     })
 
@@ -67,6 +70,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
         fee: 2000,
         estimatedDays: '1-2 business days',
         active: true,
+        updatedAt: new Date(),
       },
     })
 
@@ -76,6 +80,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
         fee: 3000,
         estimatedDays: '2-3 business days',
         active: true,
+        updatedAt: new Date(),
       },
     })
 
@@ -85,6 +90,7 @@ test.describe('Jessy Luxury Shipping & Delivery Engine E2E Test', () => {
         fee: 4000,
         estimatedDays: '1-2 business days',
         active: false,
+        updatedAt: new Date(),
       },
     })
   })

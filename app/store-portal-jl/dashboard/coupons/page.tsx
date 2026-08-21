@@ -96,46 +96,61 @@ export default function AdminCouponsPage() {
     }
   }
 
+  const inp = 'admin-input font-medium'
+  const lbl = 'mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]'
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">Coupons &amp; Discount Engine</h1>
-          <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
-            Create percentage or fixed discount coupons with automatic limit reactivation.
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Promotions</p>
+          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">Coupons &amp; Discounts</h1>
+          <p className="mt-1 text-xs font-medium text-[var(--admin-text-secondary)]">
+            Percentage or fixed discounts with automatic limit reactivation.
           </p>
         </div>
 
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10"
+          className="inline-flex w-fit items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)]"
         >
-          <Plus size={16} /> CREATE NEW COUPON
+          <Plus size={15} /> New Coupon
         </button>
       </div>
 
       {loading ? (
-        <div className="py-20 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading coupons engine…</div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="skeleton h-48 w-full" />
+          ))}
+        </div>
+      ) : coupons.length === 0 ? (
+        <div className="admin-card py-16 text-center">
+          <Ticket size={30} className="mx-auto text-[var(--admin-text-muted)]" />
+          <p className="mt-3 font-display text-lg font-bold">No coupons yet</p>
+          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">Create your first promo code to run discounts.</p>
+        </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {coupons.map((c) => (
             <div
               key={c.id}
-              className={`flex flex-col justify-between rounded-2xl border p-5 transition shadow-sm ${
+              className={`flex flex-col justify-between rounded-xl border p-5 transition ${
                 c.isActive
-                  ? 'border-[var(--border)] bg-[var(--card-bg)] hover:border-amber-500/40'
-                  : 'border-[var(--border)] bg-[var(--bg-primary)] opacity-60'
+                  ? 'border-[var(--admin-border)] bg-[var(--admin-card-bg)] shadow-sm hover:border-[var(--accent)]/40'
+                  : 'border-dashed border-[var(--admin-border)] bg-[var(--admin-bg)] opacity-70'
               }`}
             >
               <div>
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <span className="rounded-xl bg-purple-500/10 p-2.5 text-purple-500 border border-purple-500/20">
-                      <Ticket size={20} />
+                    <span className="rounded-lg bg-[var(--accent-soft)] p-2.5 text-[var(--accent)]">
+                      <Ticket size={18} />
                     </span>
                     <div>
-                      <h3 className="font-mono text-xl font-bold tracking-wider text-amber-500">{c.code}</h3>
-                      <p className="text-xs text-[var(--text-secondary)] font-bold">
+                      <h3 className="font-mono text-lg font-bold tracking-wider text-[var(--accent)]">{c.code}</h3>
+                      <p className="text-xs font-bold text-[#7a5c22]">
                         {c.discountType === 'PERCENTAGE'
                           ? `${c.discountValue}% OFF`
                           : `₦${c.discountValue.toLocaleString('en-NG')} OFF`}
@@ -143,46 +158,53 @@ export default function AdminCouponsPage() {
                     </div>
                   </div>
                   <span
-                    className={`rounded-full px-3 py-0.5 text-[10px] font-bold tracking-wider ${
+                    className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[9px] font-bold tracking-wider ${
                       c.isActive
-                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                        : 'bg-[var(--bg-primary)] text-[var(--text-muted)] border border-[var(--border)]'
+                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                        : 'border-[var(--admin-border)] bg-[var(--admin-bg)] text-[var(--admin-text-muted)]'
                     }`}
                   >
-                    {c.isActive ? 'ACTIVE' : 'INACTIVE'}
+                    {c.isActive ? 'ACTIVE' : 'PAUSED'}
                   </span>
                 </div>
 
-                <div className="mt-4 space-y-2 text-xs text-[var(--text-secondary)] border-t border-[var(--border)] pt-4 font-medium">
+                <div className="mt-4 space-y-2 border-t border-[var(--admin-border)] pt-4 text-xs font-medium text-[var(--admin-text-secondary)]">
                   <div className="flex justify-between">
-                    <span className="text-[var(--text-muted)] font-semibold">Min Order Required:</span>
-                    <strong className="text-[var(--text-primary)] font-mono">₦{c.minOrderAmount.toLocaleString('en-NG')}</strong>
+                    <span className="font-semibold text-[var(--admin-text-muted)]">Min Order:</span>
+                    <strong className="font-mono tabular-nums">₦{c.minOrderAmount.toLocaleString('en-NG')}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[var(--text-muted)] font-semibold">Usage Tracker:</span>
-                    <strong className="text-[var(--text-primary)] font-mono">{c.usedCount} / {c.usageLimit} used</strong>
+                    <span className="font-semibold text-[var(--admin-text-muted)]">Usage:</span>
+                    <strong className="font-mono tabular-nums">{c.usedCount} / {c.usageLimit} used</strong>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] pt-1 font-bold">
-                    <RefreshCw size={13} className={c.autoReactivate ? 'text-amber-500' : 'text-[var(--text-muted)]'} />
-                    <span className={c.autoReactivate ? 'text-amber-500' : 'text-[var(--text-muted)]'}>
+                  {/* Usage progress */}
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--admin-bg)]">
+                    <div
+                      className={`h-full rounded-full ${c.usedCount >= c.usageLimit && !c.autoReactivate ? 'bg-red-500' : 'bg-[var(--champagne)]'}`}
+                      style={{ width: `${Math.min(100, Math.round((c.usedCount / Math.max(c.usageLimit, 1)) * 100))}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5 pt-1 text-[11px] font-bold">
+                    <RefreshCw size={12} className={c.autoReactivate ? 'text-emerald-600' : 'text-[var(--admin-text-muted)]'} />
+                    <span className={c.autoReactivate ? 'text-emerald-600' : 'text-[var(--admin-text-muted)]'}>
                       {c.autoReactivate ? 'Auto-Reactivation Enabled' : 'Manual Reset'}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+              <div className="mt-5 flex items-center justify-end gap-2 border-t border-[var(--admin-border)] pt-4">
                 <button
                   onClick={() => handleOpenModal(c)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 hover:text-amber-500 transition"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] px-3 py-1.5 text-[11px] font-bold transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
-                  <Edit2 size={13} /> Edit
+                  <Edit2 size={12} /> Edit
                 </button>
                 <button
                   onClick={() => handleDelete(c.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-1.5 text-[11px] font-bold text-red-500 transition hover:bg-red-500 hover:text-white"
                 >
-                  <Trash2 size={13} /> Delete
+                  <Trash2 size={12} /> Delete
                 </button>
               </div>
             </div>
@@ -190,38 +212,38 @@ export default function AdminCouponsPage() {
         </div>
       )}
 
-      {/* Modal for Add / Edit Coupon */}
+      {/* Add / Edit modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-              <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">
-                {editingCoupon ? 'Edit Promo Coupon' : 'Create New Promo Coupon'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm">
+          <div className="w-full max-w-lg space-y-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--admin-border)] pb-4">
+              <h3 className="font-display text-lg font-bold">
+                {editingCoupon ? 'Edit Promo Coupon' : 'Create Promo Coupon'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                <X size={20} />
+              <button onClick={() => setShowModal(false)} className="text-[var(--admin-text-muted)] transition hover:text-[var(--admin-text-primary)]" aria-label="Close dialog">
+                <X size={19} />
               </button>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block text-[var(--text-secondary)] mb-1 font-bold">Coupon Code</label>
+                <label className={lbl}>Coupon Code</label>
                 <input
                   value={form.code}
                   onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                   placeholder="e.g. JESSY10"
                   required
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-amber-500 outline-none focus:border-amber-500 font-mono font-bold tracking-wider"
+                  className={`${inp} font-mono font-bold uppercase tracking-wider`}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Discount Type</label>
+                  <label className={lbl}>Discount Type</label>
                   <select
                     value={form.discountType}
                     onChange={(e) => setForm({ ...form, discountType: e.target.value })}
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-medium"
+                    className={inp}
                   >
                     <option value="PERCENTAGE">Percentage (%)</option>
                     <option value="FIXED">Fixed Amount (₦)</option>
@@ -229,79 +251,75 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Discount Value</label>
+                  <label className={lbl}>Discount Value</label>
                   <input
                     type="number"
                     value={form.discountValue}
                     onChange={(e) => setForm({ ...form, discountValue: e.target.value })}
-                    placeholder="e.g. 10 for 10% or 2000 for ₦2,000"
+                    placeholder="10 for 10% or 2000 for ₦2,000"
                     required
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono font-bold"
+                    className={`${inp} font-mono font-bold`}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Min. Order Amount (₦)</label>
+                  <label className={lbl}>Min. Order Amount (₦)</label>
                   <input
                     type="number"
                     value={form.minOrderAmount}
                     onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
                     placeholder="0 for no minimum"
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono font-bold"
+                    className={`${inp} font-mono font-bold`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[var(--text-secondary)] mb-1 font-bold">Usage Limit</label>
+                  <label className={lbl}>Usage Limit</label>
                   <input
                     type="number"
                     value={form.usageLimit}
                     onChange={(e) => setForm({ ...form, usageLimit: e.target.value })}
                     placeholder="100"
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] outline-none focus:border-amber-500 font-mono font-bold"
+                    className={`${inp} font-mono font-bold`}
                   />
                 </div>
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-[var(--border)]">
-                <div className="flex items-center gap-2">
+              <div className="space-y-2 border-t border-[var(--admin-border)] pt-3">
+                <label className="flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
-                    id="autoReactivate"
                     checked={form.autoReactivate}
                     onChange={(e) => setForm({ ...form, autoReactivate: e.target.checked })}
-                    className="h-4 w-4 rounded accent-amber-500"
+                    className="h-4 w-4 rounded accent-[var(--accent)]"
                   />
-                  <label htmlFor="autoReactivate" className="text-amber-500 font-bold">
-                    Automatic Reactivation (Resets usage count when limit reached)
-                  </label>
-                </div>
+                  <span className="font-bold">Auto-reactivate when limit reached</span>
+                </label>
 
-                <div className="flex items-center gap-2">
+                <label className="flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
-                    id="isActive"
                     checked={form.isActive}
                     onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                    className="h-4 w-4 rounded accent-amber-500"
+                    className="h-4 w-4 rounded accent-[var(--accent)]"
                   />
-                  <label htmlFor="isActive" className="text-[var(--text-primary)] font-bold">Active</label>
-                </div>
+                  <span className="font-bold">Active</span>
+                </label>
               </div>
 
-              <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
+              <div className="flex justify-end gap-3 border-t border-[var(--admin-border)] pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-xl border border-[var(--border)] px-5 py-2.5 font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  className="rounded-lg border border-[var(--admin-border)] px-5 py-2.5 font-bold text-[var(--admin-text-secondary)] transition hover:text-[var(--admin-text-primary)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-amber-500 px-6 py-2.5 font-bold text-stone-950 hover:bg-amber-400 transition"
+                  className="rounded-lg bg-[var(--accent)] px-6 py-2.5 font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)]"
                 >
                   Save Coupon
                 </button>

@@ -43,7 +43,7 @@ test.describe('Jessy Luxury Sales & Marketing Engine E2E Test', () => {
     testCategory = await prisma.category.upsert({
       where: { name: 'Marketing Test Category' },
       update: {},
-      create: { name: 'Marketing Test Category', slug: 'marketing-test-category' },
+      create: { name: 'Marketing Test Category', slug: 'marketing-test-category', updatedAt: new Date() },
     })
 
     testProduct = await prisma.product.create({
@@ -55,6 +55,7 @@ test.describe('Jessy Luxury Sales & Marketing Engine E2E Test', () => {
         brand: 'Marketing Brand',
         notes: 'Marketing notes description',
         categoryId: testCategory.id,
+        updatedAt: new Date(),
       },
     })
 
@@ -63,6 +64,7 @@ test.describe('Jessy Luxury Sales & Marketing Engine E2E Test', () => {
         name: `Promo Target User ${runId}`,
         phone: `+234812345${runId}`,
         whatsapp: `+234812345${runId}`,
+        updatedAt: new Date(),
       },
     })
   })
@@ -83,7 +85,7 @@ test.describe('Jessy Luxury Sales & Marketing Engine E2E Test', () => {
       })
     }
     await prisma.campaign.deleteMany({
-      where: { coupon: { code: { contains: codeSuffix } } },
+      where: { Coupon: { code: { contains: codeSuffix } } },
     })
     await prisma.coupon.deleteMany({
       where: { code: { contains: codeSuffix } },

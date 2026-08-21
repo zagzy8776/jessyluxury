@@ -30,39 +30,46 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
   let testProduct: any
   let testCustomer: any
   let createdOrderId: number
-  const testCustomerName = 'Analytics Tester'
-  const testCustomerPhone = '+2348001112223'
+  const runId = Math.floor(1000 + Math.random() * 9000)
+  const ns = `ANA_${runId}`
+  const testCustomerName = `Analytics Tester ${ns}`
+  // Same local/canonical pattern as smoke.spec.ts — derive canonical from local so the fixture is valid regardless of runId width
+  const rawCustomerPhone = `0800111${String(runId).padStart(4, '0').slice(-4)}`
+  const canonicalCustomerPhone = `+234${rawCustomerPhone.slice(1)}`
 
   test.beforeAll(async () => {
     test.setTimeout(180000)
     // 1. Programmatic database setup
     testCategory = await prisma.category.create({
       data: {
-        name: 'Analytics Test Category',
-        slug: 'analytics-test-cat',
+        name: `Analytics Test Category ${ns}`,
+        slug: `analytics-test-cat-${ns.toLowerCase()}`,
+        updatedAt: new Date(),
       },
     })
 
     testProduct = await prisma.product.create({
       data: {
-        name: 'Analytics Initial Name',
+        name: `Analytics Initial Name ${ns}`,
         brand: 'Initial Brand',
         price: 30000,
-        costPrice: 15000, // Margin = 15,000
+        costPrice: 15000,
         volume: '100ml EDP',
         notes: 'Rose · Vanilla',
         stock: 10,
         reserved: 0,
         categoryId: testCategory.id,
+        updatedAt: new Date(),
       },
     })
 
     testCustomer = await prisma.customer.create({
       data: {
         name: testCustomerName,
-        phone: testCustomerPhone,
-        whatsapp: testCustomerPhone,
+        phone: canonicalCustomerPhone,
+        whatsapp: canonicalCustomerPhone,
         acquisitionSource: 'Instagram',
+        updatedAt: new Date(),
       },
     })
 
@@ -70,6 +77,13 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
     const config = await prisma.systemConfig.findUnique({ where: { id: 1 } })
     const sessionVersion = config?.sessionVersion ?? 1
     authToken = await generateAdminToken(sessionVersion)
+
+    // Warm the dev-server compile cache for the POS page. Next.js compiles
+    // routes on demand; a cold compile of this page can exceed the 60s
+    // selector timeout below, so pre-render it once here.
+    await fetch('http://localhost:3000/store-portal-jl/dashboard/orders/create', {
+      headers: { Cookie: `jl_admin_token=${authToken}` },
+    }).catch(() => {})
   })
 
   test.afterAll(async () => {
@@ -128,7 +142,7 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
     )
 
     // Search product
-    const productName = 'Analytics Initial Name'
+    const productName = `Analytics Initial Name ${ns}`
     await page.fill('input[placeholder="Search catalog to add..."]', productName)
     await expect(page.getByText(productName, { exact: false })).toBeVisible({ timeout: 10000 })
 
@@ -139,7 +153,7 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
 
     // Fill customer details
     await page.fill('input[placeholder="e.g. Blessing Okafor"]', testCustomerName)
-    await page.fill('input[placeholder="08012345678"]', testCustomerPhone)
+    await page.fill('input[placeholder="08012345678"]', rawCustomerPhone)
 
     // Select payment status and submit order
     await page.selectOption('#payment-status-select', 'PAID')
@@ -163,7 +177,7 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
 
     const dbItem = dbOrder!.items[0]
     expect(dbItem.unitCost).toBe(15000)
-    expect(dbItem.productNameSnapshot).toBe('Analytics Initial Name')
+    expect(dbItem.productNameSnapshot).toBe(`Analytics Initial Name ${ns}`)
     expect(dbItem.brandSnapshot).toBe('Initial Brand')
 
     // ─── Simulate historical edits ──────────────────────────────────────────
@@ -171,7 +185,7 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
     await prisma.product.update({
       where: { id: testProduct.id },
       data: {
-        name: 'Analytics Modified Name',
+        name: `Analytics Modified Name ${ns}`,
         brand: 'Modified Brand',
         costPrice: 22000,
       },
@@ -192,9 +206,9 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
 
     const bestSellersCard = page.locator('div').filter({ hasText: 'Top Selling Fragrances' }).last()
     // Historic name and brand should still display in the transaction snapshot list
-    await expect(bestSellersCard.locator('text=Analytics Initial Name')).toBeVisible()
+    await expect(bestSellersCard.locator(`text=Analytics Initial Name ${ns}`)).toBeVisible()
     await expect(bestSellersCard.locator('text=Initial Brand')).toBeVisible()
-    await expect(bestSellersCard.locator('text=Analytics Modified Name')).not.toBeVisible()
+    await expect(bestSellersCard.locator(`text=Analytics Modified Name ${ns}`)).not.toBeVisible()
 
     // Switch to Channels Tab
     await page.click('button:has-text("Channels Report")')

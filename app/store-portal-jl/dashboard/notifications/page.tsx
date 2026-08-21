@@ -1,6 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Bell, Check, Inbox, RefreshCw, Trash2, Mail, ShieldAlert, Sparkles, ShoppingBag, Eye, EyeOff } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Bell, Check, Inbox, RefreshCw, Trash2, ShieldAlert, Sparkles, ShoppingBag, Eye, EyeOff, Megaphone,
+} from 'lucide-react'
 
 export default function NotificationsDashboard() {
   const [notifications, setNotifications] = useState<any[]>([])
@@ -84,11 +87,19 @@ export default function NotificationsDashboard() {
     return true
   })
 
+  const unreadCount = notifications.filter((n) => !n.readAt).length
+
   function getIcon(type: string) {
-    if (type.startsWith('order.')) return <ShoppingBag className="text-amber-600" size={16} />
+    if (type.startsWith('order.')) return <ShoppingBag className="text-[var(--accent)]" size={16} />
     if (type.startsWith('inventory.')) return <Sparkles className="text-red-500" size={16} />
     if (type.startsWith('security.')) return <ShieldAlert className="text-orange-500" size={16} />
-    return <Bell className="text-amber-500" size={16} />
+    return <Megaphone className="text-[#7a5c22]" size={16} />
+  }
+
+  function getIconBg(item: any) {
+    if (item.readAt) return 'bg-[var(--admin-bg)] border-[var(--admin-border)]'
+    if (item.type.startsWith('order.')) return 'bg-[var(--accent-soft)] border-[var(--accent)]/20'
+    return 'bg-[var(--champagne-soft)] border-[var(--champagne)]/30'
   }
 
   function handleNotificationClick(item: any) {
@@ -96,7 +107,7 @@ export default function NotificationsDashboard() {
     if (!item.readAt) {
       handleToggleRead(item.id, false)
     }
-    
+
     const payload = item.payload || {}
     if (payload.orderId) {
       window.location.href = `/store-portal-jl/dashboard/orders?openId=${payload.orderId}`
@@ -106,13 +117,26 @@ export default function NotificationsDashboard() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200/80 pb-5">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 border-b border-[var(--admin-border)] pb-5 sm:flex-row sm:items-center">
         <div>
-          <span className="text-[10px] font-bold tracking-[0.2em] text-amber-600 uppercase">Alert Console</span>
-          <h1 className="font-display text-3xl font-bold text-stone-900 mt-1">Notification Center</h1>
-          <p className="text-xs text-stone-500 font-medium mt-1">Monitor operational event queues, email receipts, and outbox delivery metrics.</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Alert console</p>
+          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">Notification Center</h1>
+          <p className="mt-1 text-xs font-medium text-[var(--admin-text-secondary)]">
+            {unreadCount > 0
+              ? `${unreadCount} unread alert${unreadCount === 1 ? '' : 's'} in the queue.`
+              : 'Operational event queue is clear.'}
+          </p>
+          <div className="mt-3 flex gap-4 text-[11px] font-bold">
+            <span className="cursor-default border-b-2 border-[var(--accent)] pb-1 text-[var(--accent)]">Alert Queue</span>
+            <Link
+              href="/store-portal-jl/dashboard/notifications/announcements"
+              className="text-[var(--admin-text-muted)] transition hover:text-[var(--admin-text-primary)]"
+            >
+              Storefront Announcements →
+            </Link>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
@@ -122,130 +146,141 @@ export default function NotificationsDashboard() {
               fetchNotifications()
             }}
             disabled={refreshing}
-            className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3.5 py-2 text-xs font-bold text-stone-700 shadow-sm transition hover:bg-stone-50 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-3.5 py-2 text-xs font-bold shadow-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-50"
           >
-            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-            {refreshing ? 'REFRESHING...' : 'SYNC'}
+            <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+            Sync
           </button>
           <button
             onClick={handleMarkAllAsRead}
-            className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50/50 px-3.5 py-2 text-xs font-bold text-amber-800 shadow-sm transition hover:bg-amber-100/50"
+            disabled={unreadCount === 0}
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-3.5 py-2 text-xs font-bold text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-white disabled:opacity-40"
           >
-            <Check size={14} />
-            MARK ALL READ
+            <Check size={13} />
+            Mark all read
           </button>
         </div>
       </div>
 
-      {/* Tabs / Filters */}
-      <div className="flex flex-wrap items-center gap-1 bg-stone-100 p-1.5 rounded-xl border border-stone-200/50 max-w-md">
+      {/* Filters */}
+      <div className="flex max-w-lg flex-wrap items-center gap-1 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-bg)] p-1.5">
         {(['ALL', 'UNREAD', 'ORDERS', 'STOCK', 'SECURITY'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`rounded-lg px-4 py-1.5 text-xs font-bold transition-all ${
+            className={`rounded-lg px-3.5 py-1.5 text-[11px] font-bold tracking-wide transition ${
               filter === tab
-                ? 'bg-white text-stone-950 shadow-sm'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-[var(--admin-card-bg)] text-[var(--accent)] shadow-sm'
+                : 'text-[var(--admin-text-muted)] hover:text-[var(--admin-text-primary)]'
             }`}
           >
             {tab}
+            {tab === 'UNREAD' && unreadCount > 0 && (
+              <span className="ml-1.5 rounded-full bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold text-white">{unreadCount}</span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Notifications List Container */}
+      {/* List */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-stone-400">
-          <RefreshCw className="animate-spin text-amber-500 mb-3" size={32} />
-          <p className="text-xs font-bold tracking-wider">LOADING NOTIFICATION CACHE...</p>
+        <div className="space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="skeleton h-24 w-full" />
+          ))}
         </div>
       ) : filteredNotifications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 rounded-3xl border border-stone-200/80 bg-white/50 text-center shadow-sm">
-          <Inbox size={48} className="text-stone-300 mb-4" />
-          <h3 className="font-display text-lg font-bold text-stone-900">Inbox Clean</h3>
-          <p className="text-xs text-stone-500 font-medium max-w-xs mt-1.5">No notifications match your current filter settings. System queue is idle.</p>
+        <div className="admin-card flex flex-col items-center justify-center py-16 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--admin-bg)] text-[var(--admin-text-muted)]">
+            <Inbox size={26} />
+          </span>
+          <h3 className="mt-4 font-display text-lg font-bold">Inbox clean</h3>
+          <p className="mt-1 max-w-xs text-xs font-medium text-[var(--admin-text-muted)]">
+            No notifications match your current filter. System queue is idle.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
           {filteredNotifications.map((item) => (
-            <div
+            <article
               key={item.id}
-              className={`group flex flex-col md:flex-row md:items-start justify-between rounded-2xl border transition-all p-5 gap-4 bg-white shadow-sm ${
+              className={`group relative flex flex-col justify-between gap-4 rounded-xl border p-4 transition-all sm:flex-row sm:p-5 ${
                 item.readAt
-                  ? 'border-stone-200/80 hover:border-stone-300/80'
-                  : 'border-amber-300 bg-amber-50/10 hover:border-amber-400 shadow-amber-500/5'
+                  ? 'border-[var(--admin-border)] bg-[var(--admin-card-bg)] hover:border-[var(--admin-border-hover)]'
+                  : 'border-[var(--accent)]/35 bg-[var(--admin-card-bg)] shadow-sm'
               }`}
             >
-              <div className="flex items-start gap-4 flex-1">
-                <div className={`p-2.5 rounded-xl border shrink-0 ${
-                  item.readAt ? 'bg-stone-50 border-stone-200' : 'bg-amber-100 border-amber-200'
-                }`}>
+              {!item.readAt && <span className="absolute inset-y-0 left-0 w-1 rounded-l-xl bg-[var(--accent)]" />}
+
+              <div className="flex flex-1 items-start gap-4">
+                <div className={`shrink-0 rounded-lg border p-2.5 ${getIconBg(item)}`}>
                   {getIcon(item.type)}
                 </div>
 
-                <div className="space-y-1.5 flex-1 min-w-0">
+                <div className="min-w-0 flex-1 space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-display text-sm font-bold text-stone-900">{item.title}</h3>
+                    <h3 className={`text-sm ${item.readAt ? 'font-semibold text-[var(--admin-text-secondary)]' : 'font-bold'}`}>
+                      {item.title}
+                    </h3>
                     {!item.readAt && (
-                      <span className="inline-block rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold text-stone-950 uppercase tracking-wider">
+                      <span className="inline-block rounded-full bg-[var(--accent)] px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white">
                         New
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-stone-600 font-medium leading-relaxed max-w-2xl">{item.message}</p>
-                  
-                  {/* Delivery Channels status display */}
+                  <p className="max-w-2xl text-xs font-medium leading-relaxed text-[var(--admin-text-secondary)]">{item.message}</p>
+
+                  {/* Delivery channels */}
                   {item.deliveries && item.deliveries.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-3 pt-2.5 border-t border-stone-100">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-stone-400">Deliveries:</span>
+                    <div className="flex flex-wrap items-center gap-3 border-t border-[var(--admin-border)] pt-2.5">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Deliveries:</span>
                       {item.deliveries.map((del: any, dIdx: number) => (
-                        <div key={dIdx} className="flex items-center gap-1.5 text-[10px] font-semibold text-stone-600">
-                          <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                        <div key={dIdx} className="flex items-center gap-1.5 text-[10px] font-semibold">
+                          <span className={`inline-block h-1.5 w-1.5 rounded-full ${
                             del.status === 'SENT' ? 'bg-emerald-500' :
                             del.status === 'SKIPPED' ? 'bg-stone-400' :
                             del.status === 'PROCESSING' ? 'bg-blue-500' : 'bg-red-500'
                           }`} />
-                          <span className="font-bold text-stone-700">{del.channel}</span>
-                          <span className="text-[9px] text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded-md">
+                          <span className="font-bold">{del.channel}</span>
+                          <span className="rounded-md bg-[var(--admin-bg)] px-1.5 py-0.5 text-[9px] text-[var(--admin-text-muted)]">
                             {del.status === 'SKIPPED' ? 'SKIPPED (No Key)' : del.status}
                           </span>
                         </div>
                       ))}
                     </div>
                   )}
-                  
-                  <span className="text-[10px] text-stone-400 font-bold block pt-1">
+
+                  <span className="block pt-1 text-[10px] font-bold tabular-nums text-[var(--admin-text-muted)]">
                     {new Date(item.createdAt).toLocaleDateString()} at {new Date(item.createdAt).toLocaleTimeString()}
                   </span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 self-end md:self-start opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Actions */}
+              <div className="flex items-center gap-2 self-end transition-opacity md:self-start">
                 <button
                   onClick={() => handleNotificationClick(item)}
-                  className="p-2 rounded-lg border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 transition shadow-sm"
-                  title="View item detail page"
+                  className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-2 shadow-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  title="Open linked item"
                 >
                   <Eye size={14} />
                 </button>
                 <button
                   onClick={() => handleToggleRead(item.id, !!item.readAt)}
-                  className="p-2 rounded-lg border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 transition shadow-sm"
+                  className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-2 shadow-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                   title={item.readAt ? 'Mark as Unread' : 'Mark as Read'}
                 >
                   {item.readAt ? <EyeOff size={14} /> : <Check size={14} />}
                 </button>
                 <button
                   onClick={() => handleArchive(item.id)}
-                  className="p-2 rounded-lg border border-stone-200 text-red-600 hover:text-red-700 bg-white hover:bg-red-50 transition shadow-sm"
+                  className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-2 text-[var(--admin-text-secondary)] shadow-sm transition hover:border-red-500/40 hover:text-red-500"
                   title="Archive notification"
                 >
                   <Trash2 size={14} />
                 </button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}

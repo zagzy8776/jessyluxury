@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'customers')
   if (authErr) return authErr
 
   try {
@@ -29,6 +29,7 @@ export async function PUT(
       marketingEmail,
       marketingWhatsapp,
       marketingPush,
+      customerGroupId,
     } = body
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -36,11 +37,17 @@ export async function PUT(
 
       const customer = await tx.customer.update({
         where: { id: customerId },
+        include: { CustomerGroup: true },
         data: {
           notes: notes !== undefined ? notes : undefined,
           marketingEmail: marketingEmail !== undefined ? Boolean(marketingEmail) : undefined,
           marketingWhatsapp: marketingWhatsapp !== undefined ? Boolean(marketingWhatsapp) : undefined,
           marketingPush: marketingPush !== undefined ? Boolean(marketingPush) : undefined,
+          customerGroupId: customerGroupId === null
+            ? null
+            : customerGroupId !== undefined
+              ? Number(customerGroupId)
+              : undefined,
         },
       })
 

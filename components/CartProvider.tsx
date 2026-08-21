@@ -69,7 +69,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
   const add = (p: Product, q = 1) =>
     setItems((prev) => {
-      const price = p.salePrice ?? p.price
+      const price = (p as any).displayPrice ?? p.salePrice ?? p.price
       const existing = prev.find((i) => i.id === p.id)
       if (existing)
         return prev.map((i) =>

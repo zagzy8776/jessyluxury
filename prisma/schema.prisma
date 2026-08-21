@@ -7,112 +7,331 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id             Int             @id @default(autoincrement())
-  name           String
-  brand          String
-  price          Int
-  salePrice      Int?
-  costPrice      Int?            @default(0)
-  badge          String?
-  category       Category        @relation(fields: [categoryId], references: [id])
-  categoryId     Int
-  volume         String          @default("100ml EDP")
-  notes          String
-  topNotes       String?
-  middleNotes    String?
-  baseNotes      String?
-  description    String?
-  tone           String          @default("amber")
-  stock          Int             @default(10)
-  reserved       Int             @default(0)
-  featured       Boolean         @default(false)
-  gift           Boolean         @default(false)
-  images         String[]        @default([])
-  orderItems     OrderItem[]
-  reviews        Review[]
-  stockMovements StockMovement[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  String
+  details   String
+  changedBy String
+  createdAt DateTime @default(now())
+}
+
+model BusinessProfile {
+  id        Int      @id @default(1)
+  name      String   @default("Jessy Luxury Fragrance")
+  phone     String   @default("+234 800 000 0000")
+  email     String   @default("support@jessyluxury.com")
+  address   String   @default("57 MCC Road, Opposite Ihechiuwa Junction, Owerri, Imo State, Nigeria")
+  hours     String   @default("Mon – Sat, 9am – 7pm")
+  taxId     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Campaign {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  description       String?
+  couponId          Int
+  audience          String              @default("ALL")
+  channel           String
+  startDate         DateTime
+  endDate           DateTime
+  isActive          Boolean             @default(true)
+  emailEnabled      Boolean             @default(false)
+  pushEnabled       Boolean             @default(false)
+  websiteEnabled    Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  Coupon            Coupon              @relation(fields: [couponId], references: [id])
+  CouponRedemption  CouponRedemption[]
+  StoreAnnouncement StoreAnnouncement[]
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  slug      String    @unique
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  slug               String               @unique
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  Product            Product[]
+  WholesalePriceRule WholesalePriceRule[]
+}
+
+model Coupon {
+  id                Int                @id @default(autoincrement())
+  code              String             @unique
+  name              String?
+  storeLocation     String?            @default("Headquarters (Owerri)")
+  discountType      String             @default("PERCENTAGE")
+  discountValue     Int
+  minOrderAmount    Int                @default(0)
+  usageLimit        Int                @default(100)
+  usedCount         Int                @default(0)
+  customerLimit     Int                @default(1)
+  maxDiscountAmount Int?
+  startDate         DateTime?
+  endDate           DateTime?
+  productIds        Int[]              @default([])
+  categoryIds       Int[]              @default([])
+  autoReactivate    Boolean            @default(true)
+  isActive          Boolean            @default(true)
+  wholesaleEligible Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime
+  Campaign          Campaign[]
+  CouponRedemption  CouponRedemption[]
+}
+
+model CouponRedemption {
+  id         Int       @id @default(autoincrement())
+  couponId   Int
+  customerId Int
+  orderId    Int       @unique
+  campaignId Int?
+  createdAt  DateTime  @default(now())
+  Campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  Coupon     Coupon    @relation(fields: [couponId], references: [id])
+  Customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  Order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, customerId, orderId])
+  @@index([couponId, customerId])
 }
 
 model Customer {
-  id                Int                @id @default(autoincrement())
-  name              String
-  phone             String             @unique
-  whatsapp          String
-  email             String?
-  city              String?
-  address           String?
-  totalSpent        Int                @default(0)
-  ordersCount       Int                @default(0)
-  notes             String?
-  acquisitionSource String?            @default("Manual")
-  marketingEmail    Boolean            @default(true)
-  marketingWhatsapp Boolean            @default(true)
-  marketingPush     Boolean            @default(true)
-  orders            Order[]
-  couponRedemptions CouponRedemption[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  id                       Int                        @id @default(autoincrement())
+  name                     String
+  phone                    String                     @unique
+  whatsapp                 String
+  email                    String?
+  city                     String?
+  address                  String?
+  totalSpent               Int                        @default(0)
+  ordersCount              Int                        @default(0)
+  notes                    String?
+  acquisitionSource        String?                    @default("Manual")
+  marketingEmail           Boolean                    @default(true)
+  marketingWhatsapp        Boolean                    @default(true)
+  marketingPush            Boolean                    @default(true)
+  customerGroupId          Int?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime
+  CouponRedemption         CouponRedemption[]
+  CustomerGroup            CustomerGroup?             @relation(fields: [customerGroupId], references: [id])
+  CustomerPushSubscription CustomerPushSubscription[]
+  Order                    Order[]
+}
+
+model CustomerGroup {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  slug               String               @unique
+  code               String               @unique @default("RETAIL")
+  description        String?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  Customer           Customer[]
+  WholesalePriceRule WholesalePriceRule[]
+}
+
+model CustomerPushSubscription {
+  id         Int       @id @default(autoincrement())
+  customerId Int?
+  pushToken  String    @unique
+  deviceType String?
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  Customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  category    String
+  description String
+  amount      Int
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+model Notification {
+  id                   Int                    @id @default(autoincrement())
+  eventKey             String?                @unique
+  type                 String
+  title                String
+  message              String
+  payload              Json?
+  recipientType        String                 @default("ADMIN")
+  recipientId          Int?
+  readAt               DateTime?
+  archivedAt           DateTime?
+  createdAt            DateTime               @default(now())
+  NotificationDelivery NotificationDelivery[]
+}
+
+model NotificationDelivery {
+  id             Int          @id @default(autoincrement())
+  notificationId Int
+  channel        String
+  provider       String
+  status         String
+  providerId     String?
+  attempts       Int          @default(0)
+  errorMessage   String?
+  nextAttemptAt  DateTime?    @default(now())
+  claimedAt      DateTime?
+  claimedBy      String?
+  sentAt         DateTime?
+  createdAt      DateTime     @default(now())
+  Notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
+  @@index([notificationId, channel])
+  @@index([status, nextAttemptAt])
+}
+
+model NotificationSettings {
+  id              Int      @id @default(1)
+  emailEnabled    Boolean  @default(true)
+  pushEnabled     Boolean  @default(true)
+  resendApiKey    String?
+  oneSignalAppId  String?
+  oneSignalApiKey String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
 }
 
 model Order {
-  id                       Int                  @id @default(autoincrement())
-  orderNumber              String               @unique
-  customer                 Customer?            @relation(fields: [customerId], references: [id])
-  customerId               Int?
-  customerName             String
-  customerPhone            String
-  customerWhatsapp         String
-  shippingAddress          String?
-  shippingZone             ShippingZone?        @relation(fields: [shippingZoneId], references: [id])
-  shippingZoneId           Int?
-  shippingFee              Int                  @default(0)
-  subtotal                 Int
-  discountAmount           Int                  @default(0)
-  couponCode               String?
-  couponDiscount           Int                  @default(0)
-  couponId                 Int?
-  total                    Int
-  paymentStatus            String               @default("PAID") // PAID, PARTIALLY_PAID, PENDING, UNPAID, ABANDONED
-  status                   String               @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  salesChannel             String               @default("Online Store") // Online Store, WhatsApp, Instagram, Physical, Other
-  trackingNumber           String?
-  courierName              String?
-  courierPhone             String?
-  waybillNotes             String?
-  shippingZoneNameSnapshot String?
-  estimatedDaysSnapshot    String?
-  trackingToken            String?              @unique
-  items                    OrderItem[]
-  priceAdjustments         PriceAdjustmentLog[]
-  timeline                 OrderTimeline[]
-  couponRedemption         CouponRedemption?
-  createdAt                DateTime             @default(now())
-  updatedAt                DateTime             @updatedAt
+  id                        Int                  @id @default(autoincrement())
+  orderNumber               String               @unique
+  customerId                Int?
+  customerName              String
+  customerPhone             String
+  customerWhatsapp          String
+  shippingAddress           String?
+  shippingZoneId            Int?
+  shippingFee               Int                  @default(0)
+  subtotal                  Int
+  discountAmount            Int                  @default(0)
+  couponCode                String?
+  couponDiscount            Int                  @default(0)
+  couponId                  Int?
+  total                     Int
+  paymentStatus             String               @default("PAID")
+  status                    String               @default("PENDING")
+  salesChannel              String               @default("Online Store")
+  trackingNumber            String?
+  courierName               String?
+  courierPhone              String?
+  waybillNotes              String?
+  shippingZoneNameSnapshot  String?
+  estimatedDaysSnapshot     String?
+  trackingToken             String?              @unique
+  customerGroupIdSnapshot   Int?
+  customerGroupCodeSnapshot String?
+  customerGroupNameSnapshot String?
+  isWholesaleOrderSnapshot  Boolean              @default(false)
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime
+  CouponRedemption          CouponRedemption?
+  Customer                  Customer?            @relation(fields: [customerId], references: [id])
+  ShippingZone              ShippingZone?        @relation(fields: [shippingZoneId], references: [id])
+  OrderItem                 OrderItem[]
+  OrderTimeline             OrderTimeline[]
+  PriceAdjustmentLog        PriceAdjustmentLog[]
 }
 
 model OrderItem {
   id                  Int     @id @default(autoincrement())
-  order               Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId             Int
-  product             Product @relation(fields: [productId], references: [id])
   productId           Int
   quantity            Int
-  price               Int // Actual unit selling price charged at sale time (may differ from product.price due to POS override)
-  unitCost            Int? // Historical cost snapshot from product.costPrice at sale time; NULL if unavailable for legacy records
-  productNameSnapshot String? // Product name at sale time — immutable for reliable historical reports
-  brandSnapshot       String? // Brand at sale time — immutable for reliable historical reports
+  price               Int
+  unitCost            Int?
+  productNameSnapshot String?
+  brandSnapshot       String?
+  Order               Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  Product             Product @relation(fields: [productId], references: [id])
+}
+
+model OrderTimeline {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  eventType String
+  message   String
+  actorId   String   @default("Admin")
+  metadata  String?
+  createdAt DateTime @default(now())
+  Order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model PaymentSettings {
+  id                    Int      @id @default(1)
+  bankAccountNumber     String?
+  bankRoutingNumber     String?
+  bankAccountName       String?
+  paymentProviderApiKey String?
+  merchantId            String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime
+}
+
+model PriceAdjustmentLog {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  productId     Int
+  productName   String
+  originalPrice Int
+  customPrice   Int
+  difference    Int
+  changedBy     String   @default("Admin")
+  reason        String?
+  createdAt     DateTime @default(now())
+  Order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  brand              String
+  price              Int
+  salePrice          Int?
+  costPrice          Int?                 @default(0)
+  badge              String?
+  categoryId         Int
+  volume             String               @default("100ml EDP")
+  notes              String
+  topNotes           String?
+  middleNotes        String?
+  baseNotes          String?
+  description        String?
+  tone               String               @default("amber")
+  stock              Int                  @default(10)
+  reserved           Int                  @default(0)
+  featured           Boolean              @default(false)
+  gift               Boolean              @default(false)
+  images             String[]             @default([])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  OrderItem          OrderItem[]
+  Category           Category             @relation(fields: [categoryId], references: [id])
+  Review             Review[]
+  StockMovement      StockMovement[]
+  WholesalePriceRule WholesalePriceRule[]
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  customerName String
+  rating       Int      @default(5)
+  comment      String
+  createdAt    DateTime @default(now())
+  Product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ShippingZone {
@@ -123,76 +342,52 @@ model ShippingZone {
   description   String?
   active        Boolean  @default(true)
   isPickup      Boolean  @default(false)
-  orders        Order[]
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime
+  Order         Order[]
 }
 
-model Coupon {
-  id                Int                @id @default(autoincrement())
-  code              String             @unique
-  name              String?
-  storeLocation     String?            @default("Headquarters (Owerri)")
-  discountType      String             @default("PERCENTAGE") // PERCENTAGE or FIXED
-  discountValue     Int // e.g. 10 for 10% or 2000 for N2000
-  minOrderAmount    Int                @default(0)
-  usageLimit        Int                @default(100)
-  usedCount         Int                @default(0)
-  customerLimit     Int                @default(1) // Max redemptions per customer
-  maxDiscountAmount Int? // Max cap for percentage discounts
-  startDate         DateTime?
-  endDate           DateTime?
-  productIds        Int[]              @default([]) // Eligible product restrictions
-  categoryIds       Int[]              @default([]) // Eligible category restrictions
-  autoReactivate    Boolean            @default(true) // Auto-reactivate coupon after reaching usage limit
-  isActive          Boolean            @default(true)
-  redemptions       CouponRedemption[]
-  campaigns         Campaign[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-}
-
-model CouponRedemption {
-  id         Int      @id @default(autoincrement())
-  couponId   Int
-  customerId Int
-  orderId    Int      @unique
-  campaignId Int? // Direct campaign attribution tracker
-  createdAt  DateTime @default(now())
-
-  coupon   Coupon    @relation(fields: [couponId], references: [id])
-  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  campaign Campaign? @relation(fields: [campaignId], references: [id])
-
-  @@unique([couponId, customerId, orderId])
-  @@index([couponId, customerId])
-}
-
-model Campaign {
-  id          Int                @id @default(autoincrement())
-  name        String
-  description String?
-  coupon      Coupon             @relation(fields: [couponId], references: [id])
-  couponId    Int
-  audience    String             @default("ALL") // ALL, VIP, INSTAGRAM_ACQUIRED, WHATSAPP_ACQUIRED, INACTIVE
-  channel     String // e.g. "WhatsApp", "Instagram", "Email", "SMS"
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean            @default(true)
-  redemptions CouponRedemption[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-}
-
-model Review {
+model StaffAccount {
   id           Int      @id @default(autoincrement())
-  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId    Int
-  customerName String
-  rating       Int      @default(5)
-  comment      String
+  name         String
+  email        String   @unique
+  role         String   @default("Manager")
+  permissions  String[] @default(["orders", "products"])
+  active       Boolean  @default(true)
   createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  passwordHash String?
+}
+
+model StockMovement {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  quantity  Int
+  type      String
+  notes     String?
+  changedBy String   @default("Admin")
+  createdAt DateTime @default(now())
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model StoreAnnouncement {
+  id          Int       @id @default(autoincrement())
+  type        String
+  title       String
+  message     String
+  imageUrl    String?
+  actionLabel String?
+  actionUrl   String?
+  audience    String    @default("ALL")
+  priority    Int       @default(0)
+  dismissible Boolean   @default(true)
+  campaignId  Int?
+  isActive    Boolean   @default(false)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Campaign    Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
 model StoreLocation {
@@ -202,115 +397,40 @@ model StoreLocation {
   city      String
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model StaffAccount {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  role        String   @default("Manager") // Owner, Manager, Fulfillment, Catalog
-  permissions String[] @default(["orders", "products"])
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Expense {
-  id          Int      @id @default(autoincrement())
-  category    String // Packaging, Shipping, Marketing, Utility, Salary
-  description String
-  amount      Int
-  date        DateTime @default(now())
-  createdAt   DateTime @default(now())
+  updatedAt DateTime
 }
 
 model SystemConfig {
   id                Int      @id @default(1)
   adminPasswordHash String?
   sessionVersion    Int      @default(1)
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime
 }
 
-model AuditLog {
-  id        Int      @id @default(autoincrement())
-  action    String // e.g. "PRODUCT_CREATED", "STOCK_ADJUSTED", "ORDER_STATUS_CHANGED", "PASSWORD_CHANGED"
-  entity    String // e.g. "Product", "Order"
-  entityId  String
-  details   String // JSON string or descriptive text summary
-  changedBy String // "Admin" or Staff Account email
-  createdAt DateTime @default(now())
+model SystemDefaults {
+  id                       Int      @id @default(1)
+  defaultShippingZoneId    Int?
+  defaultStoreLocationId   Int?
+  defaultAcquisitionSource String?  @default("Manual")
+  orderNumberPrefix        String   @default("JL")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime
 }
 
-model StockMovement {
-  id        Int      @id @default(autoincrement())
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity  Int // e.g. +10, -2
-  type      String // "RESERVATION_CREATED", "RESERVATION_RELEASED", "SALE", "RESTOCK", "MANUAL_ADJUSTMENT", "DAMAGE", "RETURN_RESTOCK"
-  notes     String?
-  changedBy String   @default("Admin")
-  createdAt DateTime @default(now())
-}
+model WholesalePriceRule {
+  id              Int           @id @default(autoincrement())
+  customerGroupId Int
+  productId       Int?
+  categoryId      Int?
+  minQuantity     Int           @default(1)
+  unitPrice       Int?
+  discountPercent Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  Category        Category?     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  CustomerGroup   CustomerGroup @relation(fields: [customerGroupId], references: [id], onDelete: Cascade)
+  Product         Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-model PriceAdjustmentLog {
-  id            Int      @id @default(autoincrement())
-  orderId       Int
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId     Int
-  productName   String
-  originalPrice Int
-  customPrice   Int
-  difference    Int
-  changedBy     String   @default("Admin")
-  reason        String?
-  createdAt     DateTime @default(now())
-}
-
-model OrderTimeline {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  eventType String // "ORDER_CREATED", "PAYMENT_UPDATED", "STATUS_CHANGED", "DISCOUNT_APPLIED", etc.
-  message   String
-  actorId   String   @default("Admin")
-  metadata  String? // JSON string
-  createdAt DateTime @default(now())
-}
-
-model Notification {
-  id            Int                    @id @default(autoincrement())
-  eventKey      String?                @unique // Scoped: e.g. 'order:JL-123456:shipped:ADMIN'
-  type          String // e.g. 'ORDER_CREATED', 'LOW_STOCK'
-  title         String
-  message       String
-  payload       Json?
-  recipientType String                 @default("ADMIN") // "ADMIN" or "CUSTOMER"
-  recipientId   Int?
-  readAt        DateTime?
-  archivedAt    DateTime?
-  createdAt     DateTime               @default(now())
-  deliveries    NotificationDelivery[]
-}
-
-model NotificationDelivery {
-  id             Int       @id @default(autoincrement())
-  notificationId Int
-  channel        String // "IN_APP", "EMAIL", "PUSH"
-  provider       String // "INTERNAL", "RESEND", "ONESIGNAL"
-  status         String // "PENDING", "PROCESSING", "SENT", "FAILED", "SKIPPED"
-  providerId     String?
-  attempts       Int       @default(0)
-  errorMessage   String?
-  nextAttemptAt  DateTime? @default(now())
-  claimedAt      DateTime?
-  claimedBy      String?
-  sentAt         DateTime?
-  createdAt      DateTime  @default(now())
-
-  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-
-  @@unique([notificationId, channel])
-  @@index([notificationId, channel])
-  @@index([status, nextAttemptAt])
+  @@index([customerGroupId, categoryId])
+  @@index([customerGroupId, productId])
 }

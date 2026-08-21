@@ -1,0 +1,53 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GΓ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 887ms
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 394ms
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/orders/route.ts:233:9
+Type error: Type '{ id: number; email: string | null; name: string; createdAt: Date; updatedAt: Date; phone: string; whatsapp: string; city: string | null; address: string | null; totalSpent: number; ... 6 more ...; customerGroupId: number | null; }' is not assignable to type '{ CustomerGroup: { id: number; name: string; createdAt: Date; updatedAt: Date; description: string | null; isActive: boolean; code: string; slug: string; } | null; } & { id: number; ... 15 more ...; customerGroupId: number | null; }'.
+  Property 'CustomerGroup' is missing in type '{ id: number; email: string | null; name: string; createdAt: Date; updatedAt: Date; phone: string; whatsapp: string; city: string | null; address: string | null; totalSpent: number; ... 6 more ...; customerGroupId: number | null; }' but required in type '{ CustomerGroup: { id: number; name: string; createdAt: Date; updatedAt: Date; description: string | null; isActive: boolean; code: string; slug: string; } | null; }'.
+
+  231 |         })
+  232 |       } else {
+> 233 |         customer = await tx.customer.create({
+      |         ^
+  234 |           data: {
+  235 |             name: customerName,
+  236 |             phone: cleanPhone,
+Next.js build worker exited with code: 1 and signal: null

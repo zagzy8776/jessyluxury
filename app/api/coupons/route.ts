@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function GET(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'marketing')
   if (authErr) return authErr
 
   try {
     const coupons = await prisma.coupon.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        campaigns: true,
+        Campaign: true,
       },
     })
     return NextResponse.json(coupons)
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'marketing')
   if (authErr) return authErr
 
   try {
@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       productIds = [],
       categoryIds = [],
       isActive = true,
+      wholesaleEligible = false,
     } = body
 
     if (!code || !discountType || discountValue === undefined) {
@@ -72,6 +73,8 @@ export async function POST(request: Request) {
         productIds: Array.isArray(productIds) ? productIds.map(Number) : [],
         categoryIds: Array.isArray(categoryIds) ? categoryIds.map(Number) : [],
         isActive,
+        wholesaleEligible: Boolean(wholesaleEligible),
+        updatedAt: new Date(),
       },
     })
 

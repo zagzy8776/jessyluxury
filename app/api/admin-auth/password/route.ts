@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth, verifyPassword, hashPassword, clearAdminCookie } from '@/lib/auth'
+import { verifyPassword, hashPassword, clearAdminCookie } from '@/lib/auth'
+import { requireOwnerRole, getStaffIdFromToken } from '@/lib/staff-auth'
 
 export async function POST(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  // CRITICAL: Password change requires Owner role ONLY
+  const authErr = await requireOwnerRole(request)
   if (authErr) return authErr
 
   try {
@@ -32,6 +34,7 @@ export async function POST(request: Request) {
             id: 1,
             adminPasswordHash: null,
             sessionVersion: 1,
+            updatedAt: new Date(),
           }
         })
       } catch {
@@ -44,15 +47,31 @@ export async function POST(request: Request) {
     }
 
     // 3. Verify current password
+    // Check if this is a staff account (Owner role) or master admin
+    const staffId = await getStaffIdFromToken(request)
     let isMatch = false
-    const currentHash = config.adminPasswordHash
-    const envAdminPassword = process.env.ADMIN_PASSWORD || 'jessyluxuryadmin2024'
+    let staffAccount = null
 
-    if (currentHash) {
-      isMatch = verifyPassword(currentPassword, currentHash)
+    if (staffId) {
+      // This is a staff account with Owner role
+      staffAccount = await prisma.staffAccount.findUnique({
+        where: { id: staffId }
+      })
+
+      if (staffAccount && staffAccount.passwordHash) {
+        isMatch = verifyPassword(currentPassword, staffAccount.passwordHash)
+      }
     } else {
-      // Fallback if password hasn't been seeded yet
-      isMatch = currentPassword === envAdminPassword
+      // This is master admin - use system config password
+      const currentHash = config.adminPasswordHash
+      const envAdminPassword = process.env.ADMIN_PASSWORD || 'jessyluxuryadmin2024'
+
+      if (currentHash) {
+        isMatch = verifyPassword(currentPassword, currentHash)
+      } else {
+        // Fallback if password hasn't been seeded yet
+        isMatch = currentPassword === envAdminPassword
+      }
     }
 
     if (!isMatch) {
@@ -64,15 +83,49 @@ export async function POST(request: Request) {
     const newHash = hashPassword(newPassword)
     const nextVersion = config.sessionVersion + 1
 
-    await prisma.systemConfig.update({
-      where: { id: 1 },
-      data: {
-        adminPasswordHash: newHash,
-        sessionVersion: nextVersion,
-      }
-    })
+    // CRITICAL: Use transaction to atomically update password and session version
+    if (staffId && staffAccount) {
+      // Update both staff password and session version atomically
+      await prisma.$transaction(async (tx) => {
+        await tx.staffAccount.update({
+          where: { id: staffId },
+          data: { passwordHash: newHash }
+        })
 
-    // 5. Invalidate current user session
+        await tx.systemConfig.update({
+          where: { id: 1 },
+          data: {
+            sessionVersion: nextVersion,
+            updatedAt: new Date(),
+          }
+        })
+      })
+    } else {
+      // Update master admin password and session version atomically
+      await prisma.$transaction(async (tx) => {
+        await tx.systemConfig.update({
+          where: { id: 1 },
+          data: {
+            adminPasswordHash: newHash,
+            sessionVersion: nextVersion,
+            updatedAt: new Date(),
+          }
+        })
+      })
+    }
+
+    // 5. Create audit log
+    const { createAuditLog } = await import('@/lib/audit')
+    const staffEmail = staffAccount?.email || 'Master Admin'
+    await createAuditLog(
+      'ADMIN_PASSWORD_CHANGED',
+      'SystemConfig',
+      '1',
+      { timestamp: new Date().toISOString() },
+      staffEmail
+    )
+
+    // 6. Invalidate current user session
     const response = NextResponse.json({ success: true, message: 'Password updated successfully' })
     clearAdminCookie(response)
     return response

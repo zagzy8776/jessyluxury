@@ -9,6 +9,9 @@ export interface Product {
   brand: string
   price: number
   salePrice?: number
+  displayPrice?: number
+  wholesalePrice?: number | null
+  isWholesale?: boolean
   badge?: 'SALE' | 'BEST' | 'NEW' | 'OIL'
   category: string
   volume: string

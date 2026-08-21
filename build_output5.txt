@@ -1,0 +1,52 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GΓ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 1.00s
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 302ms
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/orders/route.ts:107:56
+Type error: Property 'customerGroup' does not exist on type '{ CustomerGroup: { id: number; name: string; createdAt: Date; updatedAt: Date; description: string | null; isActive: boolean; code: string; slug: string; } | null; } & { id: number; ... 15 more ...; customerGroupId: number | null; }'. Did you mean 'CustomerGroup'?
+
+  105 |       include: { CustomerGroup: true },
+  106 |     })
+> 107 |     const isWholesaleBuyer = Boolean(existingCustomer?.customerGroup?.isActive)
+      |                                                        ^
+  108 |     const customerGroupId = isWholesaleBuyer ? existingCustomer!.customerGroupId : null
+  109 |
+  110 |     // Pre-fetch product snapshot data (cost, name, brand) BEFORE the transaction
+Next.js build worker exited with code: 1 and signal: null

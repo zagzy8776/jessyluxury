@@ -9,13 +9,12 @@ import {
   Layers,
   Users,
   Target,
-  ArrowUpRight,
   Info,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
 const DATE_RANGES = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Year', 'All Time']
-const TABS = ['Sales', 'Products', 'Customers', 'Channels', 'Marketing']
+const TABS = ['Sales', 'Products', 'Customers', 'Channels', 'Marketing', 'Wholesale']
 
 export default function AnalyticsHubPage() {
   const [activeDateRange, setActiveDateRange] = useState('Last 30 Days')
@@ -45,11 +44,14 @@ export default function AnalyticsHubPage() {
 
   if (loading || !data) {
     return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-amber-500 border-t-transparent mx-auto" />
-          <p className="text-xs font-mono text-[var(--text-secondary)] font-bold">Aggregating Executive Metrics...</p>
+      <div className="space-y-4">
+        <div className="skeleton h-10 w-64" />
+        <div className="grid gap-4 sm:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="skeleton h-28 w-full" />
+          ))}
         </div>
+        <div className="skeleton h-72 w-full" />
       </div>
     )
   }
@@ -57,140 +59,123 @@ export default function AnalyticsHubPage() {
   const { sales, products, customers, channels, marketing } = data
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
-      {/* Header & Controls */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center border-b border-[var(--border)] pb-5">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 border-b border-[var(--admin-border)] pb-5 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-            Executive Analytics Hub
-          </h1>
-          <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
-            Server-aggregated tracking for sales, brand margins, channels, and customer loyalty boundaries.
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Insights</p>
+          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">Analytics</h1>
+          <p className="mt-1 text-xs font-medium text-[var(--admin-text-secondary)]">
+            Server-aggregated sales, margins, channels and customer loyalty.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 shadow-sm">
-            <Calendar size={14} className="text-amber-500" />
-            <select
-              value={activeDateRange}
-              onChange={(e) => setActiveDateRange(e.target.value)}
-              className="bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none cursor-pointer"
-            >
-              {DATE_RANGES.map((r) => (
-                <option key={r} value={r} className="bg-[var(--card-bg)]">{r}</option>
-              ))}
-            </select>
-          </div>
+        <div className="relative flex w-fit items-center gap-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-3 py-2.5 shadow-sm">
+          <Calendar size={14} className="text-[var(--accent)]" />
+          <select
+            value={activeDateRange}
+            onChange={(e) => setActiveDateRange(e.target.value)}
+            className="cursor-pointer bg-transparent text-xs font-bold outline-none"
+            aria-label="Date range"
+          >
+            {DATE_RANGES.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Primary KPI Metrics Row */}
-      <div className="grid gap-5 sm:grid-cols-4">
-        {/* Gross Revenue */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
+      {/* Primary KPIs */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+        <div className="admin-card p-5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Gross Revenue</span>
-            <span className="rounded-xl bg-amber-500/10 p-2 text-amber-500 border border-amber-500/20">
-              <TrendingUp size={16} />
-            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Gross Revenue</span>
+            <span className="rounded-lg bg-[var(--accent-soft)] p-2 text-[var(--accent)]"><TrendingUp size={15} /></span>
           </div>
-          <p className="mt-3 font-display text-2xl font-bold text-[var(--text-primary)]">
+          <p className="mt-3 font-display text-2xl font-bold tabular-nums">
             ₦{sales.grossRevenue.toLocaleString('en-NG')}
           </p>
-          <p className="mt-1 text-[10px] text-[var(--text-secondary)] font-medium">Completed order values</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[var(--admin-text-muted)]">Completed order values</p>
         </div>
 
-        {/* Profit After Discounts */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
+        <div className="admin-card p-5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Profit after Discounts</span>
-            <span className="rounded-xl bg-emerald-500/10 p-2 text-emerald-500 border border-emerald-500/20">
-              <DollarSign size={16} />
-            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Profit after Discounts</span>
+            <span className="rounded-lg bg-emerald-500/10 p-2 text-emerald-600"><DollarSign size={15} /></span>
           </div>
-          <p className="mt-3 font-display text-2xl font-bold text-[var(--text-primary)]">
+          <p className="mt-3 font-display text-2xl font-bold tabular-nums">
             {sales.profitAfterDiscounts !== null ? `₦${sales.profitAfterDiscounts.toLocaleString('en-NG')}` : 'Unavailable'}
           </p>
-          <p className="mt-1 text-[10px] text-[var(--text-secondary)] font-medium">Historical cost snapshot basis</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[var(--admin-text-muted)]">Historical cost snapshot basis</p>
         </div>
 
-        {/* Successful Orders */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
+        <div className="admin-card p-5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Completed Orders</span>
-            <span className="rounded-xl bg-purple-500/10 p-2 text-purple-500 border border-purple-500/20">
-              <ShoppingBag size={16} />
-            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Completed Orders</span>
+            <span className="rounded-lg bg-blue-500/10 p-2 text-blue-600"><ShoppingBag size={15} /></span>
           </div>
-          <p className="mt-3 font-display text-2xl font-bold text-[var(--text-primary)]">
-            {sales.completedOrders}
-          </p>
-          <p className="mt-1 text-[10px] text-[var(--text-secondary)] font-medium">Active PAID transactions</p>
+          <p className="mt-3 font-display text-2xl font-bold tabular-nums">{sales.completedOrders}</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[var(--admin-text-muted)]">Active PAID transactions</p>
         </div>
 
-        {/* Average Order Value */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
+        <div className="admin-card p-5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Average Order Value</span>
-            <span className="rounded-xl bg-blue-500/10 p-2 text-blue-500 border border-blue-500/20">
-              <Percent size={16} />
-            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--admin-text-muted)]">Average Order Value</span>
+            <span className="rounded-lg bg-[var(--champagne-soft)] p-2 text-[#7a5c22]"><Percent size={15} /></span>
           </div>
-          <p className="mt-3 font-display text-2xl font-bold text-[var(--text-primary)]">
+          <p className="mt-3 font-display text-2xl font-bold tabular-nums">
             ₦{sales.averageOrderValue.toLocaleString('en-NG')}
           </p>
-          <p className="mt-1 text-[10px] text-[var(--text-secondary)] font-medium">AOV per checkout</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[var(--admin-text-muted)]">AOV per checkout</p>
         </div>
       </div>
 
-      {/* Tabs Row */}
-      <div className="flex border-b border-[var(--border)] gap-2 overflow-x-auto">
+      {/* Tabs */}
+      <div className="hide-scrollbar flex gap-1 overflow-x-auto border-b border-[var(--admin-border)]">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`border-b-2 px-5 py-3 text-xs font-bold tracking-wide transition whitespace-nowrap ${
+            className={`whitespace-nowrap border-b-2 px-4 py-2.5 text-xs font-bold tracking-wide transition ${
               activeTab === tab
-                ? 'border-amber-500 text-amber-500 bg-amber-500/5 rounded-t-xl'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'border-[var(--accent)] text-[var(--accent)]'
+                : 'border-transparent text-[var(--admin-text-muted)] hover:text-[var(--admin-text-primary)]'
             }`}
           >
-            {tab} Report
+            {tab}
           </button>
         ))}
       </div>
 
-      {/* TAB 1: Sales Reports */}
+      {/* TAB: Sales */}
       {activeTab === 'Sales' && (
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Revenue and Orders Chart Visualizer */}
-          <div className="md:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="admin-card space-y-4 p-6 md:col-span-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Revenue Trend Visualizer</h3>
-              <span className="text-[10px] text-amber-500 font-mono font-bold">{activeDateRange}</span>
+              <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Revenue Trend</h3>
+              <span className="font-mono text-[10px] font-bold text-[var(--accent)]">{activeDateRange}</span>
             </div>
-            <div className="h-64 flex items-end justify-between gap-3 pt-6 border-b border-[var(--border)] pb-2">
+            <div className="flex h-64 items-end justify-between gap-2 border-b border-[var(--admin-border)] pb-2 pt-6 sm:gap-3">
               {sales.trend.length === 0 ? (
-                <div className="w-full h-full flex items-center justify-center text-xs text-[var(--text-muted)] font-mono">
+                <div className="flex h-full w-full items-center justify-center text-xs font-medium text-[var(--admin-text-muted)]">
                   No transaction activity logged in period
                 </div>
               ) : (
                 sales.trend.map((t: any, i: number) => {
                   const maxRevenue = Math.max(...sales.trend.map((x: any) => x.revenue || 1), 1)
-                  const heightPct = Math.max(10, Math.round((t.revenue / maxRevenue) * 100))
+                  const heightPct = Math.max(8, Math.round((t.revenue / maxRevenue) * 100))
                   return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                      <div className="text-[9px] text-[var(--text-secondary)] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    <div key={i} className="group flex flex-1 flex-col items-center gap-1">
+                      <div className="whitespace-nowrap font-mono text-[9px] text-[var(--admin-text-secondary)] opacity-0 transition-opacity group-hover:opacity-100">
                         ₦{Math.round(t.revenue / 1000)}k
                       </div>
                       <div
                         style={{ height: `${heightPct}%` }}
-                        className="w-full rounded-t-md bg-amber-500/20 group-hover:bg-amber-500 transition-colors duration-200"
+                        className="w-full rounded-t-md bg-[var(--accent)]/20 transition-colors duration-200 group-hover:bg-[var(--accent)]"
                       />
-                      <span className="text-[8px] text-[var(--text-muted)] font-mono font-bold rotate-45 mt-2 origin-left whitespace-nowrap">
+                      <span className="mt-2 whitespace-nowrap font-mono text-[8px] font-bold text-[var(--admin-text-muted)]">
                         {t.label.split('-').slice(-2).join('/')}
                       </span>
                     </div>
@@ -198,38 +183,37 @@ export default function AnalyticsHubPage() {
                 })
               )}
             </div>
-            <p className="text-[10px] text-[var(--text-secondary)] text-center font-medium pt-2">
+            <p className="pt-1 text-center text-[10px] font-medium text-[var(--admin-text-muted)]">
               Values grouped timezone-correctly relative to Africa/Lagos boundaries
             </p>
           </div>
 
-          {/* Sales Profitability Sidebar */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-6 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Profitability Audit</h3>
+          <div className="admin-card space-y-5 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Profitability</h3>
             <div className="space-y-4 text-xs font-semibold">
-              <div className="flex justify-between border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--text-secondary)]">Discounts Offered</span>
-                <span className="text-red-500">-₦{sales.discountsGiven.toLocaleString('en-NG')}</span>
+              <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+                <span className="text-[var(--admin-text-secondary)]">Discounts Offered</span>
+                <span className="font-mono tabular-nums text-red-500">−₦{sales.discountsGiven.toLocaleString('en-NG')}</span>
               </div>
-              <div className="flex justify-between border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--text-secondary)]">Gross Cost of Goods</span>
-                <span className="text-[var(--text-primary)] font-mono">
+              <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+                <span className="text-[var(--admin-text-secondary)]">Cost of Goods</span>
+                <span className="font-mono tabular-nums">
                   {sales.grossProductProfit !== null
                     ? `₦${(sales.grossRevenue - sales.grossProductProfit).toLocaleString('en-NG')}`
                     : 'Unavailable'}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--text-secondary)]">Calculated Margin Share</span>
-                <span className="text-emerald-500">
+              <div className="flex justify-between border-b border-[var(--admin-border)] pb-2">
+                <span className="text-[var(--admin-text-secondary)]">Margin Share</span>
+                <span className="font-mono tabular-nums text-emerald-600">
                   {sales.profitAfterDiscounts !== null && sales.grossRevenue > 0
                     ? `${Math.round((sales.profitAfterDiscounts / sales.grossRevenue) * 100)}%`
                     : '—'}
                 </span>
               </div>
               {sales.profitCoverageNote && (
-                <div className="rounded-lg bg-amber-500/10 p-3 text-[10px] text-amber-600 dark:text-amber-400 flex gap-2">
-                  <Info size={14} className="flex-shrink-0" />
+                <div className="flex gap-2 rounded-lg bg-[var(--champagne-soft)] p-3 text-[10px] font-medium text-[#7a5c22]">
+                  <Info size={14} className="shrink-0" />
                   <p>{sales.profitCoverageNote}</p>
                 </div>
               )}
@@ -238,30 +222,31 @@ export default function AnalyticsHubPage() {
         </div>
       )}
 
-      {/* TAB 2: Products Reports */}
+      {/* TAB: Products */}
       {activeTab === 'Products' && (
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Top Selling Products list */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Top Selling Fragrances</h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="admin-card space-y-4 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Top Selling Fragrances</h3>
             <div className="space-y-3">
               {products.bestSellers.length === 0 ? (
-                <p className="text-xs text-[var(--text-muted)] py-4 text-center">No units sold in this period.</p>
+                <p className="py-6 text-center text-xs text-[var(--admin-text-muted)]">No units sold in this period.</p>
               ) : (
                 products.bestSellers.map((p: any, idx: number) => (
-                  <div key={p.productId} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-xs">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/10 text-amber-500 font-mono font-bold text-[10px]">
+                  <div key={p.productId} className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-3 text-xs">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold ${
+                        idx === 0 ? 'bg-[var(--champagne)] text-white' : 'bg-[var(--accent-soft)] text-[var(--accent)]'
+                      }`}>
                         #{idx + 1}
                       </span>
-                      <div>
-                        <p className="font-bold text-[var(--text-primary)]">{p.name}</p>
-                        <p className="text-[9px] text-[var(--text-muted)] font-mono">{p.brand}</p>
+                      <div className="min-w-0">
+                        <p className="truncate font-bold">{p.name}</p>
+                        <p className="font-mono text-[9px] text-[var(--admin-text-muted)]">{p.brand}</p>
                       </div>
                     </div>
-                    <div className="text-right font-mono">
-                      <p className="font-bold text-[var(--text-primary)]">{p.unitsSold} units</p>
-                      <p className="text-[9px] text-emerald-500">₦{p.revenue.toLocaleString('en-NG')}</p>
+                    <div className="shrink-0 text-right font-mono tabular-nums">
+                      <p className="font-bold">{p.unitsSold} units</p>
+                      <p className="text-[9px] text-emerald-600">₦{p.revenue.toLocaleString('en-NG')}</p>
                     </div>
                   </div>
                 ))
@@ -269,22 +254,21 @@ export default function AnalyticsHubPage() {
             </div>
           </div>
 
-          {/* Low Performing Products list */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Low Performing / Stagnant Stock</h3>
+          <div className="admin-card space-y-4 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Low Performing Stock</h3>
             <div className="space-y-3">
               {products.lowPerformers.length === 0 ? (
-                <p className="text-xs text-[var(--text-muted)] py-4 text-center">No stagnant inventory listings.</p>
+                <p className="py-6 text-center text-xs text-[var(--admin-text-muted)]">No stagnant inventory listings.</p>
               ) : (
                 products.lowPerformers.map((p: any) => (
-                  <div key={p.productId} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-xs">
-                    <div>
-                      <p className="font-bold text-[var(--text-primary)]">{p.name}</p>
-                      <p className="text-[9px] text-[var(--text-muted)] font-mono">{p.brand}</p>
+                  <div key={p.productId} className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-3 text-xs">
+                    <div className="min-w-0">
+                      <p className="truncate font-bold">{p.name}</p>
+                      <p className="font-mono text-[9px] text-[var(--admin-text-muted)]">{p.brand}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-red-500 font-mono">{p.unitsSold} sold</p>
-                      <p className="text-[9px] text-[var(--text-secondary)] font-medium">Stock: {p.stock} units</p>
+                    <div className="shrink-0 text-right">
+                      <p className="font-mono font-bold tabular-nums text-red-500">{p.unitsSold} sold</p>
+                      <p className="text-[9px] font-medium text-[var(--admin-text-secondary)]">Stock: {p.stock} units</p>
                     </div>
                   </div>
                 ))
@@ -294,64 +278,62 @@ export default function AnalyticsHubPage() {
         </div>
       )}
 
-      {/* TAB 3: Customers Reports */}
+      {/* TAB: Customers */}
       {activeTab === 'Customers' && (
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Cohort Segments cards */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Cohort Metrics</h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="admin-card space-y-4 p-5">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Cohorts</h3>
             <div className="space-y-3 text-xs">
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
+              <div className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
                 <div>
-                  <p className="text-[var(--text-muted)] font-bold uppercase text-[9px]">New Customer Growth</p>
-                  <p className="text-2xl font-bold mt-1 text-[var(--text-primary)]">{customers.newCustomers}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">New Customers</p>
+                  <p className="mt-1 font-display text-2xl font-bold tabular-nums">{customers.newCustomers}</p>
                 </div>
-                <Users className="text-amber-500" size={24} />
+                <Users className="text-[var(--accent)]" size={22} />
               </div>
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
+              <div className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
                 <div>
-                  <p className="text-[var(--text-muted)] font-bold uppercase text-[9px]">Returning Customer Rate</p>
-                  <p className="text-2xl font-bold mt-1 text-[var(--text-primary)]">{customers.returningCustomers}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Returning</p>
+                  <p className="mt-1 font-display text-2xl font-bold tabular-nums">{customers.returningCustomers}</p>
                 </div>
-                <Target className="text-blue-500" size={24} />
+                <Target className="text-emerald-600" size={22} />
               </div>
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
+              <div className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
                 <div>
-                  <p className="text-[var(--text-muted)] font-bold uppercase text-[9px]">One-Time Buyer Counts</p>
-                  <p className="text-2xl font-bold mt-1 text-[var(--text-primary)]">{customers.oneTimeCustomers}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">One-Time Buyers</p>
+                  <p className="mt-1 font-display text-2xl font-bold tabular-nums">{customers.oneTimeCustomers}</p>
                 </div>
-                <Layers className="text-purple-500" size={24} />
+                <Layers className="text-blue-500" size={22} />
               </div>
             </div>
           </div>
 
-          {/* Top customer spenders within the selected range */}
-          <div className="md:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Top Customers (Range Active Spend)</h3>
+          <div className="admin-card space-y-4 p-6 md:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Top Customers (Active Spend)</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-[var(--border)] text-[var(--text-muted)] font-bold">
-                    <th className="py-2.5">Name</th>
-                    <th className="py-2.5">Phone</th>
-                    <th className="py-2.5 text-center">Orders</th>
-                    <th className="py-2.5 text-right">Spend</th>
+                  <tr className="border-b border-[var(--admin-border)] text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
+                    <th className="py-2.5 pr-3">Name</th>
+                    <th className="py-2.5 pr-3">Phone</th>
+                    <th className="py-2.5 pr-3 text-center">Orders</th>
+                    <th className="py-2.5 pr-3 text-right">Spend</th>
                     <th className="py-2.5 text-right">AOV</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customers.topClients.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-4 text-center text-[var(--text-muted)]">No active checkout customers in range</td>
+                      <td colSpan={5} className="py-6 text-center text-[var(--admin-text-muted)]">No active checkout customers in range</td>
                     </tr>
                   ) : (
                     customers.topClients.map((c: any) => (
-                      <tr key={c.customerId} className="border-b border-[var(--border)] font-medium text-[var(--text-primary)]">
-                        <td className="py-3 font-bold">{c.name}</td>
-                        <td className="py-3 font-mono text-[var(--text-secondary)]">{c.phone}</td>
-                        <td className="py-3 text-center font-mono">{c.orders}</td>
-                        <td className="py-3 text-right font-mono text-emerald-500">₦{c.spend.toLocaleString('en-NG')}</td>
-                        <td className="py-3 text-right font-mono text-amber-500">₦{c.aov.toLocaleString('en-NG')}</td>
+                      <tr key={c.customerId} className="border-b border-[var(--admin-border)] last:border-0">
+                        <td className="py-3 pr-3 font-bold">{c.name}</td>
+                        <td className="py-3 pr-3 font-mono text-[var(--admin-text-secondary)]">{c.phone}</td>
+                        <td className="py-3 pr-3 text-center font-mono tabular-nums">{c.orders}</td>
+                        <td className="py-3 pr-3 text-right font-mono tabular-nums text-emerald-600">₦{c.spend.toLocaleString('en-NG')}</td>
+                        <td className="py-3 text-right font-mono tabular-nums text-[var(--accent)]">₦{c.aov.toLocaleString('en-NG')}</td>
                       </tr>
                     ))
                   )}
@@ -362,24 +344,25 @@ export default function AnalyticsHubPage() {
         </div>
       )}
 
-      {/* TAB 4: Channel Reports */}
+      {/* TAB: Channels */}
       {activeTab === 'Channels' && (
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Order Channel List */}
-          <div className="md:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Channel Performance (Order.salesChannel)</h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="admin-card space-y-4 p-6 md:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Channel Performance</h3>
             <div className="space-y-4 pt-2">
               {channels.channels.length === 0 ? (
-                <p className="text-xs text-[var(--text-muted)] py-4 text-center">No sales channel allocations mapped.</p>
+                <p className="py-6 text-center text-xs text-[var(--admin-text-muted)]">No sales channel allocations mapped.</p>
               ) : (
                 channels.channels.map((ch: any) => (
                   <div key={ch.channel} className="space-y-1.5 text-xs font-semibold">
-                    <div className="flex justify-between items-center text-[var(--text-primary)]">
+                    <div className="flex items-center justify-between">
                       <span className="font-bold">{ch.channel}</span>
-                      <span className="font-mono text-amber-500">{ch.share}% <span className="text-[var(--text-muted)]">({ch.orders} orders)</span></span>
+                      <span className="font-mono tabular-nums text-[var(--accent)]">
+                        {ch.share}% <span className="font-normal text-[var(--admin-text-muted)]">({ch.orders} orders)</span>
+                      </span>
                     </div>
-                    <div className="h-2.5 w-full rounded-full bg-[var(--bg-primary)] overflow-hidden border border-[var(--border)]">
-                      <div className="h-full bg-amber-500 rounded-full" style={{ width: `${ch.share}%` }} />
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-[var(--admin-bg)]">
+                      <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${ch.share}%` }} />
                     </div>
                   </div>
                 ))
@@ -387,79 +370,164 @@ export default function AnalyticsHubPage() {
             </div>
           </div>
 
-          {/* Business Insights Panel */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm flex flex-col justify-center">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Acquisition Source vs Sales Channel</h3>
-            <div className="text-xs text-[var(--text-secondary)] leading-relaxed space-y-2">
+          <div className="admin-card flex flex-col justify-center space-y-4 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Acquisition vs Channel</h3>
+            <div className="space-y-2 text-xs leading-relaxed text-[var(--admin-text-secondary)]">
               <p>
-                <strong>Order Sales Channel</strong> represents where the transaction checkout actually occurred (e.g., Physical POS, WhatsApp shop, Instagram direct DM).
+                <strong className="text-[var(--admin-text-primary)]">Order Sales Channel</strong> represents where the transaction checkout occurred (Physical POS, WhatsApp shop, Instagram DM).
               </p>
               <p>
-                <strong>Customer Acquisition Source</strong> represents where the client was originally discovered (e.g., Online Store referral, Referral from friend).
+                <strong className="text-[var(--admin-text-primary)]">Customer Acquisition Source</strong> represents where the client was originally discovered.
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 5: Marketing Campaigns */}
+      {/* TAB: Marketing */}
       {activeTab === 'Marketing' && (
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Promo Impact Widget cards */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Promo Performance</h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="admin-card space-y-4 p-5">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Promo Performance</h3>
             <div className="space-y-3 text-xs">
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
-                <div>
-                  <p className="text-[9px] text-[var(--text-muted)] font-bold uppercase">Revenue Influenced by Coupons</p>
-                  <p className="text-2xl font-bold mt-1 text-emerald-500 font-mono">₦{marketing.totalRevenueInfluenced.toLocaleString('en-NG')}</p>
-                </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Revenue Influenced by Coupons</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums text-emerald-600">₦{marketing.totalRevenueInfluenced.toLocaleString('en-NG')}</p>
               </div>
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
-                <div>
-                  <p className="text-[9px] text-[var(--text-muted)] font-bold uppercase">Total Discount Deductions</p>
-                  <p className="text-2xl font-bold mt-1 text-red-500 font-mono">₦{marketing.totalDiscountGiven.toLocaleString('en-NG')}</p>
-                </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Total Discount Deductions</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums text-red-500">₦{marketing.totalDiscountGiven.toLocaleString('en-NG')}</p>
               </div>
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-4 flex justify-between items-center">
-                <div>
-                  <p className="text-[9px] text-[var(--text-muted)] font-bold uppercase">Checkout Count using Promo</p>
-                  <p className="text-2xl font-bold mt-1 text-[var(--text-primary)]">{marketing.ordersWithDiscount}</p>
-                </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Checkouts Using Promo</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums">{marketing.ordersWithDiscount}</p>
               </div>
             </div>
           </div>
 
-          {/* Coupon Leaderboard */}
-          <div className="md:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-[var(--text-primary)] tracking-wide uppercase">Active Coupon Redemptions</h3>
+          <div className="admin-card space-y-4 p-6 md:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Coupon Redemptions</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-[var(--border)] text-[var(--text-muted)] font-bold">
-                    <th className="py-2.5">Code</th>
-                    <th className="py-2.5 text-center">Uses</th>
-                    <th className="py-2.5 text-right">Discount Claimed</th>
+                  <tr className="border-b border-[var(--admin-border)] text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
+                    <th className="py-2.5 pr-3">Code</th>
+                    <th className="py-2.5 pr-3 text-center">Uses</th>
+                    <th className="py-2.5 pr-3 text-right">Discount Claimed</th>
                     <th className="py-2.5 text-right">Revenue Influenced</th>
                   </tr>
                 </thead>
                 <tbody>
                   {marketing.couponUsage.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-4 text-center text-[var(--text-muted)]">No coupons redeemed in range</td>
+                      <td colSpan={4} className="py-6 text-center text-[var(--admin-text-muted)]">No coupons redeemed in range</td>
                     </tr>
                   ) : (
                     marketing.couponUsage.map((c: any) => (
-                      <tr key={c.code} className="border-b border-[var(--border)] font-medium text-[var(--text-primary)]">
-                        <td className="py-3 font-bold font-mono text-amber-500">{c.code}</td>
-                        <td className="py-3 text-center font-mono">{c.timesUsed}</td>
-                        <td className="py-3 text-right font-mono text-red-500">₦{c.totalDiscountGiven.toLocaleString('en-NG')}</td>
-                        <td className="py-3 text-right font-mono text-emerald-500">₦{c.revenueInfluenced.toLocaleString('en-NG')}</td>
+                      <tr key={c.code} className="border-b border-[var(--admin-border)] last:border-0">
+                        <td className="py-3 pr-3 font-mono font-bold text-[var(--accent)]">{c.code}</td>
+                        <td className="py-3 pr-3 text-center font-mono tabular-nums">{c.timesUsed}</td>
+                        <td className="py-3 pr-3 text-right font-mono tabular-nums text-red-500">₦{c.totalDiscountGiven.toLocaleString('en-NG')}</td>
+                        <td className="py-3 text-right font-mono tabular-nums text-emerald-600">₦{c.revenueInfluenced.toLocaleString('en-NG')}</td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Wholesale */}
+      {activeTab === 'Wholesale' && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="admin-card space-y-5 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Wholesale KPIs</h3>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">WS Orders</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums">{data.wholesale.wholesaleOrders}</p>
+              </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">WS Revenue</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums text-emerald-600">₦{data.wholesale.wholesaleRevenue.toLocaleString('en-NG')}</p>
+              </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">WS Units Sold</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums">{data.wholesale.wholesaleUnitsSold}</p>
+              </div>
+              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-4">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Avg WS Order</p>
+                <p className="mt-1 font-display text-xl font-bold tabular-nums">₦{data.wholesale.averageWholesaleOrderValue.toLocaleString('en-NG')}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-card space-y-6 p-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Wholesale vs Retail</h3>
+
+            <div className="space-y-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Revenue Share</h4>
+              <div className="flex justify-between text-xs">
+                <span className="font-bold text-[#7a5c22]">Wholesale:</span>
+                <span className="font-mono font-bold tabular-nums">₦{data.wholesale.wholesaleVsRetailRevenue.wholesaleRevenue.toLocaleString('en-NG')}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="font-bold text-blue-600">Retail:</span>
+                <span className="font-mono font-bold tabular-nums">₦{data.wholesale.wholesaleVsRetailRevenue.retailRevenue.toLocaleString('en-NG')}</span>
+              </div>
+              <div className="flex h-3 w-full overflow-hidden rounded-full bg-[var(--admin-bg)]" title={`Wholesale ${data.wholesale.wholesaleVsRetailRevenue.wholesaleShare}%`}>
+                <div className="h-full bg-[var(--champagne)]" style={{ width: `${data.wholesale.wholesaleVsRetailRevenue.wholesaleShare}%` }} />
+                <div className="h-full bg-blue-500/70" style={{ width: `${100 - data.wholesale.wholesaleVsRetailRevenue.wholesaleShare}%` }} />
+              </div>
+              <p className="text-right text-[10px] font-bold text-[#7a5c22]">{data.wholesale.wholesaleVsRetailRevenue.wholesaleShare}% wholesale share</p>
+            </div>
+
+            <div className="space-y-2 border-t border-[var(--admin-border)] pt-4">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">Order Volume Share</h4>
+              <div className="flex justify-between text-xs">
+                <span className="font-bold text-[#7a5c22]">Wholesale Orders:</span>
+                <span className="font-mono font-bold tabular-nums">{data.wholesale.wholesaleVsRetailOrderCount.wholesaleOrders}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="font-bold text-blue-600">Retail Orders:</span>
+                <span className="font-mono font-bold tabular-nums">{data.wholesale.wholesaleVsRetailOrderCount.retailOrders}</span>
+              </div>
+              <div className="flex h-3 w-full overflow-hidden rounded-full bg-[var(--admin-bg)]" title={`Wholesale ${data.wholesale.wholesaleVsRetailOrderCount.wholesaleShare}%`}>
+                <div className="h-full bg-[var(--champagne)]" style={{ width: `${data.wholesale.wholesaleVsRetailOrderCount.wholesaleShare}%` }} />
+                <div className="h-full bg-blue-500/70" style={{ width: `${100 - data.wholesale.wholesaleVsRetailOrderCount.wholesaleShare}%` }} />
+              </div>
+              <p className="text-right text-[10px] font-bold text-[#7a5c22]">{data.wholesale.wholesaleVsRetailOrderCount.wholesaleShare}% wholesale share</p>
+            </div>
+          </div>
+
+          <div className="admin-card space-y-4 p-6 md:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em]">Top Wholesale Products</h3>
+            <div className="space-y-3">
+              {data.wholesale.topWholesaleProducts.length === 0 ? (
+                <p className="py-6 text-center text-xs text-[var(--admin-text-muted)]">No wholesale units sold in this period.</p>
+              ) : (
+                data.wholesale.topWholesaleProducts.map((p: any, idx: number) => (
+                  <div key={p.productId} className="flex items-center justify-between rounded-lg border border-[var(--admin-border)] bg-[var(--admin-bg)] p-3 text-xs">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold ${
+                        idx === 0 ? 'bg-[var(--champagne)] text-white' : 'bg-[var(--accent-soft)] text-[var(--accent)]'
+                      }`}>
+                        #{idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-bold">{p.name}</p>
+                        <p className="font-mono text-[9px] text-[var(--admin-text-muted)]">{p.brand}</p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right font-mono tabular-nums">
+                      <p className="font-bold">{p.unitsSold} units</p>
+                      <p className="text-[9px] text-emerald-600">₦{p.revenue.toLocaleString('en-NG')}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

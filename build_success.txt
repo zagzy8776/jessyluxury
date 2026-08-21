@@ -1,0 +1,55 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+Error: P1001: Can't reach database server at `ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech:5432`.
+
+ΓÜá∩╕Å  `prisma db push` failed (database unreachable or invalid string?).
+   Continuing the build anyway ΓÇö fix DATABASE_URL (status: 1).
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 1.08s
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/products/route.ts:99:7
+Type error: Type '{ name: any; brand: any; price: number; salePrice: number | null; costPrice: number; badge: any; categoryId: number; volume: any; notes: any; topNotes: any; middleNotes: any; baseNotes: any; description: any; ... 4 more ...; images: any[]; }' is not assignable to type '(Without<ProductCreateInput, ProductUncheckedCreateInput> & ProductUncheckedCreateInput) | (Without<...> & ProductCreateInput)'.
+  Type '{ name: any; brand: any; price: number; salePrice: number | null; costPrice: number; badge: any; categoryId: number; volume: any; notes: any; topNotes: any; middleNotes: any; baseNotes: any; description: any; ... 4 more ...; images: any[]; }' is not assignable to type 'Without<ProductCreateInput, ProductUncheckedCreateInput> & ProductUncheckedCreateInput'.
+    Property 'updatedAt' is missing in type '{ name: any; brand: any; price: number; salePrice: number | null; costPrice: number; badge: any; categoryId: number; volume: any; notes: any; topNotes: any; middleNotes: any; baseNotes: any; description: any; ... 4 more ...; images: any[]; }' but required in type 'ProductUncheckedCreateInput'.
+
+   97 |
+   98 |     const product = await prisma.product.create({
+>  99 |       data: {
+      |       ^
+  100 |         name,
+  101 |         brand,
+  102 |         price: Number(price),
+Next.js build worker exited with code: 1 and signal: null

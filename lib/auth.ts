@@ -2,7 +2,7 @@ import { scryptSync, randomBytes, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { isValidTokenSignature, generateAdminToken } from './auth-crypto'
+import { isValidTokenSignature, generateAdminToken, generateCustomerToken, verifyCustomerToken } from './auth-crypto'
 
 const COOKIE_NAME = 'jl_admin_token'
 
@@ -100,3 +100,57 @@ export function clearAdminCookie(response: NextResponse) {
     maxAge: 0,
   })
 }
+
+const CUSTOMER_COOKIE_NAME = 'jl_customer_token'
+
+export async function isCustomerAuthenticated(request?: Request): Promise<number | null> {
+  try {
+    let token: string | undefined
+    
+    if (request) {
+      const cookieHeader = request.headers.get('cookie') || ''
+      const match = cookieHeader.match(new RegExp(`${CUSTOMER_COOKIE_NAME}=([^;]+)`))
+      if (match) token = match[1]
+    }
+    
+    if (!token) {
+      const cookieStore = cookies()
+      token = cookieStore.get(CUSTOMER_COOKIE_NAME)?.value
+    }
+    
+    if (!token) return null
+
+    const { isValid, customerId } = await verifyCustomerToken(token)
+    if (!isValid || customerId === undefined) return null
+
+    return customerId
+  } catch {
+    return null
+  }
+}
+
+export async function setCustomerCookie(response: NextResponse, customerId: number) {
+  const token = await generateCustomerToken(customerId)
+  response.cookies.set({
+    name: CUSTOMER_COOKIE_NAME,
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+  })
+}
+
+export function clearCustomerCookie(response: NextResponse) {
+  response.cookies.set({
+    name: CUSTOMER_COOKIE_NAME,
+    value: '',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  })
+}
+

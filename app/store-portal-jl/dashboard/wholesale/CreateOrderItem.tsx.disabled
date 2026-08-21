@@ -1,0 +1,91 @@
+'use client'
+import { Product, WholesalePriceRule } from '@prisma/client'
+import { Minus, Plus, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui'
+import { formatNaira, resolveClientSideUnitPrice } from '@/lib/utils'
+
+type ProductWithRules = Product & { wholesalePriceRules: WholesalePriceRule[] }
+
+interface CreateOrderItemProps {
+  item: ProductWithRules & { quantity: number; price: number; appliedTier: number | null }
+  onQtyChange: (productId: number, newQuantity: number) => void
+  isWholesaleCustomer: boolean
+}
+
+export function CreateOrderItem({ item, onQtyChange, isWholesaleCustomer }: CreateOrderItemProps) {
+  const retailPrice = item.salePrice ?? item.price
+  const currentAppliedPrice = item.price // This is the price passed from parent, already resolved
+
+  // Recalculate savings based on retail price vs applied price
+  const savingsPerUnit = retailPrice - currentAppliedPrice
+  const totalSavings = savingsPerUnit * item.quantity
+
+  return (
+    <div className="flex items-center gap-4 rounded-md border p-3">
+      {/* Product Info */}
+      <div className="flex-1">
+        <p className="font-medium">{item.name}</p>
+        <p className="text-sm text-muted-foreground">{item.brand}</p>
+      </div>
+
+      {/* Quantity Controls */}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onQtyChange(item.id, item.quantity - 1)}
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <span className="w-8 text-center font-mono text-sm font-medium">{item.quantity}</span>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onQtyChange(item.id, item.quantity + 1)}
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Pricing Breakdown */}
+      <div className="text-right">
+        {isWholesaleCustomer && item.appliedTier !== null && currentAppliedPrice < retailPrice ? (
+          <>
+            <p className="text-sm text-muted-foreground line-through">{formatNaira(retailPrice)}</p>
+            <p className="font-medium text-emerald-600">{formatNaira(currentAppliedPrice)}</p>
+            <p className="text-xs text-muted-foreground">
+              Wholesale Tier {item.appliedTier}
+            </p>
+            {savingsPerUnit > 0 && (
+              <p className="text-xs text-emerald-500">
+                Save {formatNaira(savingsPerUnit)}/unit
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="font-medium">{formatNaira(currentAppliedPrice)}</p>
+        )}
+      </div>
+
+      {/* Total Savings for the line item */}
+      {isWholesaleCustomer && totalSavings > 0 && (
+        <div className="text-right text-sm text-emerald-500 font-medium hidden sm:block">
+          <p>Total Savings:</p>
+          <p>{formatNaira(totalSavings)}</p>
+        </div>
+      )}
+
+      {/* Remove Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 text-destructive hover:text-destructive"
+        onClick={() => onQtyChange(item.id, 0)}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}

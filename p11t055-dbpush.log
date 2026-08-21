@@ -1,0 +1,6 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+The database is already in sync with the Prisma schema.
+

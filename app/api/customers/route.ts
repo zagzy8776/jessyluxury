@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 import { normalizePhoneNumber } from '@/lib/orders/phone'
 
 export async function GET(request: Request) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'customers')
   if (authErr) return authErr
 
   try {
@@ -62,9 +62,10 @@ export async function GET(request: Request) {
     const customers = await prisma.customer.findMany({
       where,
       include: {
-        orders: {
+        Order: {
           orderBy: { createdAt: 'desc' },
         },
+        CustomerGroup: true,
       },
       orderBy: {
         updatedAt: 'desc',

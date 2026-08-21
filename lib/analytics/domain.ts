@@ -169,6 +169,31 @@ export interface MarketingMetrics {
   ordersWithDiscount: number
 }
 
+export interface WholesaleMetrics {
+  wholesaleOrders: number
+  wholesaleRevenue: number
+  wholesaleUnitsSold: number
+  averageWholesaleOrderValue: number
+  topWholesaleProducts: Array<{
+    productId: number
+    name: string
+    brand: string
+    unitsSold: number
+    revenue: number
+    grossProfit: number | null
+  }>
+  wholesaleVsRetailRevenue: {
+    wholesaleRevenue: number
+    retailRevenue: number
+    wholesaleShare: number
+  }
+  wholesaleVsRetailOrderCount: {
+    wholesaleOrders: number
+    retailOrders: number
+    wholesaleShare: number
+  }
+}
+
 export interface AnalyticsPayload {
   range: AnalyticsRange
   generatedAt: string
@@ -177,4 +202,5 @@ export interface AnalyticsPayload {
   customers: CustomerMetrics
   channels: ChannelMetrics
   marketing: MarketingMetrics
+  wholesale: WholesaleMetrics
 }

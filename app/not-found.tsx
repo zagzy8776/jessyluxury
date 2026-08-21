@@ -3,31 +3,23 @@ import { ArrowLeft, ShoppingBag } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="min-h-[75vh] flex items-center justify-center p-6 bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <div className="max-w-md text-center space-y-6">
-        <p className="text-[10px] font-bold tracking-[0.24em] text-amber-500 uppercase">404 PAGE NOT FOUND</p>
+    <div className="flex min-h-[75vh] items-center justify-center bg-[var(--bg-primary)] p-6 text-[var(--text-primary)]">
+      <div className="max-w-md space-y-6 text-center">
+        <p className="eyebrow">404 — Page not found</p>
 
-        <h1 className="font-display text-5xl font-bold text-[var(--text-primary)]">
-          Page Not Found
-        </h1>
+        <h1 className="font-display text-5xl font-bold">This page has vanished</h1>
 
-        <p className="text-xs leading-6 text-[var(--text-secondary)] font-medium">
-          The page or product you are looking for doesn't exist or may have been moved.
+        <p className="text-xs font-medium leading-6 text-[var(--text-secondary)]">
+          The page or product you&apos;re looking for doesn&apos;t exist or may have been moved.
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 pt-2">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3.5 text-xs font-bold text-stone-950 hover:bg-amber-400 transition shadow-md"
-          >
-            <ArrowLeft size={15} /> Back to Home
+          <Link href="/" className="btn-dark !px-6 !py-3.5">
+            <ArrowLeft size={15} /> Back to home
           </Link>
 
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-6 py-3.5 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 transition shadow-sm"
-          >
-            <ShoppingBag size={15} /> Shop Collection
+          <Link href="/shop" className="btn-outline !px-6 !py-3.5">
+            <ShoppingBag size={15} /> Shop collection
           </Link>
         </div>
       </div>

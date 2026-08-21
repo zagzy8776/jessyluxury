@@ -3,10 +3,22 @@ import { test, expect } from '@playwright/test'
 import { PrismaClient } from '@prisma/client'
 import { generateAdminToken } from '../lib/auth-crypto'
 import { processPendingDeliveries } from '../lib/notifications/worker'
+import { publishBusinessEvent } from '../lib/orders/events'
 import fs from 'fs'
 import path from 'path'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+})
+
+// Ensure cleanup even if test fails
+process.on('beforeExit', async () => {
+  await prisma.$disconnect().catch(() => {})
+})
 
 test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
   test.setTimeout(180000)
@@ -30,7 +42,7 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
     const config = await prisma.systemConfig.upsert({
       where: { id: 1 },
       update: {},
-      create: { id: 1, sessionVersion: 1 },
+      create: { id: 1, sessionVersion: 1, updatedAt: new Date() },
     })
     const sessionVersion = config.sessionVersion
     authToken = await generateAdminToken(sessionVersion)
@@ -39,6 +51,7 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
       data: {
         name: `Notification Cat ${namespace}`,
         slug: `notif-cat-${namespace.toLowerCase()}`,
+        updatedAt: new Date()
       },
     })
 
@@ -51,6 +64,7 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
         costPrice: 20000,
         stock: 5, // Low stock triggers
         categoryId: testCategory.id,
+        updatedAt: new Date()
       },
     })
 
@@ -59,6 +73,8 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
         name: `Notif Cust ${namespace}`,
         phone: `+234805555${runId}`,
         whatsapp: `+234805555${runId}`,
+        acquisitionSource: 'Instagram',
+        updatedAt: new Date()
       },
     })
   })
@@ -71,7 +87,7 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
     // Clean up
     await prisma.notificationDelivery.deleteMany({
       where: {
-        notification: {
+        Notification: {
           eventKey: { startsWith: `notif_test:${namespace}` },
         },
       },
@@ -246,5 +262,254 @@ test.describe('Jessy Luxury Notifications outbox E2E Suite', () => {
       },
     })
     expect(workerCronUnauthorized.status()).toBe(401)
+  })
+
+  test('should verify Phase 9 customer notification portal and engagement features', async ({ request }) => {
+    // 1. Create a public active store announcement
+    const announcement = await prisma.storeAnnouncement.create({
+      data: {
+        type: 'PROMOTION',
+        title: `E2E Promo ${namespace}`,
+        message: 'Active announcement message',
+        actionLabel: 'Click Me',
+        actionUrl: '/',
+        audience: 'ALL',
+        priority: 80,
+        dismissible: true,
+        isActive: true,
+        startsAt: new Date(Date.now() - 60000),
+        endsAt: new Date(Date.now() + 600000),
+        updatedAt: new Date(),
+      }
+    })
+
+    const activeAnnRes = await request.get('http://localhost:3000/api/store-announcements/active')
+    expect(activeAnnRes.status()).toBe(200)
+    const activeAnn = await activeAnnRes.json()
+    expect(activeAnn).not.toBeNull()
+    expect(activeAnn.title).toBe(`E2E Promo ${namespace}`)
+
+    // 2. Perform passwordless login for customer
+    const loginRes = await request.post('http://localhost:3000/api/customer-auth/login', {
+      data: {
+        phone: testCustomer.phone,
+        name: testCustomer.name
+      }
+    })
+    expect(loginRes.status()).toBe(200)
+    const loginData = await loginRes.json()
+    expect(loginData.success).toBe(true)
+
+    // Capture the cookie header
+    const setCookieHeader = loginRes.headers()['set-cookie']
+    expect(setCookieHeader).toBeDefined()
+    const customerCookie = setCookieHeader.split(';')[0]
+
+    // 3. Register a customer push subscription
+    const pushSubRes = await request.post('http://localhost:3000/api/push-subscriptions', {
+      data: {
+        pushToken: `onesignal_e2e_sub_${runId}`
+      },
+      headers: {
+        'Cookie': customerCookie
+      }
+    })
+    expect(pushSubRes.status()).toBe(201)
+
+    // Verify sub exists in DB
+    const subRecord = await prisma.customerPushSubscription.findFirst({
+      where: { pushToken: `onesignal_e2e_sub_${runId}` }
+    })
+    expect(subRecord).toBeDefined()
+    expect(subRecord?.customerId).toBe(testCustomer.id)
+
+    // 4. Test Customer Notification Center scoped fetching
+    // Get notifications -> should be empty at first
+    const initNotifRes = await request.get('http://localhost:3000/api/notifications', {
+      headers: { 'Cookie': customerCookie }
+    })
+    expect(initNotifRes.status()).toBe(200)
+    const initNotifs = await initNotifRes.json()
+    expect(initNotifs.length).toBe(0)
+
+    // 5. Create a Campaign with push and web enabled
+    const promoCoupon = await prisma.coupon.create({
+      data: {
+        code: `COUPON_${runId}`,
+        discountType: 'PERCENTAGE',
+        discountValue: 20,
+        minOrderAmount: 1000,
+        isActive: true,
+        updatedAt: new Date(),
+      }
+    })
+
+    const campaignRes = await request.post('http://localhost:3000/api/campaigns', {
+      data: {
+        name: `E2E Campaign ${namespace}`,
+        description: `Use discount code ${promoCoupon.code}`,
+        couponId: promoCoupon.id,
+        audience: 'INSTAGRAM_ACQUIRED',
+        startDate: new Date(Date.now() - 5000).toISOString(),
+        endDate: new Date(Date.now() + 50000).toISOString(),
+        isActive: true,
+        pushEnabled: true,
+        websiteEnabled: true,
+      },
+      headers: {
+        'Cookie': `jl_admin_token=${authToken}`
+      }
+    })
+    expect(campaignRes.status()).toBe(201)
+
+    // Poll notifications endpoint to allow async background execution to complete
+    let checkNotifs: any[] = []
+    for (let i = 0; i < 10; i++) {
+      const checkNotifRes = await request.get('http://localhost:3000/api/notifications', {
+        headers: { 'Cookie': customerCookie }
+      })
+      if (checkNotifRes.status() === 200) {
+        checkNotifs = await checkNotifRes.json()
+        if (Array.isArray(checkNotifs) && checkNotifs.length > 0) {
+          break
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+
+    expect(checkNotifs.length).toBeGreaterThan(0)
+    expect(checkNotifs[0].title).toBe(`E2E Campaign ${namespace}`)
+
+    // 6. Clean up Campaign, Coupon, Announcement, and Subscriptions
+    const campaignData = await campaignRes.json()
+    await prisma.storeAnnouncement.deleteMany({ where: { campaignId: campaignData.id } })
+    await prisma.notificationDelivery.deleteMany({ where: { Notification: { recipientId: testCustomer.id } } })
+    await prisma.notification.deleteMany({ where: { recipientId: testCustomer.id } })
+    await prisma.campaign.delete({ where: { id: campaignData.id } })
+    await prisma.coupon.delete({ where: { id: promoCoupon.id } })
+    await prisma.storeAnnouncement.delete({ where: { id: announcement.id } })
+    await prisma.customerPushSubscription.delete({ where: { id: subRecord?.id } })
+  })
+
+  test('should render an active StoreAnnouncement on the public storefront', async ({ page }) => {
+    const title = `Storefront Banner ${namespace}`
+    const message = `Homepage announcement ${namespace}`
+    const announcement = await prisma.storeAnnouncement.create({
+      data: {
+        type: 'PROMOTION',
+        title,
+        message,
+        actionLabel: 'Shop Now',
+        actionUrl: '/',
+        audience: 'ALL',
+        priority: 999,
+        dismissible: true,
+        isActive: true,
+        startsAt: new Date(Date.now() - 60000),
+        endsAt: new Date(Date.now() + 600000),
+        updatedAt: new Date(),
+      },
+    })
+
+    try {
+      await page.goto('http://localhost:3000/')
+      await expect(page.getByText(title, { exact: true })).toBeVisible({ timeout: 15000 })
+      await expect(page.getByText(message, { exact: true })).toBeVisible()
+    } finally {
+      await prisma.storeAnnouncement.delete({ where: { id: announcement.id } })
+    }
+  })
+
+  test('should not suppress transactional order notifications when marketing is opted out', async () => {
+    const localPhone = `0802${String(runId).padStart(7, '0').slice(-7)}`
+    const canonicalPhone = `+234${localPhone.slice(1)}`
+    const orderNumber = `JL-TXN${namespace}`
+
+    const optedOutCustomer = await prisma.customer.create({
+      data: {
+        name: `OptOut Cust ${namespace}`,
+        phone: canonicalPhone,
+        whatsapp: canonicalPhone,
+        email: `optout_${runId}@example.com`,
+        acquisitionSource: 'Manual',
+        marketingEmail: false,
+        marketingPush: false,
+        updatedAt: new Date(),
+      },
+    })
+
+    const order = await prisma.order.create({
+      data: {
+        orderNumber,
+        Customer: { connect: { id: optedOutCustomer.id } },
+        customerName: optedOutCustomer.name,
+        customerPhone: canonicalPhone,
+        customerWhatsapp: canonicalPhone,
+        subtotal: 10000,
+        total: 10000,
+        paymentStatus: 'PAID',
+        status: 'SHIPPED',
+        updatedAt: new Date(),
+        OrderItem: {
+          create: [{
+            productId: testProduct.id,
+            quantity: 1,
+            price: 10000,
+          }],
+        },
+      },
+    })
+
+    const previousResendKey = process.env.RESEND_API_KEY
+    const previousOneSignalKey = process.env.ONESIGNAL_API_KEY
+    const previousOneSignalAppId = process.env.ONESIGNAL_APP_ID
+    process.env.RESEND_API_KEY = ''
+    process.env.ONESIGNAL_API_KEY = ''
+    process.env.ONESIGNAL_APP_ID = ''
+
+    try {
+      await publishBusinessEvent('order.shipped', {
+        orderId: order.id,
+        orderNumber,
+        isAuthenticated: true,
+      })
+
+      const customerNotif = await prisma.notification.findFirst({
+        where: {
+          eventKey: `order:${orderNumber}:shipped:CUSTOMER`,
+          recipientType: 'CUSTOMER',
+          recipientId: optedOutCustomer.id,
+        },
+        include: { NotificationDelivery: true },
+      })
+
+      expect(customerNotif).toBeTruthy()
+      expect(customerNotif?.title).toBe('Your Order Has Shipped!')
+
+      const emailDelivery = customerNotif!.NotificationDelivery.find((d) => d.channel === 'EMAIL')
+      const pushDelivery = customerNotif!.NotificationDelivery.find((d) => d.channel === 'PUSH')
+
+      expect(emailDelivery).toBeDefined()
+      expect(emailDelivery?.errorMessage).not.toBe('MARKETING_EMAIL_DISABLED')
+      expect(pushDelivery).toBeDefined()
+      expect(pushDelivery?.errorMessage).not.toBe('MARKETING_PUSH_DISABLED')
+    } finally {
+      if (previousResendKey !== undefined) process.env.RESEND_API_KEY = previousResendKey
+      else delete process.env.RESEND_API_KEY
+      if (previousOneSignalKey !== undefined) process.env.ONESIGNAL_API_KEY = previousOneSignalKey
+      else delete process.env.ONESIGNAL_API_KEY
+      if (previousOneSignalAppId !== undefined) process.env.ONESIGNAL_APP_ID = previousOneSignalAppId
+      else delete process.env.ONESIGNAL_APP_ID
+
+      await prisma.notificationDelivery.deleteMany({
+        where: { Notification: { eventKey: { startsWith: `order:${orderNumber}:` } } },
+      })
+      await prisma.notification.deleteMany({
+        where: { eventKey: { startsWith: `order:${orderNumber}:` } },
+      })
+      await prisma.orderItem.deleteMany({ where: { orderId: order.id } })
+      await prisma.order.delete({ where: { id: order.id } })
+      await prisma.customer.delete({ where: { id: optedOutCustomer.id } })
+    }
   })
 })

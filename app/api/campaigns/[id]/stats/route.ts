@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuthOr } from '@/lib/staff-auth'
 import { completedOrderWhere } from '@/lib/analytics/domain'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuthOr(request, ['analytics', 'settings'])
   if (authErr) return authErr
 
   try {
@@ -15,7 +15,7 @@ export async function GET(
 
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
-      include: { coupon: true },
+      include: { Coupon: true },
     })
 
     if (!campaign) {
@@ -32,14 +32,14 @@ export async function GET(
     const completedRedemptions = await prisma.couponRedemption.findMany({
       where: {
         campaignId,
-        order: completedOrderWhere,
+        Order: completedOrderWhere,
       },
       include: {
-        order: {
+        Order: {
           select: {
             total: true,
             discountAmount: true,
-            items: {
+            OrderItem: {
               select: {
                 price: true,
                 unitCost: true,
@@ -52,13 +52,13 @@ export async function GET(
     })
 
     const completedOrdersCount = completedRedemptions.length
-    const revenue = completedRedemptions.reduce((s, r) => s + r.order.total, 0)
-    const discountCost = completedRedemptions.reduce((s, r) => s + r.order.discountAmount, 0)
+    const revenue = completedRedemptions.reduce((s, r) => s + r.Order.total, 0)
+    const discountCost = completedRedemptions.reduce((s, r) => s + r.Order.discountAmount, 0)
 
     // Calculate Net Contribution = Revenue - COGS - DiscountCost
     let cogs = 0
     for (const r of completedRedemptions) {
-      for (const item of r.order.items) {
+      for (const item of r.Order.OrderItem) {
         // If snapshot unitCost is not available, default to 0 for calculations
         const cost = item.unitCost ?? 0
         cogs += cost * item.quantity
@@ -70,7 +70,7 @@ export async function GET(
     return NextResponse.json({
       campaignId,
       name: campaign.name,
-      couponCode: campaign.coupon.code,
+      couponCode: campaign.Coupon.code,
       redemptionsCount,
       completedOrdersCount,
       revenue,

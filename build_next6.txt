@@ -1,0 +1,53 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+Error: P1001: Can't reach database server at `ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech:5432`.
+
+ΓÜá∩╕Å  `prisma db push` failed (database unreachable or invalid string?).
+   Continuing the build anyway ΓÇö fix DATABASE_URL (status: 1).
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 338ms
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/orders/track/[token/]/route.ts:43:9
+Type error: Object literal may only specify known properties, and 'items' does not exist in type 'OrderInclude<DefaultArgs>'.
+
+  41 |       where: { trackingToken: token },
+  42 |       include: {
+> 43 |         items: true,
+     |         ^
+  44 |         timeline: {
+  45 |           orderBy: { createdAt: 'asc' },
+  46 |         },
+Next.js build worker exited with code: 1 and signal: null

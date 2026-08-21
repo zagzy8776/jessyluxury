@@ -24,6 +24,11 @@ loadDotEnv()
 
 const prisma = new PrismaClient()
 
+// Ensure cleanup even if test fails
+process.on('beforeExit', async () => {
+  await prisma.$disconnect().catch(() => {})
+})
+
 test.describe('Jessy Luxury CRM & POS E2E Smoke Test', () => {
   test.setTimeout(180000)
 
@@ -43,7 +48,7 @@ test.describe('Jessy Luxury CRM & POS E2E Smoke Test', () => {
     testCategory = await prisma.category.upsert({
       where: { name: 'Smoke Test Category' },
       update: {},
-      create: { name: 'Smoke Test Category', slug: `smoke-test-cat-${runId}` },
+      create: { name: 'Smoke Test Category', slug: `smoke-test-cat-${runId}`, updatedAt: new Date() },
     })
 
     testProduct = await prisma.product.create({
@@ -57,6 +62,7 @@ test.describe('Jessy Luxury CRM & POS E2E Smoke Test', () => {
         stock: 5,
         reserved: 0,
         categoryId: testCategory.id,
+        updatedAt: new Date()
       },
     })
 
@@ -64,6 +70,13 @@ test.describe('Jessy Luxury CRM & POS E2E Smoke Test', () => {
     const config = await prisma.systemConfig.findUnique({ where: { id: 1 } })
     const sessionVersion = config?.sessionVersion ?? 1
     authToken = await generateAdminToken(sessionVersion)
+
+    // Warm the dev-server compile cache for the POS page. Next.js compiles
+    // routes on demand; a cold compile of this page can exceed the 60s
+    // selector timeout below, so pre-render it once here.
+    await fetch('http://localhost:3000/store-portal-jl/dashboard/orders/create', {
+      headers: { Cookie: `jl_admin_token=${authToken}` },
+    }).catch(() => {})
   })
 
   test.afterAll(async () => {
@@ -183,7 +196,8 @@ test.describe('Jessy Luxury CRM & POS E2E Smoke Test', () => {
     const dbCustomer = await prisma.customer.findUnique({ where: { phone: canonicalCustomerPhone } })
     expect(dbCustomer).toBeDefined()
     expect(dbCustomer?.phone).toBe(canonicalCustomerPhone)  // Canonical +234 normalization
-    expect(dbCustomer?.totalSpent).toBe(10000)
+    // totalSpent includes product (10000) + default shipping (500) = 10500
+    expect(dbCustomer?.totalSpent).toBe(10500)
     expect(dbCustomer?.ordersCount).toBe(1)
 
     const dbOrder = await prisma.order.findUnique({ where: { orderNumber } })

@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Allows parallel agents to build/serve from an isolated output dir
+  // (e.g. NEXT_DIST_DIR=.next-frontend) without clobbering each other's .next
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
+  watchOptions: {
+    ignored: /^(?!.*jessy-luxury-website).*/,
+  },
   images: {
     remotePatterns: [
       {

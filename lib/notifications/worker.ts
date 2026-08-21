@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { sendResendEmail, sendOneSignalPush } from './client'
+import { sendResendEmail, sendOneSignalPush, sendOneSignalPushToSubscriptions } from './client'
 
 export async function processPendingDeliveries(workerId?: string): Promise<{ processedCount: number; successCount: number; failedCount: number; skippedCount: number }> {
   const currentWorkerId = workerId || `worker_${Math.random().toString(36).slice(2)}`
@@ -46,7 +46,7 @@ export async function processPendingDeliveries(workerId?: string): Promise<{ pro
       nextAttemptAt: { lte: now },
     },
     include: {
-      notification: true,
+      Notification: true,
     },
     take: 10,
   })
@@ -79,7 +79,7 @@ export async function processPendingDeliveries(workerId?: string): Promise<{ pro
 
     try {
       const channel = delivery.channel
-      const notification = delivery.notification
+      const notification = delivery.Notification
 
       if (channel === 'EMAIL') {
         const payload = notification.payload as any
@@ -128,8 +128,6 @@ export async function processPendingDeliveries(workerId?: string): Promise<{ pro
         successCount++
 
       } else if (channel === 'PUSH') {
-        const recipientId = notification.recipientId || 1 // Fallback to primary admin
-
         // Check OneSignal keys
         if (!process.env.ONESIGNAL_APP_ID || !process.env.ONESIGNAL_API_KEY) {
           // SKIPPED: Missing credentials
@@ -149,7 +147,57 @@ export async function processPendingDeliveries(workerId?: string): Promise<{ pro
           continue
         }
 
-        const res = await sendOneSignalPush(String(recipientId), notification.title, notification.message, notification.payload)
+        let res;
+        if (notification.recipientType === 'CUSTOMER') {
+          if (!notification.recipientId) {
+            await prisma.notificationDelivery.updateMany({
+              where: {
+                id: delivery.id,
+                status: 'PROCESSING',
+                claimedBy: currentWorkerId,
+              },
+              data: {
+                status: 'SKIPPED',
+                errorMessage: 'NO_PUSH_SUBSCRIPTION',
+                provider: 'ONESIGNAL',
+              },
+            })
+            skippedCount++
+            continue
+          }
+
+          // Fetch active customer push subscriptions
+          const subs = await prisma.customerPushSubscription.findMany({
+            where: {
+              customerId: notification.recipientId,
+              active: true
+            }
+          })
+
+          if (subs.length === 0) {
+            await prisma.notificationDelivery.updateMany({
+              where: {
+                id: delivery.id,
+                status: 'PROCESSING',
+                claimedBy: currentWorkerId,
+              },
+              data: {
+                status: 'SKIPPED',
+                errorMessage: 'NO_PUSH_SUBSCRIPTION',
+                provider: 'ONESIGNAL',
+              },
+            })
+            skippedCount++
+            continue
+          }
+
+          const subscriptionTokens = subs.map(s => s.pushToken)
+          res = await sendOneSignalPushToSubscriptions(subscriptionTokens, notification.title, notification.message, notification.payload)
+        } else {
+          // Admin recipient - legacy external ID route
+          const recipientId = notification.recipientId || 1
+          res = await sendOneSignalPush(String(recipientId), notification.title, notification.message, notification.payload)
+        }
 
         // Success completion
         await prisma.notificationDelivery.updateMany({

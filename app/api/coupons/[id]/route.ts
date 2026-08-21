@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'marketing')
   if (authErr) return authErr
 
   try {
     const coupon = await prisma.coupon.findUnique({
       where: { id: Number(params.id) },
-      include: { campaigns: true },
+      include: { Campaign: true },
     })
 
     if (!coupon) {
@@ -29,7 +29,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'marketing')
   if (authErr) return authErr
 
   try {
@@ -49,6 +49,7 @@ export async function PUT(
       productIds = [],
       categoryIds = [],
       isActive = true,
+      wholesaleEligible,
     } = body
 
     const existingCoupon = await prisma.coupon.findUnique({
@@ -88,6 +89,7 @@ export async function PUT(
         productIds: Array.isArray(productIds) ? productIds.map(Number) : undefined,
         categoryIds: Array.isArray(categoryIds) ? categoryIds.map(Number) : undefined,
         isActive: isActive !== undefined ? isActive : undefined,
+        wholesaleEligible: wholesaleEligible !== undefined ? Boolean(wholesaleEligible) : undefined,
       },
     })
 
@@ -112,7 +114,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'marketing')
   if (authErr) return authErr
 
   try {

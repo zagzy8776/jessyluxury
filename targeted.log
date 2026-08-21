@@ -1,0 +1,34 @@
+
+🔧 [Global Setup] Starting test account provisioning...
+
+   Waiting for previous connections to close...
+   Creating/updating owner@jessy.test (Owner)...
+   Creating/updating manager@jessy.test (Manager)...
+   Creating/updating fulfillment@jessy.test (Fulfillment)...
+   Creating/updating catalog@jessy.test (Catalog)...
+   Creating/updating inactive@jessy.test (Manager)...
+
+✅ [Global Setup] All test accounts provisioned successfully
+
+✅ [Global Setup] Verified 5 test accounts exist
+
+[E2E Env Loader] Successfully loaded environment from .env
+
+Running 31 tests using 1 worker
+
+  x   1 [chromium] › e2e\analytics.spec.ts:114:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics (1.1m)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok  2 [chromium] › e2e\settings\import-export.spec.ts:23:7 › Configuration Import/Export › should export all settings as JSON with masked secrets (4.7s)
+  ok  3 [chromium] › e2e\settings\import-export.spec.ts:53:7 › Configuration Import/Export › should validate business profile data on import (1.1s)
+  ok  4 [chromium] › e2e\settings\import-export.spec.ts:77:7 › Configuration Import/Export › should validate store locations on import (430ms)
+  ok  5 [chromium] › e2e\settings\import-export.spec.ts:97:7 › Configuration Import/Export › should validate staff accounts on import (449ms)
+  ok  6 [chromium] › e2e\settings\import-export.spec.ts:121:7 › Configuration Import/Export › should reject unmasked secrets in import (436ms)
+  x   7 [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully (8.4s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok  8 [chromium] › e2e\settings\import-export.spec.ts:205:7 › Configuration Import/Export › should enforce authorization on export (128ms)
+  ok  9 [chromium] › e2e\settings\import-export.spec.ts:213:7 › Configuration Import/Export › should enforce authorization on import (58ms)
+  ok 10 [chromium] › e2e\settings\import-export.spec.ts:222:7 › Configuration Import/Export › should maintain round-trip property for non-secret settings (9.0s)
+  ok 11 [chromium] › e2e\settings\import-export.spec.ts:257:7 › Configuration Import/Export › should handle empty configuration export (1.6s)
+  ok 12 [chromium] › e2e\settings\import-export.spec.ts:270:7 › Configuration Import/Export › should create audit log on successful import (3.5s)
+  x  13 [chromium] › e2e\settings\shell-integration.spec.ts:12:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI (22.1s)
+  x  14 [chromium] › e2e\settings\shell-integration.spec.ts:25:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page (4.0s)

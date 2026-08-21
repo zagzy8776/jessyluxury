@@ -4,8 +4,11 @@ import dns from 'dns'
 
 dns.setDefaultResultOrder('ipv4first')
 
+// Resolve the project root relative to this file (e2e/load-env.ts → project root)
+const projectRoot = path.resolve(__dirname, '..')
+
 function loadDotEnv() {
-  const envPath = path.resolve(process.cwd(), '.env')
+  const envPath = path.resolve(projectRoot, '.env')
   if (!fs.existsSync(envPath)) return
   const lines = fs.readFileSync(envPath, 'utf8').split('\n')
   for (const line of lines) {

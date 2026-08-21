@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
+import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
+import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
 
 export async function GET(
   request: Request,
@@ -15,8 +17,8 @@ export async function GET(
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
-        category: true,
-        reviews: {
+        Category: true,
+        Review: {
           orderBy: { createdAt: 'desc' },
         },
       },
@@ -26,7 +28,18 @@ export async function GET(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    return NextResponse.json(product)
+    let customerId = await isCustomerAuthenticated(request)
+    const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
+    if (isStaff) {
+      const forCustomerId = Number(new URL(request.url).searchParams.get('forCustomerId'))
+      if (!isNaN(forCustomerId) && forCustomerId > 0) customerId = forCustomerId
+    }
+
+    const [decorated] = await decorateProductsWithWholesale([product], customerId)
+    // Prisma exposes these relations capitalized; remap to the lowercase public contract
+    const { Category, Review, ...rest } = decorated as any
+    const normalized = { ...rest, category: Category ?? null, reviews: Review ?? [] }
+    return NextResponse.json(normalized)
   } catch (error) {
     console.error('Error fetching product:', error)
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
@@ -37,7 +50,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'products')
   if (authErr) return authErr
 
   try {
@@ -78,7 +91,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'products')
   if (authErr) return authErr
 
   try {

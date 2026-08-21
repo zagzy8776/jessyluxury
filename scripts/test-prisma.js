@@ -25,8 +25,12 @@ const prisma = new PrismaClient();
 async function run() {
   try {
     console.log('Testing Prisma connection with DATABASE_URL:', process.env.DATABASE_URL);
-    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
-    console.log('Successfully reached database with Prisma! config:', config);
+    const customers = await prisma.customer.findMany({ orderBy: { id: 'desc' }, take: 5 });
+    const campaigns = await prisma.campaign.findMany({ orderBy: { id: 'desc' }, take: 5 });
+    const notifications = await prisma.notification.findMany({ orderBy: { id: 'desc' }, take: 5 });
+    console.log('Customers:', JSON.stringify(customers, null, 2));
+    console.log('Campaigns:', JSON.stringify(campaigns, null, 2));
+    console.log('Notifications:', JSON.stringify(notifications, null, 2));
   } catch (err) {
     console.error('Failed to connect with Prisma:', err);
   } finally {

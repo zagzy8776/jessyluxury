@@ -1,6 +1,18 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Truck, CheckCircle2, Clock, Package, MapPin, AlertCircle, AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Truck, CheckCircle2, Package, AlertCircle, AlertTriangle, Receipt,
+  CreditCard, Loader2, PackageCheck, XCircle,
+} from 'lucide-react'
+
+const STEPS = [
+  { key: 'ORDER_RECEIVED', label: 'Order received', icon: Receipt, eventTypes: ['ORDER_CREATED'] },
+  { key: 'PAYMENT_CONFIRMED', label: 'Payment confirmed', icon: CreditCard, eventTypes: ['PAYMENT_UPDATED'] },
+  { key: 'PROCESSING', label: 'Processing', icon: Loader2, eventTypes: ['STATUS_CHANGED'] },
+  { key: 'SHIPPED', label: 'Shipped', icon: Truck, eventTypes: ['ORDER_SHIPPED'] },
+  { key: 'DELIVERED', label: 'Delivered', icon: PackageCheck, eventTypes: ['ORDER_DELIVERED'] },
+] as const
 
 export default function TrackOrderDetailsPage({ params }: { params: { token: string } }) {
   const [order, setOrder] = useState<any>(null)
@@ -36,171 +48,293 @@ export default function TrackOrderDetailsPage({ params }: { params: { token: str
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <Truck className="animate-bounce text-amber-500 mx-auto" size={40} />
-          <p className="text-xs font-semibold text-[var(--text-muted)] tracking-wider">RETRIEVING LIVE SHIPMENT DATA...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-[var(--bg-primary)] py-20 px-6">
-        <div className="mx-auto max-w-md rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center space-y-4">
-          <AlertCircle className="text-red-500 mx-auto" size={40} />
-          <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Tracking Failed</h2>
-          <p className="text-xs text-[var(--text-secondary)] font-medium leading-relaxed">{error}</p>
-          <a
-            href="/track"
-            className="inline-block rounded-xl bg-[var(--border)] border border-[var(--border)] px-4 py-2 text-xs font-bold text-[var(--text-primary)] hover:border-amber-500 transition"
-          >
-            Go Back
-          </a>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--bg-primary)]">
+        <div className="space-y-4 text-center">
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-soft)]">
+            <Truck size={26} className="animate-bounce text-[var(--accent)]" />
+          </span>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+            Retrieving shipment…
+          </p>
         </div>
       </main>
     )
   }
 
-  // Derive stepper completion status
-  const statuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED']
-  const statusLabels = {
-    PENDING: 'Order Placed',
-    PROCESSING: 'Processing',
-    SHIPPED: 'Shipped',
-    DELIVERED: 'Delivered',
+  if (error) {
+    return (
+      <main className="min-h-screen bg-[var(--bg-primary)] px-6 py-20">
+        <div className="mx-auto max-w-md space-y-4 rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+          <AlertCircle size={36} className="mx-auto text-[var(--danger)]" />
+          <h2 className="font-display text-xl font-bold">Tracking unavailable</h2>
+          <p className="text-xs leading-relaxed text-[var(--text-secondary)]">{error}</p>
+          <Link href="/track" className="btn-primary mt-2 !px-6 !py-3">Try another order</Link>
+        </div>
+      </main>
+    )
   }
-  const currentIdx = statuses.indexOf(order.status)
+
+  const cancelled = order.status === 'CANCELLED'
+  const statusMap: Record<string, number> = {
+    PENDING: 0,
+    PROCESSING: 2,
+    SHIPPED: 3,
+    DELIVERED: 4,
+  }
+  let currentIdx = statusMap[order.status] ?? 0
+  // Payment confirmed step (index 1) inferred from timeline
+  const hasPaymentEvent = (order.timeline || []).some((e: any) => e.eventType === 'PAYMENT_UPDATED')
+  if (order.status === 'PENDING' && hasPaymentEvent) currentIdx = 1
+
+  const eventForStep = (eventTypes: readonly string[]) =>
+    (order.timeline || []).find((e: any) => eventTypes.includes(e.eventType))
+
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
 
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] pb-20">
+    <main className="min-h-screen bg-[var(--bg-primary)] pb-20 text-[var(--text-primary)]">
       {/* Banner */}
-      <section className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--card-bg)] py-12">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,163,93,0.08),transparent_60%)]" />
-        <div className="relative mx-auto max-w-4xl px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <section className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--card-bg)] py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(79,45,127,0.08),transparent_60%)]" />
+        <div className="relative mx-auto flex max-w-4xl flex-col gap-6 px-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <span className="text-[10px] font-bold tracking-widest text-amber-500 uppercase">Live Delivery Tracking</span>
-            <h1 className="mt-2 font-mono text-3xl font-bold text-[var(--text-primary)]">{order.orderNumber}</h1>
-            <p className="text-xs text-[var(--text-secondary)] font-medium mt-1">
-              Destination Zone: <strong className="text-amber-500">{order.shippingZone}</strong> ({order.estimatedDays})
+            <p className="eyebrow">Live delivery tracking</p>
+            <h1 className="mt-1.5 font-mono text-2xl font-bold sm:text-3xl">{order.orderNumber}</h1>
+            <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+              Destination: <strong className="text-[var(--accent)]">{order.shippingZone}</strong> · Estimated {order.estimatedDays}
             </p>
           </div>
 
-          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-2xl p-4 flex items-center gap-3 self-start md:self-auto shadow-sm">
-            <span className="rounded-lg bg-amber-500/10 p-2 text-amber-500">
-              <Truck size={20} />
+          <div
+            className={`flex items-center gap-3 self-start rounded-2xl border p-4 shadow-card md:self-auto ${
+              cancelled
+                ? 'border-red-500/25 bg-red-500/5'
+                : 'border-[var(--border)] bg-[var(--bg-primary)]'
+            }`}
+          >
+            <span
+              className={`rounded-xl p-2 ${
+                cancelled ? 'bg-red-500/10 text-[var(--danger)]' : 'bg-[var(--accent-soft)] text-[var(--accent)]'
+              }`}
+            >
+              {cancelled ? <XCircle size={20} /> : <Truck size={20} />}
             </span>
             <div>
-              <span className="text-[9px] font-bold text-[var(--text-muted)] block">SHIPMENT STATUS</span>
-              <span className="text-xs font-bold text-[var(--text-primary)] tracking-wide">{statusLabels[order.status as keyof typeof statusLabels] || order.status}</span>
+              <span className="block text-[9px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                Shipment status
+              </span>
+              <span className="text-sm font-bold tracking-wide">
+                {cancelled
+                  ? 'Cancelled'
+                  : STEPS[currentIdx]?.label}
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Progress Timeline Stepper */}
-      <section className="mx-auto max-w-4xl px-6 mt-12">
-        <div className="rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-6 sm:p-8 space-y-8 shadow-sm">
-          <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-6 border-b border-[var(--border)]">
-            <div className="absolute left-[15px] sm:left-0 sm:right-0 top-[20px] sm:top-1/2 h-[calc(100%-40px)] sm:h-0.5 w-0.5 sm:w-full bg-[var(--border)] -translate-y-1/2 -z-10 hidden sm:block" />
-            
-            {statuses.map((step, idx) => {
-              const isActive = idx <= currentIdx
-              const isCurrent = idx === currentIdx
-              return (
-                <div key={step} className="flex sm:flex-col items-center gap-3 sm:gap-2 relative z-10 flex-1 w-full sm:text-center">
-                  <div
-                    className={`h-8 w-8 rounded-full border flex items-center justify-center transition shadow-sm ${
-                      isCurrent
-                        ? 'border-amber-500 bg-amber-500 text-stone-950 font-bold'
-                        : isActive
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-500'
-                        : 'border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-muted)]'
-                    }`}
-                  >
-                    {isActive && !isCurrent ? <CheckCircle2 size={16} /> : <span className="text-xs font-mono">{idx + 1}</span>}
-                  </div>
-                  <div>
-                    <p className={`text-xs font-bold ${isActive ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
-                      {statusLabels[step as keyof typeof statusLabels]}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
+      {cancelled && (
+        <section className="mx-auto max-w-4xl px-6 pt-6">
+          <div className="flex items-start gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm font-semibold text-[var(--danger)]">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+            <p>This order was cancelled. Contact us on WhatsApp if this looks wrong.</p>
+          </div>
+        </section>
+      )}
+
+      <section className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mt-8 space-y-8 rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-card sm:p-8">
+          {/* ═══ Timeline ═══ */}
+          <div>
+            <h2 className="mb-6 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              Delivery progress
+            </h2>
+
+            {/* Desktop: horizontal */}
+            <ol className="relative hidden justify-between sm:flex">
+              <span className="absolute left-5 right-5 top-5 h-0.5 bg-[var(--border)]" />
+              <span
+                className="absolute left-5 top-5 h-0.5 bg-[var(--accent)] transition-all duration-500"
+                style={{ width: `calc((100% - 2.5rem) * ${currentIdx / (STEPS.length - 1)})` }}
+              />
+              {STEPS.map((step, idx) => {
+                const done = !cancelled && idx < currentIdx
+                const active = !cancelled && idx === currentIdx
+                const evt = eventForStep(step.eventTypes)
+                return (
+                  <li key={step.key} className="relative z-10 flex w-24 flex-col items-center gap-2 text-center">
+                    <span
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 bg-[var(--card-bg)] transition ${
+                        active
+                          ? 'border-[var(--accent)] bg-[var(--accent)] text-white shadow-plum'
+                          : done
+                          ? 'border-[var(--accent)] text-[var(--accent)]'
+                          : 'border-[var(--border)] text-[var(--text-muted)]'
+                      }`}
+                    >
+                      {done ? <CheckCircle2 size={17} /> : <step.icon size={16} />}
+                    </span>
+                    <span className={`text-[11px] font-bold leading-tight ${idx <= currentIdx && !cancelled ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>
+                      {step.label}
+                    </span>
+                    <span className="text-[10px] tabular-nums text-[var(--text-muted)]">
+                      {evt ? fmtDate(evt.createdAt) : active ? 'In progress' : ''}
+                    </span>
+                  </li>
+                )
+              })}
+            </ol>
+
+            {/* Mobile: vertical */}
+            <ol className="relative space-y-0 sm:hidden">
+              {STEPS.map((step, idx) => {
+                const done = !cancelled && idx < currentIdx
+                const active = !cancelled && idx === currentIdx
+                const evt = eventForStep(step.eventTypes)
+                const last = idx === STEPS.length - 1
+                return (
+                  <li key={step.key} className="relative flex gap-4 pb-7 last:pb-0">
+                    {!last && (
+                      <span
+                        className={`absolute left-[17px] top-9 h-[calc(100%-2rem)] w-0.5 ${
+                          done ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+                        }`}
+                      />
+                    )}
+                    <span
+                      className={`relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 ${
+                        active
+                          ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
+                          : done
+                          ? 'border-[var(--accent)] bg-[var(--card-bg)] text-[var(--accent)]'
+                          : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-muted)]'
+                      }`}
+                    >
+                      {done ? <CheckCircle2 size={15} /> : <step.icon size={14} />}
+                    </span>
+                    <span className="pt-1">
+                      <span className={`block text-sm font-bold ${idx <= currentIdx && !cancelled ? '' : 'text-[var(--text-muted)]'}`}>
+                        {step.label}
+                      </span>
+                      <span className="block text-[11px] tabular-nums text-[var(--text-muted)]">
+                        {evt ? fmtDate(evt.createdAt) : active ? 'In progress' : 'Pending'}
+                      </span>
+                    </span>
+                  </li>
+                )
+              })}
+            </ol>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {/* Courier Tracking info */}
-            <div className="md:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 space-y-4 shadow-xs">
-              <h3 className="font-display text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Truck size={16} className="text-amber-500" /> Waybill &amp; Dispatch Information
+          {/* ═══ Dispatch info ═══ */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 md:col-span-2">
+              <h3 className="flex items-center gap-2 font-display text-base font-bold">
+                <Truck size={16} className="text-[var(--accent)]" /> Dispatch information
               </h3>
-
-              <div className="grid gap-4 sm:grid-cols-2 text-xs text-[var(--text-secondary)] font-medium">
-                <div className="space-y-0.5">
-                  <span className="text-[var(--text-muted)] block font-bold">Courier / Transport Service</span>
-                  <p className="font-bold text-[var(--text-primary)] text-sm">{order.courierName || 'Pending Assignment'}</p>
+              <div className="grid gap-4 text-xs sm:grid-cols-2">
+                <div>
+                  <span className="block font-bold text-[var(--text-muted)]">Courier / transport</span>
+                  <p className="mt-0.5 text-sm font-bold">{order.courierName || 'Pending assignment'}</p>
                 </div>
-
-                <div className="space-y-0.5">
-                  <span className="text-[var(--text-muted)] block font-bold">Waybill / Tracking Receipt</span>
-                  <p className="font-mono text-amber-500 font-bold text-sm">{order.trackingNumber || 'Pending Dispatch'}</p>
+                <div>
+                  <span className="block font-bold text-[var(--text-muted)]">Waybill / tracking</span>
+                  <p className="mt-0.5 font-mono text-sm font-bold text-[var(--accent)]">
+                    {order.trackingNumber || 'Pending dispatch'}
+                  </p>
+                </div>
+                <div>
+                  <span className="block font-bold text-[var(--text-muted)]">Delivery estimate</span>
+                  <p className="mt-0.5 text-sm font-bold">{order.estimatedDays}</p>
+                </div>
+                <div>
+                  <span className="block font-bold text-[var(--text-muted)]">Destination</span>
+                  <p className="mt-0.5 text-sm font-bold">{order.shippingZone}</p>
                 </div>
               </div>
             </div>
 
-            {/* Price Summary */}
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 flex flex-col justify-between shadow-xs text-xs">
+            <div className="flex flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 text-xs">
               <div>
-                <span className="text-[var(--text-muted)] block font-bold mb-1">TOTAL AMOUNT PAID</span>
-                <p className="font-mono text-xl font-bold text-amber-500">₦{order.total.toLocaleString('en-NG')}</p>
+                <span className="mb-1 block font-bold text-[var(--text-muted)]">Order total</span>
+                <p className="font-display text-2xl font-bold tabular-nums text-[var(--accent)]">
+                  ₦{Number(order.total).toLocaleString('en-NG')}
+                </p>
               </div>
-              <p className="text-[10px] text-[var(--text-muted)] font-medium mt-3 leading-relaxed">
-                Includes all item discounts, category coupons, and zone waybill/delivery charges.
+              <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
+                Includes item discounts, coupons and delivery charges.
               </p>
             </div>
           </div>
 
-          {/* Items allowlist summary */}
+          {/* ═══ Items ═══ */}
           <div>
-            <h4 className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase mb-3">Package Contents</h4>
-            <div className="divide-y divide-[var(--border)] border-t border-b border-[var(--border)]">
+            <h4 className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              Package contents
+            </h4>
+            <div className="divide-y divide-[var(--border)] rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] px-5">
               {order.items.map((item: any, idx: number) => (
-                <div key={idx} className="flex justify-between py-3 text-xs font-medium">
-                  <div>
-                    <p className="font-bold text-[var(--text-primary)]">{item.productName}</p>
-                    <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{item.brand}</p>
+                <div key={idx} className="flex items-center justify-between gap-4 py-3.5 text-xs">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
+                      <Package size={15} />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate font-bold">{item.productName}</p>
+                      <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">{item.brand}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-[var(--text-primary)]">Qty: {item.quantity}</p>
-                    <p className="font-mono text-[var(--text-muted)] mt-0.5">₦{item.price.toLocaleString('en-NG')}</p>
+                  <div className="shrink-0 text-right">
+                    <p className="font-bold tabular-nums">×{item.quantity}</p>
+                    <p className="mt-0.5 font-mono tabular-nums text-[var(--text-muted)]">
+                      ₦{Number(item.price).toLocaleString('en-NG')}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Live Timeline History */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Status History</h4>
-            <div className="space-y-4 border-l-2 border-[var(--border)] pl-5 ml-2.5">
-              {order.timeline.map((evt: any, idx: number) => (
-                <div key={idx} className="relative space-y-1">
-                  <span className="absolute -left-[27px] top-1.5 h-2 w-2 rounded-full bg-amber-500 shadow-sm" />
-                  <p className="text-xs font-bold text-[var(--text-primary)]">{evt.message}</p>
-                  <p className="text-[10px] text-[var(--text-muted)] font-medium">
-                    {new Date(evt.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              ))}
+          {/* ═══ History ═══ */}
+          {order.timeline?.length > 0 && (
+            <div>
+              <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                Status history
+              </h4>
+              <ol className="ml-2.5 space-y-4 border-l-2 border-[var(--border)] pl-6">
+                {[...order.timeline].reverse().map((evt: any, idx: number) => (
+                  <li key={idx} className="relative">
+                    <span
+                      className={`absolute -left-[31px] top-1 h-2.5 w-2.5 rounded-full ${
+                        idx === 0 ? 'bg-[var(--accent)] ring-4 ring-[var(--accent-soft)]' : 'bg-[var(--champagne)]'
+                      }`}
+                    />
+                    <p className="text-xs font-bold">{evt.message}</p>
+                    <p className="mt-0.5 text-[10px] font-medium tabular-nums text-[var(--text-muted)]">
+                      {fmtDate(evt.createdAt)}
+                    </p>
+                  </li>
+                ))}
+              </ol>
             </div>
+          )}
+
+          <div className="flex flex-col items-center gap-2 border-t border-[var(--border)] pt-6 sm:flex-row sm:justify-between">
+            <p className="text-[11px] text-[var(--text-muted)]">
+              Questions about this delivery? We&apos;re happy to help.
+            </p>
+            <Link
+              href="/contact"
+              className="btn-outline !px-5 !py-2.5 !text-[10px]"
+            >
+              Contact support
+            </Link>
           </div>
         </div>
       </section>

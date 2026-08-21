@@ -1,0 +1,34 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 7.3s
+ ○ Compiling /api/products ...
+ ✓ Compiled /api/products in 751ms (73 modules)
+ GET /api/products 500 in 12053ms
+ GET /api/products 500 in 10029ms
+ GET /api/products 500 in 10030ms
+ ✓ Compiled /api/settings/staff-accounts in 120ms (76 modules)
+ GET /api/settings/staff-accounts 401 in 199ms
+ GET /api/settings/staff-accounts 401 in 52ms
+ GET /api/settings/staff-accounts 401 in 12ms
+ GET /api/settings/staff-accounts 401 in 13ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 36.5s (670 modules)
+ ✓ Compiled /api/products in 171ms (349 modules)
+ GET /api/products 500 in 10272ms
+ ✓ Compiled /api/customers in 115ms (349 modules)
+ GET /api/customers 401 in 184ms
+ GET /api/customers 401 in 16ms
+ GET /api/customers 401 in 15ms
+ ✓ Compiled /api/analytics in 119ms (352 modules)
+ GET /api/analytics 401 in 214ms
+ GET /api/analytics 401 in 22ms
+ ✓ Compiled /api/orders in 345ms (84 modules)
+ GET /api/orders 401 in 1205ms
+ GET /api/orders 401 in 11ms
+ ✓ Compiled /api/products in 34ms (84 modules)
+ GET /api/products 500 in 10093ms
+ ✓ Compiled in 27ms
+[?25h

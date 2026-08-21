@@ -1,0 +1,569 @@
+[E2E Env Loader] Successfully loaded environment from .env
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "E:\\jessy-luxury-website\\jessy-luxury\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "e2e/settings/import-export.spec.ts",
+      "--reporter=json"
+    ],
+    "configFile": "E:\\jessy-luxury-website\\jessy-luxury\\playwright.config.ts",
+    "rootDir": "E:/jessy-luxury-website/jessy-luxury/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "E:/jessy-luxury-website/jessy-luxury/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "E:/jessy-luxury-website/jessy-luxury/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "settings\\import-export.spec.ts",
+      "file": "settings/import-export.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Configuration Import/Export",
+          "file": "settings/import-export.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should export all settings as JSON with masked secrets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2095,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:13.692Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-58b0dec5a2d321cf478c",
+              "file": "settings/import-export.spec.ts",
+              "line": 23,
+              "column": 7
+            },
+            {
+              "title": "should validate business profile data on import",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 552,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:23.254Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-f6470e0b766daddacdbd",
+              "file": "settings/import-export.spec.ts",
+              "line": 53,
+              "column": 7
+            },
+            {
+              "title": "should validate store locations on import",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 649,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:23.834Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-87a00f19c4940a39a54b",
+              "file": "settings/import-export.spec.ts",
+              "line": 77,
+              "column": 7
+            },
+            {
+              "title": "should validate staff accounts on import",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 598,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Invalid email format\"\u001b[39m\nReceived array: \u001b[31m[\"Invalid email format: invalid-email\"]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Invalid email format\"\u001b[39m\nReceived array: \u001b[31m[\"Invalid email format: invalid-email\"]\u001b[39m\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:118:27",
+                        "location": {
+                          "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                          "column": 27,
+                          "line": 118
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 116 |\u001b[39m     expect(response\u001b[33m.\u001b[39mstatus())\u001b[33m.\u001b[39mtoBe(\u001b[35m400\u001b[39m)\n \u001b[90m 117 |\u001b[39m     \u001b[36mconst\u001b[39m error \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m response\u001b[33m.\u001b[39mjson()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 118 |\u001b[39m     expect(error\u001b[33m.\u001b[39mdetails)\u001b[33m.\u001b[39mtoContain(\u001b[32m'Invalid email format'\u001b[39m)\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 119 |\u001b[39m   })\n \u001b[90m 120 |\u001b[39m\n \u001b[90m 121 |\u001b[39m   test(\u001b[32m'should reject unmasked secrets in import'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ request }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                            "column": 27,
+                            "line": 118
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Invalid email format\"\u001b[39m\nReceived array: \u001b[31m[\"Invalid email format: invalid-email\"]\u001b[39m\n\n  116 |     expect(response.status()).toBe(400)\n  117 |     const error = await response.json()\n> 118 |     expect(error.details).toContain('Invalid email format')\n      |                           ^\n  119 |   })\n  120 |\n  121 |   test('should reject unmasked secrets in import', async ({ request }) => {\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:118:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:24.499Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-47825-te-staff-accounts-on-import-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-47825-te-staff-accounts-on-import-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                        "column": 27,
+                        "line": 118
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-30df34d9753f4bd48336",
+              "file": "settings/import-export.spec.ts",
+              "line": 97,
+              "column": 7
+            },
+            {
+              "title": "should reject unmasked secrets in import",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 494,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:26.313Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-787c457ab76e761e6b04",
+              "file": "settings/import-export.spec.ts",
+              "line": 121,
+              "column": 7
+            },
+            {
+              "title": "should import valid configuration successfully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1987,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:177:31",
+                        "location": {
+                          "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                          "column": 31,
+                          "line": 177
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 175 |\u001b[39m     })\n \u001b[90m 176 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 177 |\u001b[39m     expect(response\u001b[33m.\u001b[39mstatus())\u001b[33m.\u001b[39mtoBe(\u001b[35m200\u001b[39m)\n \u001b[90m     |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 178 |\u001b[39m     \u001b[36mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m response\u001b[33m.\u001b[39mjson()\n \u001b[90m 179 |\u001b[39m     expect(result\u001b[33m.\u001b[39msuccess)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\n \u001b[90m 180 |\u001b[39m   })\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                            "column": 31,
+                            "line": 177
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  175 |     })\n  176 |\n> 177 |     expect(response.status()).toBe(200)\n      |                               ^\n  178 |     const result = await response.json()\n  179 |     expect(result.success).toBe(true)\n  180 |   })\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:177:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:33.957Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-ebbd3--configuration-successfully-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-ebbd3--configuration-successfully-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                        "column": 31,
+                        "line": 177
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-f4cf93485bed05697f29",
+              "file": "settings/import-export.spec.ts",
+              "line": 140,
+              "column": 7
+            },
+            {
+              "title": "should enforce authorization on export",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 96,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:36.806Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-871491a13f96a761697c",
+              "file": "settings/import-export.spec.ts",
+              "line": 182,
+              "column": 7
+            },
+            {
+              "title": "should enforce authorization on import",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 29,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:42.833Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-a0412c517d9f22801c46",
+              "file": "settings/import-export.spec.ts",
+              "line": 190,
+              "column": 7
+            },
+            {
+              "title": "should maintain round-trip property for non-secret settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2872,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:42.874Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-3ad847a657e90c2cfbf1",
+              "file": "settings/import-export.spec.ts",
+              "line": 199,
+              "column": 7
+            },
+            {
+              "title": "should handle empty configuration export",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1081,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:45.762Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-351cd60b97688936c213",
+              "file": "settings/import-export.spec.ts",
+              "line": 234,
+              "column": 7
+            },
+            {
+              "title": "should create audit log on successful import",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 2471,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:261:31",
+                        "location": {
+                          "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                          "column": 31,
+                          "line": 261
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 259 |\u001b[39m     })\n \u001b[90m 260 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 261 |\u001b[39m     expect(response\u001b[33m.\u001b[39mstatus())\u001b[33m.\u001b[39mtoBe(\u001b[35m200\u001b[39m)\n \u001b[90m     |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 262 |\u001b[39m\n \u001b[90m 263 |\u001b[39m     \u001b[90m// Note: In a real test, you'd verify the audit log was created by checking the database\u001b[39m\n \u001b[90m 264 |\u001b[39m     \u001b[90m// or by calling an audit log endpoint if available\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                            "column": 31,
+                            "line": 261
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  259 |     })\n  260 |\n> 261 |     expect(response.status()).toBe(200)\n      |                               ^\n  262 |\n  263 |     // Note: In a real test, you'd verify the audit log was created by checking the database\n  264 |     // or by calling an audit log endpoint if available\n    at E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts:261:31"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-20T19:15:46.871Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-fd5bc-it-log-on-successful-import-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "E:\\jessy-luxury-website\\jessy-luxury\\test-results\\settings-import-export-Con-fd5bc-it-log-on-successful-import-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\jessy-luxury-website\\jessy-luxury\\e2e\\settings\\import-export.spec.ts",
+                        "column": 31,
+                        "line": 261
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "607c0787a8ebd082847f-768075010e716b2b2b2b",
+              "file": "settings/import-export.spec.ts",
+              "line": 247,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-20T19:15:10.419Z",
+    "duration": 39030.04,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

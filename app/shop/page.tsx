@@ -1,7 +1,7 @@
 'use client'
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { PackageSearch, Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { PackageSearch, Search, ChevronLeft, ChevronRight, RefreshCw, X } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import { products as fallbackProducts, categories } from '@/lib/products'
 
@@ -10,152 +10,210 @@ const PER_PAGE = 9
 function ShopInner() {
   const params = useSearchParams()
   const [cat, setCat] = useState(params.get('cat') || 'All')
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(params.get('q') || '')
+  const [badgeFilter, setBadgeFilter] = useState(params.get('filter') || '')
   const [page, setPage] = useState(1)
   const [liveProducts, setLiveProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  async function loadProducts() {
+    setLoading(true)
+    setError(false)
+    try {
+      const res = await fetch('/api/products')
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        setLiveProducts(data)
+      } else {
+        setLiveProducts(fallbackProducts)
+      }
+    } catch (e) {
+      console.error('Error loading DB products', e)
+      setLiveProducts(fallbackProducts)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const res = await fetch('/api/products')
-        const data = await res.json()
-        if (Array.isArray(data) && data.length > 0) {
-          setLiveProducts(data)
-        } else {
-          setLiveProducts(fallbackProducts)
-        }
-      } catch (e) {
-        console.error('Error loading DB products', e)
-        setLiveProducts(fallbackProducts)
-      } finally {
-        setLoading(false)
-      }
-    }
     loadProducts()
   }, [])
 
-  useEffect(() => { setPage(1) }, [cat, q])
+  useEffect(() => {
+    setCat(params.get('cat') || 'All')
+    setQ(params.get('q') || '')
+    setBadgeFilter(params.get('filter') || '')
+    setPage(1)
+  }, [params])
+
+  useEffect(() => {
+    setPage(1)
+  }, [cat, q, badgeFilter])
 
   const filtered = useMemo(() => {
-    const term = q.toLowerCase()
+    const term = q.toLowerCase().trim()
     return liveProducts.filter((p) => {
       const categoryName = typeof p.category === 'object' ? p.category?.name : p.category
       const matchesCat = cat === 'All' || categoryName === cat || p.category === cat
-      const matchesQuery = (
-        (p.name || '') +
-        (p.brand || '') +
-        (p.notes || '') +
-        (categoryName || '') +
-        (p.volume || '')
-      )
-        .toLowerCase()
-        .includes(term)
-
-      return matchesCat && matchesQuery
+      const matchesBadge =
+        badgeFilter === 'new'
+          ? p.badge === 'NEW'
+          : badgeFilter === 'best'
+          ? p.badge === 'BEST' || p.featured
+          : badgeFilter === 'sale'
+          ? p.salePrice != null && p.salePrice < p.price
+          : true
+      const matchesQuery =
+        !term ||
+        `${p.name || ''} ${p.brand || ''} ${p.notes || ''} ${categoryName || ''} ${p.volume || ''}`
+          .toLowerCase()
+          .includes(term)
+      return matchesCat && matchesBadge && matchesQuery
     })
-  }, [cat, q, liveProducts])
+  }, [cat, q, badgeFilter, liveProducts])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
   function scrollToTop() {
-    window.scrollTo({ top: 300, behavior: 'smooth' })
+    document.getElementById('catalog-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  const chip = (active: boolean) =>
+    `rounded-full border px-4 py-2 text-[11px] font-bold tracking-[0.08em] transition ${
+      active
+        ? 'border-[var(--accent)] bg-[var(--accent)] text-white shadow-plum'
+        : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)]'
+    }`
+
   return (
-    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-[80vh]">
+    <main className="min-h-[80vh] bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      {/* ── Page banner ── */}
       <section className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--card-bg)]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,163,93,0.14),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(79,45,127,0.10),transparent_60%)]" />
         <div className="grain absolute inset-0 opacity-30" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 text-center lg:px-8 lg:py-20">
-          <p className="text-[10px] font-bold tracking-[0.26em] text-amber-500">THE COLLECTION</p>
-          <h1 className="mt-3 font-display text-4xl font-bold text-[var(--text-primary)] sm:text-5xl lg:text-6xl">
-            Explore All Fragrances
+        <div className="relative mx-auto max-w-7xl px-6 py-14 text-center lg:px-8 lg:py-16">
+          <p className="eyebrow">The collection</p>
+          <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">
+            {badgeFilter === 'new'
+              ? 'New Arrivals'
+              : badgeFilter === 'best'
+              ? 'Best Sellers'
+              : badgeFilter === 'sale'
+              ? 'On Sale Now'
+              : 'All Fragrances'}
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[var(--text-secondary)] font-medium">
-            Discover original designer and Arabian perfumes, long-lasting oils, and luxury gift sets available for delivery.
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
+            Original designer and Arabian perfumes, long-lasting oils and luxury gift sets —
+            delivered nationwide.
           </p>
+
+          {/* Large search — prominent on mobile */}
+          <div className="relative mx-auto mt-7 w-full max-w-md">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search fragrances, brands, notes…"
+              className="w-full rounded-full border border-[var(--border)] bg-[var(--input-bg)] py-3.5 pl-11 pr-10 text-sm font-medium shadow-card outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
+            />
+            {q && (
+              <button
+                onClick={() => setQ('')}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between border-b border-[var(--border)] pb-6">
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setCat('All')}
-              className={`rounded-full border px-4 py-2 text-[11px] font-bold tracking-[0.08em] transition ${
-                cat === 'All'
-                  ? 'border-amber-500 bg-amber-500 text-stone-950'
-                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-500/50 hover:text-amber-500 bg-[var(--card-bg)]'
-              }`}
-            >
-              ALL
-            </button>
-            {categories.map((c) => {
+      <section id="catalog-top" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        {/* ── Filter chips ── */}
+        <div className="hide-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <button onClick={() => { setCat('All'); setBadgeFilter('') }} className={chip(cat === 'All' && !badgeFilter)}>
+            ALL
+          </button>
+          <button onClick={() => { setBadgeFilter('best'); setCat('All') }} className={chip(badgeFilter === 'best')}>
+            BEST SELLERS
+          </button>
+          <button onClick={() => { setBadgeFilter('new'); setCat('All') }} className={chip(badgeFilter === 'new')}>
+            NEW ARRIVALS
+          </button>
+          <button onClick={() => { setBadgeFilter('sale'); setCat('All') }} className={chip(badgeFilter === 'sale')}>
+            ON SALE
+          </button>
+          {categories
+            .filter((c) => c !== 'All' && c !== 'Best Sellers')
+            .map((c) => {
               const name = typeof c === 'string' ? c : (c as any).name
               return (
-                <button
-                  key={name}
-                  onClick={() => setCat(name)}
-                  className={`rounded-full border px-4 py-2 text-[11px] font-bold tracking-[0.08em] transition ${
-                    cat === name
-                      ? 'border-amber-500 bg-amber-500 text-stone-950'
-                      : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-500/50 hover:text-amber-500 bg-[var(--card-bg)]'
-                  }`}
-                >
+                <button key={name} onClick={() => { setCat(name); setBadgeFilter('') }} className={chip(cat === name && !badgeFilter)}>
                   {name.toUpperCase()}
                 </button>
               )
             })}
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative w-full md:w-72">
-            <Search size={15} className="absolute left-3 top-3 text-[var(--text-muted)]" />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search fragrances…"
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] py-2.5 pl-9 pr-4 text-xs font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 shadow-sm"
-            />
-          </div>
         </div>
 
-        <p className="mt-8 text-[11px] tracking-[0.12em] text-[var(--text-muted)] font-mono font-bold">
+        <p className="mt-7 text-[11px] font-bold tracking-[0.12em] text-[var(--text-muted)]">
           {loading ? 'LOADING PRODUCTS…' : `${filtered.length} ${filtered.length === 1 ? 'PRODUCT' : 'PRODUCTS'}`}
         </p>
 
+        {/* ── Grid states ── */}
         {loading ? (
-          <div className="py-24 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading catalog…</div>
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i}>
+                <div className="skeleton aspect-[4/5]" />
+                <div className="skeleton mt-3 h-3 w-16" />
+                <div className="skeleton mt-2 h-5 w-32" />
+                <div className="skeleton mt-2 h-4 w-20" />
+              </div>
+            ))}
+          </div>
+        ) : error && paginated.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <PackageSearch size={36} className="mb-3 text-[var(--text-muted)]" />
+            <p className="font-display text-xl font-bold">Something went wrong</p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">We couldn&apos;t load the catalogue. Please try again.</p>
+            <button onClick={loadProducts} className="btn-primary mt-5 !px-6 !py-3">
+              <RefreshCw size={14} /> Try again
+            </button>
+          </div>
         ) : paginated.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <PackageSearch size={36} className="text-[var(--text-muted)] mb-3" />
-            <p className="text-sm font-semibold text-[var(--text-primary)]">No fragrances found</p>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">Try adjusting your search terms or filter category.</p>
+            <PackageSearch size={36} className="mb-3 text-[var(--text-muted)]" />
+            <p className="font-display text-xl font-bold text-[var(--text-primary)]">
+              We couldn&apos;t find that fragrance.
+            </p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
+              Try adjusting your search or browsing the full collection.
+            </p>
             <button
-              onClick={() => { setCat('All'); setQ('') }}
-              className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-2 text-xs font-bold text-amber-500 hover:border-amber-500 transition"
+              onClick={() => { setCat('All'); setQ(''); setBadgeFilter('') }}
+              className="btn-outline mt-5 !px-6 !py-3"
             >
-              Reset Filters
+              Reset filters
             </button>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12">
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 sm:gap-x-6">
             {paginated.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}
           </div>
         )}
 
-        {/* ── PAGINATION CONTROLS ── */}
+        {/* ── Pagination ── */}
         {!loading && totalPages > 1 && (
-          <div className="mt-16 flex flex-col items-center gap-4">
-            <p className="text-xs text-[var(--text-muted)] font-medium">
+          <div className="mt-14 flex flex-col items-center gap-4">
+            <p className="text-xs font-medium text-[var(--text-muted)]">
               Page <span className="font-bold text-[var(--text-primary)]">{page}</span> of{' '}
-              <span className="font-bold text-[var(--text-primary)]">{totalPages}</span> &nbsp;·&nbsp;{' '}
-              Showing{' '}
+              <span className="font-bold text-[var(--text-primary)]">{totalPages}</span> &nbsp;·&nbsp; Showing{' '}
               <span className="font-bold text-[var(--text-primary)]">
                 {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)}
               </span>{' '}
@@ -166,7 +224,8 @@ function ShopInner() {
               <button
                 onClick={() => { setPage(page - 1); scrollToTop() }}
                 disabled={page === 1}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] shadow-card transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Previous page"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -182,17 +241,17 @@ function ShopInner() {
                 }, [])
                 .map((item, idx) =>
                   item === '…' ? (
-                    <span key={`ellipsis-${idx}`} className="flex h-10 w-10 items-center justify-center text-[var(--text-muted)] text-sm">
+                    <span key={`ellipsis-${idx}`} className="flex h-10 w-10 items-center justify-center text-sm text-[var(--text-muted)]">
                       …
                     </span>
                   ) : (
                     <button
                       key={item}
                       onClick={() => { setPage(item as number); scrollToTop() }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-bold transition shadow-xs ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-bold shadow-card transition ${
                         page === item
-                          ? 'border-amber-500 bg-amber-500 text-stone-950'
-                          : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-amber-500 hover:text-amber-500'
+                          ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
+                          : 'border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
                       }`}
                     >
                       {item}
@@ -203,7 +262,8 @@ function ShopInner() {
               <button
                 onClick={() => { setPage(page + 1); scrollToTop() }}
                 disabled={page === totalPages}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] transition hover:border-amber-500 hover:text-amber-500 disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--text-secondary)] shadow-card transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Next page"
               >
                 <ChevronRight size={18} />
               </button>
@@ -217,7 +277,13 @@ function ShopInner() {
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<div className="py-24 text-center text-xs font-semibold text-[var(--text-muted)]">Loading shop…</div>}>
+    <Suspense
+      fallback={
+        <div className="py-24 text-center text-xs font-semibold text-[var(--text-muted)]">
+          Loading shop…
+        </div>
+      }
+    >
       <ShopInner />
     </Suspense>
   )

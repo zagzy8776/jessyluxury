@@ -1,0 +1,127 @@
+'use client'
+import { useState, useMemo } from 'react'
+import useSWR from 'swr'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui'
+import { formatNaira } from '@/lib/utils'
+import { EditTiersModal } from './_components/EditTiersModal'
+import { CustomerGroup, Product, WholesalePriceRule } from '@prisma/client'
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
+type ProductWithRules = Product & {
+  wholesalePriceRules: WholesalePriceRule[]
+}
+
+export default function WholesalePricingPage() {
+  const { data: groups, isLoading: isLoadingGroups } = useSWR<CustomerGroup[]>('/api/customer-groups', fetcher)
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('')
+  const { data: productsWithRules, mutate: mutateProducts } = useSWR<ProductWithRules[]>(
+    selectedGroupId ? `/api/wholesale/pricing-overview?groupId=${selectedGroupId}` : null,
+    fetcher
+  )
+  const [editingProduct, setEditingProduct] = useState<ProductWithRules | null>(null)
+
+  const tierColumns = useMemo(() => {
+    if (!productsWithRules) return []
+    const allTiers = new Set<number>()
+    productsWithRules.forEach((p) => {
+      p.wholesalePriceRules.forEach((r) => {
+        allTiers.add(r.minQuantity)
+      })
+    })
+    return Array.from(allTiers).sort((a, b) => a - b)
+  }, [productsWithRules])
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Wholesale Pricing</h1>
+          <p className="text-muted-foreground">Manage tiered pricing for different customer groups.</p>
+        </div>
+        <div className="w-64">
+          <Select onValueChange={setSelectedGroupId} value={selectedGroupId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a Customer Group" />
+            </SelectTrigger>
+            <SelectContent>
+              {isLoadingGroups && <SelectItem value="loading" disabled>Loading groups...</SelectItem>}
+              {groups?.map((group) => (
+                <SelectItem key={group.id} value={String(group.id)}>
+                  {group.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Pricing Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Retail Price</TableHead>
+                {tierColumns.map((tier) => (
+                  <TableHead key={tier}>Tier ({tier}+ units)</TableHead>
+                ))}
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {!selectedGroupId && <TableRow><TableCell colSpan={tierColumns.length + 3} className="text-center text-muted-foreground">Please select a customer group to view pricing.</TableCell></TableRow>}
+              {productsWithRules?.map((product) => {
+                const tierMap = new Map(product.wholesalePriceRules.map(r => [r.minQuantity, r.unitPrice]))
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell>{formatNaira(product.price)}</TableCell>
+                    {tierColumns.map((tier) => (
+                      <TableCell key={tier}>
+                        {tierMap.has(tier) ? formatNaira(tierMap.get(tier)!) : '-'}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => setEditingProduct(product)}>Edit Tiers</Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {editingProduct && (
+        <EditTiersModal
+          isOpen={!!editingProduct}
+          onClose={() => setEditingProduct(null)}
+          product={editingProduct}
+          groupId={Number(selectedGroupId)}
+          onTiersUpdate={() => mutateProducts()}
+        />
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,387 @@
+[E2E Env Loader] Successfully loaded environment from .env
+
+Running 276 tests using 1 worker
+
+  x    1 [chromium] ΓÇ║ e2e\analytics.spec.ts:104:7 ΓÇ║ Jessy Luxury Executive Analytics E2E Test ΓÇ║ verify historical cost, product identity snapshots and channel analytics (1ms)
+  x    2 [chromium] ΓÇ║ e2e\marketing.spec.ts:97:7 ΓÇ║ Jessy Luxury Sales & Marketing Engine E2E Test ΓÇ║ should validate coupon constraints correctly (0ms)
+  -    3 [chromium] ΓÇ║ e2e\marketing.spec.ts:145:7 ΓÇ║ Jessy Luxury Sales & Marketing Engine E2E Test ΓÇ║ should enforce customer redemption limit and preserve usedCount on cancellation
+  -    4 [chromium] ΓÇ║ e2e\marketing.spec.ts:259:7 ΓÇ║ Jessy Luxury Sales & Marketing Engine E2E Test ΓÇ║ should prevent double spend via atomic increment checks on concurrent transactions
+[E2E Env Loader] Successfully loaded environment from .env
+  x    5 [chromium] ΓÇ║ e2e\notifications.spec.ts:97:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce idempotency, outbox claim locking, and credentials fallback mapping (0ms)
+  -    6 [chromium] ΓÇ║ e2e\notifications.spec.ts:231:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should enforce API session security checks
+  -    7 [chromium] ΓÇ║ e2e\notifications.spec.ts:253:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should verify Phase 9 customer notification portal and engagement features
+  -    8 [chromium] ΓÇ║ e2e\notifications.spec.ts:378:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should render an active StoreAnnouncement on the public storefront
+  -    9 [chromium] ΓÇ║ e2e\notifications.spec.ts:406:7 ΓÇ║ Jessy Luxury Notifications outbox E2E Suite ΓÇ║ should not suppress transactional order notifications when marketing is opted out
+  x   10 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:115:7 ΓÇ║ Authorization - Orders Routes ΓÇ║ Unauthenticated request to orders returns 401 (104ms)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+Failed to authenticate manager@jessy.test: 404
+  -   11 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:120:7 ΓÇ║ Authorization - Orders Routes ΓÇ║ Manager with orders permission can access orders
+Failed to authenticate catalog@jessy.test: 404
+  -   12 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:128:7 ΓÇ║ Authorization - Orders Routes ΓÇ║ Catalog without orders permission cannot access orders
+Failed to authenticate fulfillment@jessy.test: 404
+  -   13 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:136:7 ΓÇ║ Authorization - Orders Routes ΓÇ║ Fulfillment with orders permission can access orders
+Failed to authenticate owner@jessy.test: 404
+  -   14 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:144:7 ΓÇ║ Authorization - Orders Routes ΓÇ║ Owner can access orders
+Failed to authenticate manager@jessy.test: 404
+  -   15 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:154:7 ΓÇ║ Authorization - Products Routes ΓÇ║ Manager with products permission can access products admin
+Failed to authenticate catalog@jessy.test: 404
+  -   16 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:168:7 ΓÇ║ Authorization - Products Routes ΓÇ║ Catalog with products permission can access products admin
+Failed to authenticate fulfillment@jessy.test: 404
+  -   17 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:182:7 ΓÇ║ Authorization - Products Routes ΓÇ║ Fulfillment without products permission cannot create products
+Failed to authenticate owner@jessy.test: 404
+  -   18 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:196:7 ΓÇ║ Authorization - Products Routes ΓÇ║ Owner can create products
+Failed to authenticate manager@jessy.test: 404
+  -   19 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:212:7 ΓÇ║ Authorization - Customers Routes ΓÇ║ Manager with customers permission can access customers
+Failed to authenticate catalog@jessy.test: 404
+  -   20 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:220:7 ΓÇ║ Authorization - Customers Routes ΓÇ║ Catalog without customers permission cannot access customers
+Failed to authenticate fulfillment@jessy.test: 404
+  -   21 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:228:7 ΓÇ║ Authorization - Customers Routes ΓÇ║ Fulfillment without customers permission cannot access customers
+Failed to authenticate owner@jessy.test: 404
+  -   22 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:236:7 ΓÇ║ Authorization - Customers Routes ΓÇ║ Owner can access customers
+Failed to authenticate manager@jessy.test: 404
+  -   23 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:246:7 ΓÇ║ Authorization - Analytics Routes ΓÇ║ Manager with analytics permission can access analytics
+Failed to authenticate catalog@jessy.test: 404
+  -   24 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:254:7 ΓÇ║ Authorization - Analytics Routes ΓÇ║ Catalog without analytics permission cannot access analytics
+Failed to authenticate fulfillment@jessy.test: 404
+  -   25 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:262:7 ΓÇ║ Authorization - Analytics Routes ΓÇ║ Fulfillment without analytics permission cannot access analytics
+Failed to authenticate owner@jessy.test: 404
+  -   26 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:270:7 ΓÇ║ Authorization - Analytics Routes ΓÇ║ Owner can access analytics
+Failed to authenticate manager@jessy.test: 404
+  -   27 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:280:7 ΓÇ║ Authorization - Settings Routes ΓÇ║ Manager without settings permission cannot access business profile
+Failed to authenticate catalog@jessy.test: 404
+  -   28 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:288:7 ΓÇ║ Authorization - Settings Routes ΓÇ║ Catalog without settings permission cannot access settings
+Failed to authenticate fulfillment@jessy.test: 404
+  -   29 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:296:7 ΓÇ║ Authorization - Settings Routes ΓÇ║ Fulfillment without settings permission cannot access settings
+Failed to authenticate owner@jessy.test: 404
+  -   30 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:304:7 ΓÇ║ Authorization - Settings Routes ΓÇ║ Owner can access settings (implicit settings permission)
+Failed to authenticate owner@jessy.test: 404
+  -   31 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:312:7 ΓÇ║ Authorization - Settings Routes ΓÇ║ Owner can update settings
+Failed to authenticate fulfillment@jessy.test: 404
+  -   32 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:329:7 ΓÇ║ Authorization - Shipping Routes ΓÇ║ Fulfillment with fulfillment permission can create shipping zone
+Failed to authenticate manager@jessy.test: 404
+  -   33 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:341:7 ΓÇ║ Authorization - Shipping Routes ΓÇ║ Orders staff with orders permission can create shipping zone
+Failed to authenticate catalog@jessy.test: 404
+  -   34 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:356:7 ΓÇ║ Authorization - Shipping Routes ΓÇ║ Catalog cannot create shipping zone (no orders/fulfillment)
+Failed to authenticate owner@jessy.test: 404
+  -   35 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:368:7 ΓÇ║ Authorization - Shipping Routes ΓÇ║ Owner can create shipping zone
+  x   36 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:382:7 ΓÇ║ Authorization - Inactive Staff Accounts ΓÇ║ Inactive staff account cannot authenticate (40ms)
+  x   37 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:396:7 ΓÇ║ Authorization - Inactive Staff Accounts ΓÇ║ Inactive staff account rejected on protected resource (111ms)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+  ok  38 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:405:7 ΓÇ║ Authorization - Public Routes Remain Public ΓÇ║ Order tracking is public (no auth required) (87ms)
+  ok  39 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:414:7 ΓÇ║ Authorization - Public Routes Remain Public ΓÇ║ Product storefront is public (no auth required for GET) (65ms)
+  ok  40 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:420:7 ΓÇ║ Authorization - Public Routes Remain Public ΓÇ║ Shipping zones list is public (no auth required for GET) (80ms)
+Failed to authenticate manager@jessy.test: 404
+  -   41 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:428:7 ΓÇ║ Authorization - Permission Enforcement on Multiple Actions ΓÇ║ Staff can only modify their permitted resources
+Failed to authenticate fulfillment@jessy.test: 404
+  -   42 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:442:7 ΓÇ║ Authorization - Permission Enforcement on Multiple Actions ΓÇ║ Fulfillment can only access orders and fulfillment resources
+Failed to authenticate catalog@jessy.test: 404
+  -   43 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:465:7 ΓÇ║ Authorization - Permission Enforcement on Multiple Actions ΓÇ║ Catalog can only access products and catalog resources
+  x   44 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:490:7 ΓÇ║ Authorization - Edge Cases ΓÇ║ Expired session token returns 401 (59ms)
+  x   45 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:496:7 ΓÇ║ Authorization - Edge Cases ΓÇ║ Malformed request header is handled gracefully (109ms)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+Failed to authenticate owner@jessy.test: 404
+  -   46 [chromium] ΓÇ║ e2e\settings\authorization.spec.ts:506:7 ΓÇ║ Authorization - Edge Cases ΓÇ║ Missing Content-Type still authenticates
+[E2E Env Loader] Successfully loaded environment from .env
+  x   47 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:23:7 ΓÇ║ Configuration Import/Export ΓÇ║ should export all settings as JSON with masked secrets (153ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   48 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:53:7 ΓÇ║ Configuration Import/Export ΓÇ║ should validate business profile data on import (234ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   49 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:77:7 ΓÇ║ Configuration Import/Export ΓÇ║ should validate store locations on import (153ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   50 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:97:7 ΓÇ║ Configuration Import/Export ΓÇ║ should validate staff accounts on import (160ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   51 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:121:7 ΓÇ║ Configuration Import/Export ΓÇ║ should reject unmasked secrets in import (349ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   52 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:140:7 ΓÇ║ Configuration Import/Export ΓÇ║ should import valid configuration successfully (142ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   53 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:182:7 ΓÇ║ Configuration Import/Export ΓÇ║ should enforce authorization on export (169ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   54 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:190:7 ΓÇ║ Configuration Import/Export ΓÇ║ should enforce authorization on import (148ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   55 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:199:7 ΓÇ║ Configuration Import/Export ΓÇ║ should maintain round-trip property for non-secret settings (151ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   56 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:234:7 ΓÇ║ Configuration Import/Export ΓÇ║ should handle empty configuration export (189ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x   57 [chromium] ΓÇ║ e2e\settings\import-export.spec.ts:247:7 ΓÇ║ Configuration Import/Export ΓÇ║ should create audit log on successful import (183ms)
+Failed to authenticate owner@jessy.test: 404
+  -   58 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:133:7 ΓÇ║ Notification Settings API - Secret Masking ΓÇ║ GET returns masked secrets with correct format
+Failed to authenticate owner@jessy.test: 404
+  -   59 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:181:7 ΓÇ║ Notification Settings API - Secret Masking ΓÇ║ PUT updates and returns masked secrets
+Failed to authenticate owner@jessy.test: 404
+  -   60 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:218:7 ΓÇ║ Notification Settings API - Secret Masking ΓÇ║ Short secrets are fully masked
+Failed to authenticate owner@jessy.test: 404
+  -   61 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:244:7 ΓÇ║ Notification Settings API - Secret Masking ΓÇ║ Empty secrets return empty string
+Failed to authenticate owner@jessy.test: 404
+  -   62 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:274:7 ΓÇ║ Notification Settings API - Audit Trail Security ΓÇ║ Audit log does not contain secret values
+  x   63 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:325:7 ΓÇ║ Notification Settings API - Authorization ΓÇ║ Unauthorized request returns 401 (62ms)
+Failed to authenticate manager@jessy.test: 404
+  -   64 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:346:7 ΓÇ║ Notification Settings API - Authorization ΓÇ║ Staff without settings permission returns 403
+Failed to authenticate manager-settings@jessy.test: 404
+Skipping: Test account with settings permission not found
+  -   65 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:358:7 ΓÇ║ Notification Settings API - Authorization ΓÇ║ Staff with settings permission can access
+Failed to authenticate owner@jessy.test: 404
+  -   66 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:375:7 ΓÇ║ Notification Settings API - Authorization ΓÇ║ Owner role has implicit access
+Failed to authenticate owner@jessy.test: 404
+  -   67 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:393:7 ΓÇ║ Notification Settings API - Data Persistence ΓÇ║ Settings persist across requests
+Failed to authenticate owner@jessy.test: 404
+  -   68 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:430:7 ΓÇ║ Notification Settings API - Data Persistence ΓÇ║ Partial updates preserve other fields
+Failed to authenticate owner@jessy.test: 404
+  -   69 [chromium] ΓÇ║ e2e\settings\notifications.spec.ts:469:7 ΓÇ║ Notification Settings API - Boolean Field Handling ΓÇ║ emailEnabled and pushEnabled work correctly
+Failed to authenticate owner@jessy.test: 404
+  -   70 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:127:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ GET returns masked secrets with correct format
+Failed to authenticate owner@jessy.test: 404
+  -   71 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:175:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ PUT updates and returns masked secrets
+Failed to authenticate owner@jessy.test: 404
+  -   72 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:218:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ Masking algorithm correctness - first 2 + bullets + last 4 for long secrets
+Failed to authenticate owner@jessy.test: 404
+  -   73 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:249:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ Short secrets are fully masked with 6 bullets
+Failed to authenticate owner@jessy.test: 404
+  -   74 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:282:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ Empty secrets return empty string
+Failed to authenticate owner@jessy.test: 404
+  -   75 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:308:7 ΓÇ║ Payment Settings API - Secret Masking ΓÇ║ Masking preserves format across multiple lengths
+Failed to authenticate owner@jessy.test: 404
+  -   76 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:337:7 ΓÇ║ Payment Settings API - Audit Trail Security ΓÇ║ Audit log does not contain secret values
+Failed to authenticate owner@jessy.test: 404
+  -   77 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:395:7 ΓÇ║ Payment Settings API - Audit Trail Security ΓÇ║ Audit log filters sensitive field patterns
+  x   78 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:446:7 ΓÇ║ Payment Settings API - Authorization ΓÇ║ Unauthorized request returns 401 (36ms)
+Failed to authenticate manager@jessy.test: 404
+  -   79 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:461:7 ΓÇ║ Payment Settings API - Authorization ΓÇ║ Staff without settings permission returns 403
+Failed to authenticate catalog@jessy.test: 404
+  -   80 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:478:7 ΓÇ║ Payment Settings API - Authorization ΓÇ║ Catalog staff without settings permission returns 403
+Failed to authenticate owner@jessy.test: 404
+  -   81 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:495:7 ΓÇ║ Payment Settings API - Authorization ΓÇ║ Owner with settings permission can access payment settings
+  x   82 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:514:7 ΓÇ║ Payment Settings API - Authorization ΓÇ║ Invalid token returns 401 (69ms)
+Failed to authenticate owner@jessy.test: 404
+  -   83 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:525:7 ΓÇ║ Payment Settings API - Error Handling ΓÇ║ No secrets leak through error paths
+Failed to authenticate owner@jessy.test: 404
+  -   84 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:565:7 ΓÇ║ Payment Settings API - Error Handling ΓÇ║ Validation errors do not expose secrets
+Failed to authenticate owner@jessy.test: 404
+  -   85 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:592:7 ΓÇ║ Payment Settings API - Data Persistence ΓÇ║ Settings persist across requests
+Failed to authenticate owner@jessy.test: 404
+  -   86 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:621:7 ΓÇ║ Payment Settings API - Data Persistence ΓÇ║ Partial updates preserve existing values
+Failed to authenticate owner@jessy.test: 404
+  -   87 [chromium] ΓÇ║ e2e\settings\payment.spec.ts:656:7 ΓÇ║ Payment Settings API - Data Persistence ΓÇ║ Singleton pattern enforced - only one payment settings record
+Failed to authenticate owner@jessy.test: 404
+  x   88 [chromium] ΓÇ║ e2e\settings\security.spec.ts:148:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-01: Owner can change password successfully (5.5s)
+Failed to authenticate manager@jessy.test: 404
+  x   89 [chromium] ΓÇ║ e2e\settings\security.spec.ts:190:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-02: Manager cannot change password (returns 403) (5.3s)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+Failed to authenticate owner@jessy.test: 404
+  x   90 [chromium] ΓÇ║ e2e\settings\security.spec.ts:210:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-03: Invalid current password rejected (5.5s)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+Failed to authenticate owner@jessy.test: 404
+  x   91 [chromium] ΓÇ║ e2e\settings\security.spec.ts:230:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-04: New password validation - min 12 characters (16.0s)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+Failed to authenticate owner@jessy.test: 404
+  x   92 [chromium] ΓÇ║ e2e\settings\security.spec.ts:251:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-05: New password validation - confirmPassword must match (5.6s)
+Failed to authenticate owner@jessy.test: 404
+  x   93 [chromium] ΓÇ║ e2e\settings\security.spec.ts:271:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-06: Session version incremented atomically (5.3s)
+Failed to authenticate owner@jessy.test: 404
+  x   94 [chromium] ΓÇ║ e2e\settings\security.spec.ts:296:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-07: Old authentication tokens rejected after password change (401) (5.4s)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+prisma:error 
+Invalid `prisma.staffAccount.create()` invocation in
+E:\jessy-luxury-website\jessy-luxury\e2e\settings\security.spec.ts:135:31
+
+  132 })
+  133 
+  134 // Create catalog account with hashed password
+ΓåÆ 135 await prisma.staffAccount.create(
+Unique constraint failed on the fields: (`email`)
+  x   95 [chromium] ΓÇ║ e2e\settings\security.spec.ts:333:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-08: New authentication succeeds with new password (6.2s)
+prisma:error 
+Invalid `prisma.staffAccount.create()` invocation in
+E:\jessy-luxury-website\jessy-luxury\e2e\settings\security.spec.ts:122:31
+
+  119 })
+  120 
+  121 // Create manager account with hashed password
+ΓåÆ 122 await prisma.staffAccount.create(
+Unique constraint failed on the fields: (`email`)
+  x   96 [chromium] ΓÇ║ e2e\settings\security.spec.ts:368:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-09: Audit log created with ADMIN_PASSWORD_CHANGED action (4.8s)
+prisma:error 
+Invalid `prisma.staffAccount.create()` invocation in
+E:\jessy-luxury-website\jessy-luxury\e2e\settings\security.spec.ts:109:31
+
+  106 const now = new Date()
+  107 
+  108 // Create owner account with hashed password
+ΓåÆ 109 await prisma.staffAccount.create(
+Unique constraint failed on the fields: (`email`)
+  x   97 [chromium] ΓÇ║ e2e\settings\security.spec.ts:407:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-10: Transaction atomicity - both password and session version updated together (4.4s)
+  x   98 [chromium] ΓÇ║ e2e\settings\security.spec.ts:445:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-11: Unauthenticated password change returns 401 (5.7s)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 76
+prisma:error 
+Invalid `prisma.staffAccount.create()` invocation in
+E:\jessy-luxury-website\jessy-luxury\e2e\settings\security.spec.ts:109:31
+
+  106 const now = new Date()
+  107 
+  108 // Create owner account with hashed password
+ΓåÆ 109 await prisma.staffAccount.create(
+Unique constraint failed on the fields: (`email`)
+  x   99 [chromium] ΓÇ║ e2e\settings\security.spec.ts:460:7 ΓÇ║ Sessions & Security - Password Change ΓÇ║ P11-T045-12: Catalog role cannot change password (returns 403) (4.4s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  100 [chromium] ΓÇ║ e2e\settings\shell-integration.spec.ts:9:7 ΓÇ║ Settings Shell Integration - P11-T054 Checkpoint ΓÇ║ Settings page is accessible and displays main UI (1.4s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  101 [chromium] ΓÇ║ e2e\settings\shell-integration.spec.ts:23:7 ΓÇ║ Settings Shell Integration - P11-T054 Checkpoint ΓÇ║ All 7 settings tabs are present on the page (1.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  102 [chromium] ΓÇ║ e2e\settings\shell-integration.spec.ts:37:7 ΓÇ║ Settings Shell Integration - P11-T054 Checkpoint ΓÇ║ Tab navigation structure is intact (16.7s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  103 [chromium] ΓÇ║ e2e\settings\shell-integration.spec.ts:52:7 ΓÇ║ Settings Shell Integration - P11-T054 Checkpoint ΓÇ║ Settings link is present in admin dashboard navigation (1.8s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  104 [chromium] ΓÇ║ e2e\settings\shell-integration.spec.ts:66:7 ΓÇ║ Settings Shell Integration - P11-T054 Checkpoint ΓÇ║ P11-T054: Settings shell integration is complete and functional (18.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  105 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:9:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: Settings page loads successfully (16.2s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  106 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:17:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: All 7 tabs visible and accessible (15.9s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  107 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:27:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: Tab navigation works - switching between tabs (16.5s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 108 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:49:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: All tab content areas are rendered (1.0s)
+  ok 109 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:74:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: Owner can see Change Password button (693ms)
+  x  110 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:86:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T052: Settings page has responsive layout (16.1s)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 111 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:103:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T053: Settings link accessible from admin dashboard (705ms)
+  x  112 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:118:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T054: Settings page provides admin-only access (integration checkpoint) (16.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  113 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:134:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T054: Tab state persists during navigation (31.3s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  114 [chromium] ΓÇ║ e2e\settings\shell.spec.ts:154:7 ΓÇ║ Settings Shell Integration - P11-T052, P11-T053, P11-T054 ΓÇ║ P11-T054: Settings shell is fully accessible and functioning (949ms)
+Failed to authenticate owner@jessy.test: 404
+  -  115 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:96:7 ΓÇ║ System Defaults API - CRUD Operations ΓÇ║ GET returns system defaults with expected structure
+Failed to authenticate owner@jessy.test: 404
+  -  116 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:119:7 ΓÇ║ System Defaults API - CRUD Operations ΓÇ║ PUT updates system defaults successfully
+Failed to authenticate owner@jessy.test: 404
+  -  117 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:156:7 ΓÇ║ System Defaults API - CRUD Operations ΓÇ║ PUT supports partial updates
+Failed to authenticate owner@jessy.test: 404
+  -  118 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:194:7 ΓÇ║ System Defaults API - CRUD Operations ΓÇ║ PUT can set null values for optional fields
+Failed to authenticate owner@jessy.test: 404
+  -  119 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:219:7 ΓÇ║ System Defaults API - Audit Trail ΓÇ║ Audit log created on update with changed fields
+Failed to authenticate owner@jessy.test: 404
+  -  120 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:271:7 ΓÇ║ System Defaults API - Audit Trail ΓÇ║ Audit log includes all changed fields
+  x  121 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:318:7 ΓÇ║ System Defaults API - Authorization ΓÇ║ Unauthorized request returns 401 (41ms)
+Failed to authenticate manager@jessy.test: 404
+  -  122 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:333:7 ΓÇ║ System Defaults API - Authorization ΓÇ║ Staff without settings permission returns 403
+Failed to authenticate catalog@jessy.test: 404
+  -  123 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:350:7 ΓÇ║ System Defaults API - Authorization ΓÇ║ Catalog staff without settings permission returns 403
+Failed to authenticate owner@jessy.test: 404
+  -  124 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:367:7 ΓÇ║ System Defaults API - Authorization ΓÇ║ Owner with settings permission can access system defaults
+  x  125 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:385:7 ΓÇ║ System Defaults API - Authorization ΓÇ║ Invalid token returns 401 (72ms)
+Failed to authenticate owner@jessy.test: 404
+  -  126 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:396:7 ΓÇ║ System Defaults API - Data Integrity ΓÇ║ Singleton pattern enforced - only one system defaults record
+Failed to authenticate owner@jessy.test: 404
+  -  127 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:420:7 ΓÇ║ System Defaults API - Data Integrity ΓÇ║ Default values are returned when no settings exist
+Failed to authenticate owner@jessy.test: 404
+  -  128 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:438:7 ΓÇ║ System Defaults API - Data Integrity ΓÇ║ Values persist across multiple updates
+Failed to authenticate owner@jessy.test: 404
+  -  129 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:485:7 ΓÇ║ System Defaults API - Shipping Zone Deletion Protection (Req 28) ΓÇ║ Cannot delete shipping zone set as system default
+Failed to authenticate owner@jessy.test: 404
+  -  130 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:551:7 ΓÇ║ System Defaults API - Shipping Zone Deletion Protection (Req 28) ΓÇ║ Can delete non-default shipping zone
+Failed to authenticate owner@jessy.test: 404
+  -  131 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:605:7 ΓÇ║ System Defaults API - Shipping Zone Deletion Protection (Req 28) ΓÇ║ Changing default shipping zone allows deletion of previous default
+Failed to authenticate owner@jessy.test: 404
+  -  132 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:699:7 ΓÇ║ System Defaults API - Response Format ΓÇ║ Response includes timestamps in ISO format
+Failed to authenticate owner@jessy.test: 404
+  -  133 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:715:7 ΓÇ║ System Defaults API - Response Format ΓÇ║ PUT response matches GET response structure
+Failed to authenticate owner@jessy.test: 404
+  -  134 [chromium] ΓÇ║ e2e\settings\system-defaults.spec.ts:734:7 ΓÇ║ System Defaults API - Response Format ΓÇ║ Response does not contain sensitive data or internal fields
+[E2E Env Loader] Successfully loaded environment from .env
+  x  135 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:94:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 1. Unauthenticated GET returns 401 (145ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  136 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:101:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 2. Authenticated GET returns the profile (130ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  137 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:118:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 3. Valid PUT updates the profile (137ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  138 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:161:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 4. Invalid/missing required business name returns 400 (140ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  139 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:180:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 5. Invalid email returns 400 (144ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  140 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:200:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 6. Missing required phone/address returns 400 (149ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  141 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:256:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 7. Successful update creates exactly one BUSINESS_PROFILE_UPDATED audit entry (1.0s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  142 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:319:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 8. Returned response never exposes unrelated secrets/configuration (125ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  143 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:343:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 9. Updating Business Profile does not modify existing Order/Customer historical snapshot (4.8s)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  144 [chromium] ΓÇ║ e2e\settings-business-profile.spec.ts:414:7 ΓÇ║ Phase 11 Domain 1: Business Profile Settings ΓÇ║ 10. Repeated valid updates remain consistent (132ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  145 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:76:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 1. Unauthenticated GET request is rejected with 401 (221ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  146 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:83:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 2. Authenticated GET request succeeds with 200 (163ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  147 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:95:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 3. GET response has correct pagination metadata (160ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  148 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:113:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 4. Default pagination returns pageSize=20 and page=1 (135ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  149 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:126:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 5. Custom pagination parameters are respected (165ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  150 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:141:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 6. startDate filter works correctly (180ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  151 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:163:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 7. endDate filter works correctly (205ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  152 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:186:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 8. startDate and endDate filters work together (128ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  153 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:211:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 9. Invalid startDate returns 400 error (179ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  154 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:225:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 10. Invalid endDate returns 400 error (217ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  155 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:240:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 11. Expenses are ordered by date descending (149ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  156 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:260:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 12. POST with valid data creates expense (138ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  157 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:288:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 13. POST without category returns 400 error (118ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  158 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:306:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 14. POST with invalid category returns 400 error (136ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  159 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:325:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 15. POST without description returns 400 error (298ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  160 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:343:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 16. POST without amount returns 400 error (124ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  161 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:361:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 17. POST with amount <= 0 returns 400 error (152ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  162 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:380:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 18. POST with negative amount returns 400 error (167ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  163 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:399:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 19. POST with valid date uses provided date (161ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  164 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:426:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 20. POST with invalid date returns 400 error (133ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  165 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:447:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 21. POST creates audit log entry (912ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  166 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:489:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 22. All valid categories are accepted (164ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  167 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:521:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 23. Unauthenticated POST is rejected with 401 (228ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  168 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:540:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 24. Total count reflects actual number of expenses (160ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  169 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:554:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 25. pageSize is capped at 100 (166ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  170 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:567:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 26. pageSize is at least 1 (147ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  171 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:582:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 27. GET /api/settings/expenses/:id returns single expense (115ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  172 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:597:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 28. GET /api/settings/expenses/:id with invalid ID returns 400 (147ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  173 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:608:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 29. GET /api/settings/expenses/:id with non-existent ID returns 404 (177ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  174 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:620:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 30. PUT /api/settings/expenses/:id updates expense (255ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  175 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:662:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 31. PUT /api/settings/expenses/:id with invalid ID returns 400 (323ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  176 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:679:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 32. PUT /api/settings/expenses/:id with non-existent ID returns 404 (227ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  177 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:696:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 33. PUT without category returns 400 (130ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  178 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:715:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 34. PUT with invalid category returns 400 (133ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  179 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:735:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 35. PUT without description returns 400 (151ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  180 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:754:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 36. PUT without amount returns 400 (158ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  181 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:773:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 37. PUT with zero amount returns 400 (245ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  182 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:793:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 38. PUT with negative amount returns 400 (142ms)
+[E2E Env Loader] Successfully loaded environment from .env
+  x  183 [chromium] ΓÇ║ e2e\settings-expenses.spec.ts:813:7 ΓÇ║ Phase 11 - Expenses List API with Pagination and Filtering ΓÇ║ 39. PUT with invalid date returns 400 (254ms)
+[E2E Env Loader] Successfully loaded environment from .env

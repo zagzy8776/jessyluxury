@@ -1,18 +1,28 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
-    const authError = await requireAdminAuth(request)
-    if (authError) return authError
+    const isAdmin = await isAdminAuthenticated(request)
+    const customerId = await isCustomerAuthenticated(request)
+
+    if (!isAdmin && !customerId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { searchParams } = new URL(request.url)
     const unreadOnly = searchParams.get('unread') === 'true'
 
     const where: any = {
-      recipientType: 'ADMIN',
       archivedAt: null,
+    }
+
+    if (isAdmin) {
+      where.recipientType = 'ADMIN'
+    } else {
+      where.recipientType = 'CUSTOMER'
+      where.recipientId = customerId
     }
 
     if (unreadOnly) {
@@ -22,7 +32,7 @@ export async function GET(request: Request) {
     const notifications = await prisma.notification.findMany({
       where,
       include: {
-        deliveries: {
+        NotificationDelivery: {
           select: {
             channel: true,
             provider: true,
@@ -40,7 +50,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(notifications)
   } catch (error) {
-    console.error('Error fetching admin notifications:', error)
+    console.error('Error fetching notifications:', error)
     return NextResponse.json({ error: 'Failed to retrieve notifications' }, { status: 500 })
   }
 }
@@ -48,19 +58,31 @@ export async function GET(request: Request) {
 // Bulk action: Mark all as read
 export async function PUT(request: Request) {
   try {
-    const authError = await requireAdminAuth(request)
-    if (authError) return authError
+    const isAdmin = await isAdminAuthenticated(request)
+    const customerId = await isCustomerAuthenticated(request)
+
+    if (!isAdmin && !customerId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const body = await request.json()
     const { action } = body
 
     if (action === 'READ_ALL') {
+      const where: any = {
+        readAt: null,
+        archivedAt: null,
+      }
+
+      if (isAdmin) {
+        where.recipientType = 'ADMIN'
+      } else {
+        where.recipientType = 'CUSTOMER'
+        where.recipientId = customerId
+      }
+
       await prisma.notification.updateMany({
-        where: {
-          recipientType: 'ADMIN',
-          readAt: null,
-          archivedAt: null,
-        },
+        where,
         data: {
           readAt: new Date(),
         },
@@ -70,7 +92,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ error: 'Unsupported action' }, { status: 400 })
   } catch (error) {
-    console.error('Error modifying admin notifications:', error)
+    console.error('Error modifying notifications:', error)
     return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
   }
 }

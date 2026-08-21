@@ -1,0 +1,252 @@
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import { Search, User, Phone, MapPin, Plus, X, BadgeCheck, Users } from 'lucide-react'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/components/ui'
+import { Customer, CustomerGroup, Product, WholesalePriceRule } from '@prisma/client'
+import { toast } from 'sonner'
+
+type ProductWithRules = Product & { wholesalePriceRules: WholesalePriceRule[] }
+type SelectedCustomer = Customer & { customerGroup?: { code: string; name: string; isActive: boolean } | null }
+
+interface CreateOrderCustomerProps {
+  selectedCustomer: SelectedCustomer | null
+  setSelectedCustomer: (customer: SelectedCustomer | null) => void
+  onProductAdd: (product: ProductWithRules) => void
+  isWholesale: boolean
+}
+
+export function CreateOrderCustomer({
+  selectedCustomer,
+  setSelectedCustomer,
+  onProductAdd,
+  isWholesale,
+}: CreateOrderCustomerProps) {
+  const [customerSearchTerm, setCustomerSearchTerm] = useState('')
+  const [customerSearchResults, setCustomerSearchResults] = useState<Customer[]>([])
+  const [productSearchTerm, setProductSearchTerm] = useState('')
+  const [productSearchResults, setProductSearchResults] = useState<ProductWithRules[]>([])
+  const [isSearchingCustomers, setSearchingCustomers] = useState(false)
+  const [isSearchingProducts, setSearchingProducts] = useState(false)
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false)
+
+  // New Customer Form State
+  const [newCustomerName, setNewCustomerName] = useState('')
+  const [newCustomerPhone, setNewCustomerPhone] = useState('')
+  const [newCustomerAddress, setNewCustomerAddress] = useState('')
+  const [isCreatingCustomer, setCreatingCustomer] = useState(false)
+
+  const customerSearchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const productSearchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Customer Search Effect
+  useEffect(() => {
+    if (customerSearchTimeoutRef.current) {
+      clearTimeout(customerSearchTimeoutRef.current)
+    }
+    if (!customerSearchTerm) {
+      setCustomerSearchResults([])
+      setSearchingCustomers(false)
+      return
+    }
+
+    setSearchingCustomers(true)
+    customerSearchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/customers?search=${encodeURIComponent(customerSearchTerm)}`)
+        const data = await res.json()
+        setCustomerSearchResults(data.customers || [])
+      } catch (err) {
+        toast.error('Failed to search customers.')
+      } finally {
+        setSearchingCustomers(false)
+      }
+    }, 300)
+  }, [customerSearchTerm])
+
+  // Product Search Effect
+  useEffect(() => {
+    if (productSearchTimeoutRef.current) {
+      clearTimeout(productSearchTimeoutRef.current)
+    }
+    if (!productSearchTerm) {
+      setProductSearchResults([])
+      setSearchingProducts(false)
+      return
+    }
+
+    setSearchingProducts(true)
+    productSearchTimeoutRef.current = setTimeout(async () => {
+      try {
+        // Fetch products, including wholesale rules for the selected customer's group
+        const customerGroupId = selectedCustomer?.customerGroup?.id
+        const res = await fetch(`/api/products?search=${encodeURIComponent(productSearchTerm)}${customerGroupId ? `&customerGroupId=${customerGroupId}` : ''}`)
+        const data = await res.json()
+        setProductSearchResults(data || [])
+      } catch (err) {
+        toast.error('Failed to search products.')
+      } finally {
+        setSearchingProducts(false)
+      }
+    }, 300)
+  }, [productSearchTerm, selectedCustomer])
+
+  const handleCreateNewCustomer = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newCustomerName.trim() || !newCustomerPhone.trim()) {
+      toast.error('Name and Phone are required for new customer.')
+      return
+    }
+    setCreatingCustomer(true)
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newCustomerName.trim(),
+          phone: newCustomerPhone.trim(),
+          whatsapp: newCustomerPhone.trim(), // Default to phone for WhatsApp
+          address: newCustomerAddress.trim() || null,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      toast.success('New customer created!')
+      setSelectedCustomer(data)
+      setShowNewCustomerForm(false)
+      setNewCustomerName('')
+      setNewCustomerPhone('')
+      setNewCustomerAddress('')
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setCreatingCustomer(false)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Customer & Products</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Customer Selection */}
+        <div>
+          <Label htmlFor="customer-search" className="mb-1">Customer</Label>
+          {selectedCustomer ? (
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">{selectedCustomer.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedCustomer.phone}</p>
+                </div>
+              </div>
+              {isWholesale && (
+                <BadgeCheck className="h-5 w-5 text-emerald-500" title="Wholesale Customer" />
+              )}
+              <Button variant="ghost" size="sm" onClick={() => setSelectedCustomer(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="customer-search"
+                  placeholder="Search or create customer by name/phone"
+                  value={customerSearchTerm}
+                  onChange={(e) => setCustomerSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+              {isSearchingCustomers && <p className="text-sm text-muted-foreground mt-1">Searching...</p>}
+              {customerSearchResults.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {customerSearchResults.map((customer) => (
+                    <Button
+                      key={customer.id}
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setSelectedCustomer(customer)
+                        setCustomerSearchTerm('')
+                        setCustomerSearchResults([])
+                      }}
+                    >
+                      {customer.name} ({customer.phone})
+                    </Button>
+                  ))}
+                </div>
+              )}
+              {!isSearchingCustomers && customerSearchTerm && customerSearchResults.length === 0 && (
+                <Button variant="link" className="mt-2 p-0" onClick={() => setShowNewCustomerForm(true)}>
+                  <Plus className="mr-1 h-4 w-4" /> Create new customer
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* New Customer Form */}
+        {showNewCustomerForm && !selectedCustomer && (
+          <form onSubmit={handleCreateNewCustomer} className="space-y-3 border-t pt-4 mt-4">
+            <h3 className="font-semibold text-lg">New Customer Details</h3>
+            <div>
+              <Label htmlFor="new-customer-name">Name</Label>
+              <Input id="new-customer-name" value={newCustomerName} onChange={(e) => setNewCustomerName(e.target.value)} required />
+            </div>
+            <div>
+              <Label htmlFor="new-customer-phone">Phone</Label>
+              <Input id="new-customer-phone" value={newCustomerPhone} onChange={(e) => setNewCustomerPhone(e.target.value)} required />
+            </div>
+            <div>
+              <Label htmlFor="new-customer-address">Address (Optional)</Label>
+              <Input id="new-customer-address" value={newCustomerAddress} onChange={(e) => setNewCustomerAddress(e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={isCreatingCustomer}>
+                {isCreatingCustomer ? 'Creating...' : 'Create & Select'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setShowNewCustomerForm(false)}>Cancel</Button>
+            </div>
+          </form>
+        )}
+
+        {/* Product Search */}
+        <div className="border-t pt-4 mt-4">
+          <Label htmlFor="product-search" className="mb-1">Add Products</Label>
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="product-search"
+              placeholder="Search catalog to add..."
+              value={productSearchTerm}
+              onChange={(e) => setProductSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          {isSearchingProducts && <p className="text-sm text-muted-foreground mt-1">Searching...</p>}
+          {productSearchResults.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {productSearchResults.map((product) => (
+                <Button
+                  key={product.id}
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    onProductAdd(product)
+                    setProductSearchTerm('')
+                    setProductSearchResults([])
+                  }}
+                >
+                  {product.name} ({formatNaira(isWholesale ? resolveClientSideUnitPrice(product, 1).price : product.price)})
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

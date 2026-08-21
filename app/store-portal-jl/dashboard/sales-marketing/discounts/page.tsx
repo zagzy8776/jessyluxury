@@ -31,6 +31,7 @@ export default function DiscountsEnginePage() {
     productIds: [] as number[],
     categoryIds: [] as number[],
     isActive: true,
+    wholesaleEligible: false,
   })
 
   useEffect(() => {
@@ -91,6 +92,7 @@ export default function DiscountsEnginePage() {
         productIds: Array.isArray(c.productIds) ? c.productIds : [],
         categoryIds: Array.isArray(c.categoryIds) ? c.categoryIds : [],
         isActive: c.isActive,
+        wholesaleEligible: Boolean(c.wholesaleEligible),
       })
     } else {
       setEditingCoupon(null)
@@ -109,6 +111,7 @@ export default function DiscountsEnginePage() {
         productIds: [],
         categoryIds: [],
         isActive: true,
+        wholesaleEligible: false,
       })
     }
     setShowModal(true)
@@ -133,6 +136,7 @@ export default function DiscountsEnginePage() {
       productIds: form.productIds,
       categoryIds: form.categoryIds,
       isActive: form.isActive,
+      wholesaleEligible: form.wholesaleEligible,
     }
 
     try {
@@ -535,6 +539,16 @@ export default function DiscountsEnginePage() {
                   </div>
                 </div>
               </div>
+
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={form.wholesaleEligible}
+                  onChange={(e) => setForm({ ...form, wholesaleEligible: e.target.checked })}
+                  className="h-3.5 w-3.5 rounded border-[var(--border)] text-amber-500 accent-amber-500"
+                />
+                <span className="text-[11px] font-bold text-[var(--text-primary)]">Wholesale-only coupon</span>
+              </label>
 
               <div className="flex justify-end gap-3 border-t border-[var(--border)] pt-4">
                 <button

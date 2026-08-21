@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    const authError = await requireAdminAuth(request)
-    if (authError) return authError
+    const isAdmin = await isAdminAuthenticated(request)
+    const customerId = await isCustomerAuthenticated(request)
+
+    if (!isAdmin && !customerId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const notificationId = parseInt(params.id, 10)
     if (isNaN(notificationId)) {
@@ -16,8 +20,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       where: { id: notificationId },
     })
 
-    if (!notification || notification.recipientType !== 'ADMIN') {
+    if (!notification) {
       return NextResponse.json({ error: 'Notification not found' }, { status: 404 })
+    }
+
+    // Verify ownership
+    if (isAdmin) {
+      if (notification.recipientType !== 'ADMIN') {
+        return NextResponse.json({ error: 'Notification not found' }, { status: 404 })
+      }
+    } else {
+      if (notification.recipientType !== 'CUSTOMER' || notification.recipientId !== customerId) {
+        return NextResponse.json({ error: 'Notification not found' }, { status: 404 })
+      }
     }
 
     const body = await request.json()

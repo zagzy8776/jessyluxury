@@ -60,27 +60,29 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-6 text-[var(--text-primary)]">
-      <div className="grain fixed inset-0 opacity-30 pointer-events-none" />
+    <div className="flex min-h-screen items-center justify-center bg-[var(--admin-sidebar-bg)] p-6">
+      <div className="grain pointer-events-none fixed inset-0 opacity-20" />
 
       <div className="relative w-full max-w-sm">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-2xl font-bold tracking-widest text-[var(--text-primary)]">
-            JESSY <span className="text-amber-500">LUXURY</span>
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-2xl font-bold tracking-[0.2em] text-white">
+            JESSY <span className="text-[#c9a35d]">LUXURY</span>
           </h1>
-          <p className="mt-1 text-xs text-[var(--text-secondary)] font-bold tracking-wider">STORE MANAGER PORTAL</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+            Store Manager Portal
+          </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl border border-[var(--border)] bg-[var(--card-bg)] p-8 shadow-xl">
-          <div className="flex items-center gap-2 mb-6">
-            <Lock size={16} className="text-amber-500" />
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">Enter admin password</h2>
+        <div className="rounded-2xl border border-white/10 bg-[#211c17] p-8 shadow-2xl">
+          <div className="mb-6 flex items-center gap-2">
+            <Lock size={15} className="text-[#c9a35d]" />
+            <h2 className="text-sm font-bold text-stone-100">Enter admin password</h2>
           </div>
 
           {infoMessage && (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 mb-4 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-bold text-emerald-400">
               {infoMessage}
             </div>
           )}
@@ -94,20 +96,21 @@ export default function AdminLoginPage() {
                 placeholder="Password"
                 required
                 autoFocus
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] py-3.5 pl-4 pr-12 text-sm font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-amber-500 shadow-sm"
+                className="w-full rounded-lg border border-white/10 bg-black/30 py-3.5 pl-4 pr-12 text-sm font-medium text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-[#c9a35d]"
               />
               <button
                 type="button"
                 onClick={() => setShow(!show)}
-                className="absolute right-3.5 top-3.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
+                className="absolute right-3.5 top-3.5 text-stone-500 transition hover:text-stone-200"
+                aria-label={show ? 'Hide password' : 'Show password'}
               >
-                {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                {show ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
             </div>
 
             {error && (
-              <p className="text-xs text-red-500 font-bold flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+              <p className="flex items-center gap-1.5 text-xs font-bold text-red-400">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-400" />
                 {error}
               </p>
             )}
@@ -115,12 +118,16 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-amber-500 py-3.5 text-xs font-bold tracking-wider text-stone-950 transition hover:bg-amber-400 shadow-md shadow-amber-500/10 disabled:opacity-60"
+              className="w-full rounded-lg bg-[#c9a35d] py-3.5 text-xs font-bold uppercase tracking-[0.14em] text-[#241a08] transition hover:brightness-110 disabled:opacity-60"
             >
-              {loading ? 'UNLOCKING…' : 'UNLOCK PORTAL'}
+              {loading ? 'Unlocking…' : 'Unlock Portal'}
             </button>
           </form>
         </div>
+
+        <p className="mt-6 text-center text-[10px] font-medium text-stone-500">
+          Authorized staff only · All access is logged
+        </p>
       </div>
     </div>
   )

@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdminAuth } from '@/lib/auth'
+import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'fulfillment')
   if (authErr) return authErr
 
   try {
@@ -35,11 +35,26 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const authErr = await requireAdminAuth(request)
+  const authErr = await requireStaffAuth(request, 'fulfillment')
   if (authErr) return authErr
 
   try {
     const id = parseInt(params.id, 10)
+    
+    // Check if zone is set as system default
+    const systemDefaults = await prisma.systemDefaults.findUnique({
+      where: { id: 1 },
+      select: { defaultShippingZoneId: true }
+    })
+
+    if (systemDefaults?.defaultShippingZoneId === id) {
+      return NextResponse.json(
+        { error: 'Cannot delete shipping zone set as system default' },
+        { status: 409 }
+      )
+    }
+
+    // Proceed with deletion
     await prisma.shippingZone.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -1,0 +1,52 @@
+
+> jessy-luxury-fragrance@1.0.0 prebuild
+> node scripts/prebuild.mjs
+
+
+ΓåÆ DATABASE_URL found ΓÇö syncing schema with `prisma db push`...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-silent-forest-azug0wa0-pooler.c-3.ap-southeast-1.aws.neon.tech"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GΓ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 840ms
+
+
+ΓåÆ Generating Prisma Client...
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.20.0) to .\node_modules\@prisma\client in 281ms
+
+Start by importing your Prisma Client (See: http://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+
+> jessy-luxury-fragrance@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/orders/[id]/route.ts:160:43
+Type error: Property 'items' does not exist on type '{ OrderItem: { id: number; orderId: number; productId: number; quantity: number; price: number; unitCost: number | null; productNameSnapshot: string | null; brandSnapshot: string | null; }[]; } & { ...; }'.
+
+  158 |         if ((oldPay === 'UNPAID' || oldPay === 'PARTIALLY_PAID') && targetPaymentStatus === 'PAID') {
+  159 |           // Convert reserved stock -> sold
+> 160 |           for (const item of currentOrder.items) {
+      |                                           ^
+  161 |             await consumeReservation(tx, item.productId, item.quantity, actor)
+  162 |           }
+  163 |         } else if ((oldPay === 'UNPAID' || oldPay === 'PARTIALLY_PAID') && targetPaymentStatus === 'REFUNDED') {
+Next.js build worker exited with code: 1 and signal: null

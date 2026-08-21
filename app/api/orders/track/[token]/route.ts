@@ -40,8 +40,8 @@ export async function GET(
     const order = await prisma.order.findUnique({
       where: { trackingToken: token },
       include: {
-        items: true,
-        timeline: {
+        OrderItem: true,
+        OrderTimeline: {
           orderBy: { createdAt: 'asc' },
         },
       },
@@ -53,7 +53,7 @@ export async function GET(
     }
 
     // Explicit allowlist filtering for security & privacy
-    const publicItems = order.items.map((item) => ({
+    const publicItems = order.OrderItem.map((item) => ({
       productName: item.productNameSnapshot || 'Product Item',
       brand: item.brandSnapshot || 'Jessy Luxury',
       quantity: item.quantity,
@@ -61,7 +61,7 @@ export async function GET(
     }))
 
     // Allowlist timeline events that are safe for customers
-    const publicTimeline = order.timeline
+    const publicTimeline = order.OrderTimeline
       .filter((evt) =>
         ['ORDER_CREATED', 'PAYMENT_UPDATED', 'ORDER_CANCELLED', 'STATUS_CHANGED', 'ORDER_SHIPPED', 'ORDER_DELIVERED'].includes(
           evt.eventType

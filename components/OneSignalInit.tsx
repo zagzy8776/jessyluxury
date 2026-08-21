@@ -18,29 +18,54 @@ export default function OneSignalInit() {
         try {
           await OneSignal.init({
             appId,
-            safari_web_id: undefined, // Add Safari Push ID if you have one
+            safari_web_id: undefined,
             notifyButton: {
-              enable: false, // We control the bell ourselves in the admin UI
+              enable: false,
             },
-            allowLocalhostAsSecureOrigin: true, // Allow testing on localhost
+            allowLocalhostAsSecureOrigin: true,
           })
 
-          // Auto-prompt customers on the public storefront after 5 seconds if not yet opted in
-          if (!window.location.pathname.startsWith('/store-portal-jl')) {
-            setTimeout(async () => {
-              try {
-                // permission can be 'default', 'granted', or 'denied'
-                if (OneSignal.Notifications.permission === 'default') {
-                  console.log('[OneSignal] Triggering slidedown prompt for visitor subscription')
-                  await OneSignal.Slidedown.promptTrigger()
-                }
-              } catch (promptErr) {
-                console.warn('[OneSignal] Failed to trigger slidedown prompt:', promptErr)
+          // Helper function to sync push token with our backend database
+          const syncPushSubscription = async (token: string) => {
+            try {
+              await fetch('/api/push-subscriptions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pushToken: token, deviceType: 'WebBrowser' }),
+              })
+            } catch (err) {
+              console.warn('[OneSignal] Failed to sync push subscription to DB:', err)
+            }
+          }
+
+          // Initial sync if already subscribed
+          if (OneSignal.User?.pushSubscription?.id) {
+            syncPushSubscription(OneSignal.User.pushSubscription.id)
+          }
+
+          // Listen for subscription changes
+          OneSignal.User?.pushSubscription?.addEventListener('change', (event: any) => {
+            if (event.current?.id) {
+              syncPushSubscription(event.current.id)
+            }
+          })
+
+          // Expose trigger globally so our custom storefront prompter can invoke it
+          ;(window as any).triggerPushSubscriptionPrompt = async () => {
+            try {
+              console.log('[OneSignal] User initiated push subscription request')
+              await OneSignal.Notifications.requestPermission()
+              
+              // If permission granted, register and sync immediately
+              if (OneSignal.User?.pushSubscription?.id) {
+                await syncPushSubscription(OneSignal.User.pushSubscription.id)
               }
-            }, 5000)
+            } catch (err) {
+              console.error('[OneSignal] Error requesting permission:', err)
+            }
           }
         } catch (err) {
-          console.warn('[OneSignal] Initialization skipped or failed (common in local development):', err)
+          console.warn('[OneSignal] Initialization skipped or failed:', err)
         }
       })
     }

@@ -6,6 +6,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartDrawer from '@/components/CartDrawer'
 import OneSignalInit from '@/components/OneSignalInit'
+import StorefrontAnnouncement from '@/components/StorefrontAnnouncement'
+import BottomNav from '@/components/storefront/BottomNav'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const display = Cormorant_Garamond({
@@ -25,14 +27,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${display.variable}`}>
       <body>
         <OneSignalInit />
+        <StorefrontAnnouncement />
         <CartProvider>
           <Header />
-          {children}
-          <Footer />
+          <div className="pb-[calc(4.25rem+env(safe-area-inset-bottom))] lg:pb-0">
+            {children}
+            <Footer />
+          </div>
           <CartDrawer />
+          <BottomNav />
         </CartProvider>
       </body>
     </html>
   )
 }
-
