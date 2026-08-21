@@ -53,6 +53,10 @@ export default function AdminLoginPage() {
     } else if (res.status === 429) {
       setError('Too many login attempts. Please try again later.')
       setLoading(false)
+    } else if (res.status === 400) {
+      const data = await res.json().catch(() => ({}))
+      setError(data.error || 'Bad request — check server logs.')
+      setLoading(false)
     } else {
       setError('Incorrect password. Try again.')
       setLoading(false)

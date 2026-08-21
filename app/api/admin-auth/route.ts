@@ -130,7 +130,12 @@ export async function POST(request: Request) {
 
     if (isMatch) {
       const response = NextResponse.json({ ok: true, role: 'Owner' })
-      await setAdminCookie(response, config.sessionVersion)
+      try {
+        await setAdminCookie(response, config.sessionVersion)
+      } catch (cookieErr) {
+        console.error('setAdminCookie failed:', cookieErr)
+        return NextResponse.json({ error: 'ADMIN_SESSION_SECRET is not configured on this server.' }, { status: 500 })
+      }
       rateLimit.delete(ip)
       return response
     }
@@ -138,7 +143,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Incorrect password. Try again.' }, { status: 401 })
   } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+    const msg = error instanceof Error ? error.message : 'Bad request'
+    return NextResponse.json({ error: msg }, { status: 400 })
   }
 }
 

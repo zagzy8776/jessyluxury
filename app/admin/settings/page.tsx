@@ -3,7 +3,7 @@
 import { useState, Suspense, lazy } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 
 // Dynamically import components with fallbacks
@@ -54,6 +54,18 @@ interface AdminUser {
 }
 
 export default function SettingsPage() {
+  // The settings shell uses react-query but no app-level QueryClientProvider
+  // exists, so provide one scoped to this page.
+  const [queryClient] = useState(() => new QueryClient())
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SettingsPageContent />
+    </QueryClientProvider>
+  )
+}
+
+function SettingsPageContent() {
   const [activeTab, setActiveTab] = useState('profile')
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   

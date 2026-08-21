@@ -91,7 +91,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Validation failed', details: errors }, { status: 400 })
     }
 
-    // Use transaction for atomic import
+    // Use transaction for atomic import.
+    // Explicit timeout: the default 5s interactive-transaction timeout is too
+    // short for staff-account upserts against the remote database, causing
+    // "Transaction already closed" failures mid-import.
     await prisma.$transaction(async (tx) => {
       // Import business profile
       if (config.businessProfile) {

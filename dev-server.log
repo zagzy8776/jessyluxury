@@ -7924,3 +7924,7 @@ prisma:query SELECT "public"."Campaign"."id", "public"."Campaign"."name", "publi
  ✓ Compiled in 408ms (426 modules)
  ✓ Compiled in 630ms (426 modules)
  ✓ Compiled in 491ms (426 modules)
+ ✓ Compiled in 1007ms (426 modules)
+ ✓ Compiled in 348ms (426 modules)
+ ✓ Compiled in 2.3s (864 modules)
+ ✓ Compiled in 643ms (864 modules)
