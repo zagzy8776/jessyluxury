@@ -32,3 +32,548 @@ Running 31 tests using 1 worker
   ok 12 [chromium] › e2e\settings\import-export.spec.ts:270:7 › Configuration Import/Export › should create audit log on successful import (3.5s)
   x  13 [chromium] › e2e\settings\shell-integration.spec.ts:12:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI (22.1s)
   x  14 [chromium] › e2e\settings\shell-integration.spec.ts:25:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page (4.0s)
+  x  15 [chromium] › e2e\settings\shell-integration.spec.ts:39:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact (19.2s)
+  x  16 [chromium] › e2e\settings\shell-integration.spec.ts:54:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation (7.7s)
+  x  17 [chromium] › e2e\settings\shell-integration.spec.ts:68:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional (19.3s)
+  x  18 [chromium] › e2e\settings\shell.spec.ts:12:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully (19.0s)
+  x  19 [chromium] › e2e\settings\shell.spec.ts:20:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible (18.7s)
+  x  20 [chromium] › e2e\settings\shell.spec.ts:30:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs (18.5s)
+  ok 21 [chromium] › e2e\settings\shell.spec.ts:52:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All tab content areas are rendered (3.3s)
+  ok 22 [chromium] › e2e\settings\shell.spec.ts:77:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Owner can see Change Password button (2.9s)
+  x  23 [chromium] › e2e\settings\shell.spec.ts:89:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout (18.1s)
+  ok 24 [chromium] › e2e\settings\shell.spec.ts:106:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T053: Settings link accessible from admin dashboard (3.1s)
+  x  25 [chromium] › e2e\settings\shell.spec.ts:121:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) (19.0s)
+  x  26 [chromium] › e2e\settings\shell.spec.ts:137:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation (30.2s)
+  x  27 [chromium] › e2e\settings\shell.spec.ts:157:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning (3.8s)
+  x  28 [chromium] › e2e\smoke.spec.ts:123:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM (1.0m)
+[E2E Env Loader] Successfully loaded environment from .env
+  ok 29 [chromium] › e2e\wholesale.spec.ts:127:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should correctly apply tiered pricing and handle overrides (2.6m)
+  ok 30 [chromium] › e2e\wholesale.spec.ts:186:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should handle mixed carts and preserve historical prices (26.2s)
+  ok 31 [chromium] › e2e\wholesale.spec.ts:233:7 › Jessy Luxury Wholesale & Tier Pricing E2E › should isolate retail and wholesale coupons by customer group (14.1s)
+
+
+  1) [chromium] › e2e\analytics.spec.ts:114:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics 
+
+    TimeoutError: page.waitForSelector: Timeout 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Search catalog to add..."]') to be visible
+
+
+      128 |     // Go to POS create order page
+      129 |     await page.goto('http://localhost:3000/store-portal-jl/dashboard/orders/create')
+    > 130 |     await page.waitForSelector('input[placeholder="Search catalog to add..."]', { timeout: 60000 })
+          |                ^
+      131 |
+      132 |     // Wait for product catalog to load
+      133 |     await page.waitForFunction(
+        at e:\jessy-luxury-website\jessy-luxury\e2e\analytics.spec.ts:130:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\error-context.md
+
+    Error Context: test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\analytics-Jessy-Luxury-Exe-0089c-shots-and-channel-analytics-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      175 |     })
+      176 |
+    > 177 |     expect(response.status()).toBe(200)
+          |                               ^
+      178 |     const result = await response.json()
+      179 |     expect(result.success).toBe(true)
+      180 |
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\import-export.spec.ts:177:31
+
+    Error Context: test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-import-export-Con-ebbd3--configuration-successfully-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e\settings\shell-integration.spec.ts:12:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "Settings"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for locator('h1')
+
+
+      20 |     // Check that the settings page title is visible
+      21 |     const title = page.locator('h1')
+    > 22 |     await expect(title).toContainText('Settings')
+         |                         ^
+      23 |   })
+      24 |
+      25 |   test('All 7 settings tabs are present on the page', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:22:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-e1417-ssible-and-displays-main-UI-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e\settings\shell-integration.spec.ts:25:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 7
+    Received:    0
+
+      34 |     
+      35 |     // Should have at least 7 tabs
+    > 36 |     expect(count).toBeGreaterThanOrEqual(7)
+         |                   ^
+      37 |   })
+      38 |
+      39 |   test('Tab navigation structure is intact', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:36:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-b4e65-abs-are-present-on-the-page-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e\settings\shell-integration.spec.ts:39:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[role="tablist"]')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('[role="tablist"]')
+
+
+      47 |     const tabPanels = page.locator('[role="tabpanel"]')
+      48 |     
+    > 49 |     await expect(tabList).toBeVisible()
+         |                           ^
+      50 |     const panelCount = await tabPanels.count()
+      51 |     expect(panelCount).toBeGreaterThan(0)
+      52 |   })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:49:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-5c9ee-igation-structure-is-intact-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e\settings\shell-integration.spec.ts:54:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      63 |     // It should exist in the page
+      64 |     const exists = await settingsLink.count().then(c => c > 0)
+    > 65 |     expect(exists).toBe(true)
+         |                    ^
+      66 |   })
+      67 |
+      68 |   test('P11-T054: Settings shell integration is complete and functional', async ({ page }) => {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:65:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-856d5--admin-dashboard-navigation-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e\settings\shell-integration.spec.ts:68:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('div.min-h-screen')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('div.min-h-screen')
+
+
+      75 |     // Verify the page structure
+      76 |     const mainContent = page.locator('div.min-h-screen')
+    > 77 |     await expect(mainContent).toBeVisible()
+         |                               ^
+      78 |     
+      79 |     // Verify title exists
+      80 |     const title = page.locator('h1:has-text("Settings")')
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell-integration.spec.ts:77:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-integration-42908--is-complete-and-functional-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › e2e\settings\shell.spec.ts:12:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+      14 |     
+      15 |     // Check for main page title
+    > 16 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+         |                                                           ^
+      17 |     await expect(page.locator('text=Manage your business configuration and preferences')).toBeVisible()
+      18 |   })
+      19 |
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:16:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-b7b6b-ngs-page-loads-successfully-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › e2e\settings\shell.spec.ts:20:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('button:has-text("Profile")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('button:has-text("Profile")')
+
+
+      24 |     const tabs = ['Profile', 'Locations', 'Staff', 'Payment', 'Notifications', 'System', 'Expenses']
+      25 |     for (const tab of tabs) {
+    > 26 |       await expect(page.locator(`button:has-text("${tab}")`)).toBeVisible()
+         |                                                               ^
+      27 |     }
+      28 |   })
+      29 |
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:26:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-9fe4d-tabs-visible-and-accessible-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › e2e\settings\shell.spec.ts:30:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h2:has-text("Business Profile")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h2:has-text("Business Profile")')
+
+
+      32 |     
+      33 |     // Default should be on Profile tab
+    > 34 |     await expect(page.locator('h2:has-text("Business Profile")')).toBeVisible()
+         |                                                                   ^
+      35 |     
+      36 |     // Click on Locations tab
+      37 |     await page.locator('button:has-text("Locations")').click()
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:34:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-72201-ks---switching-between-tabs-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › e2e\settings\shell.spec.ts:89:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+      91 |     await page.setViewportSize({ width: 1920, height: 1080 })
+      92 |     await page.goto('/admin/settings')
+    > 93 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+         |                                                           ^
+      94 |     
+      95 |     // Test on tablet
+      96 |     await page.setViewportSize({ width: 768, height: 1024 })
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:93:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-1e704--page-has-responsive-layout-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › e2e\settings\shell.spec.ts:121:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Settings")')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('h1:has-text("Settings")')
+
+
+      124 |     
+      125 |     // Verify page loaded successfully
+    > 126 |     await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+          |                                                           ^
+      127 |     
+      128 |     // Verify all main structural elements are present
+      129 |     await expect(page.locator('[role="tablist"]')).toBeVisible()  // Tab list
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:126:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-1b6f5-ess-integration-checkpoint--chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › e2e\settings\shell.spec.ts:137:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('button:has-text("Staff")')
+
+
+      139 |     
+      140 |     // Navigate to Staff tab
+    > 141 |     await page.locator('button:has-text("Staff")').click()
+          |                                                    ^
+      142 |     await page.waitForSelector('h2:has-text("Staff Accounts")')
+      143 |     
+      144 |     // Verify we're on Staff tab
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:141:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-084cd--persists-during-navigation-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [chromium] › e2e\settings\shell.spec.ts:157:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 7
+    Received:    0
+
+      166 |     const tabButtons = page.locator('button[role="tab"]')
+      167 |     const count = await tabButtons.count()
+    > 168 |     expect(count).toBeGreaterThanOrEqual(7)  // At least 7 tabs
+          |                   ^
+      169 |     
+      170 |     // Verify each tab is clickable
+      171 |     for (let i = 0; i < Math.min(count, 7); i++) {
+        at e:\jessy-luxury-website\jessy-luxury\e2e\settings\shell.spec.ts:168:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\settings-shell-Settings-Sh-75eff--accessible-and-functioning-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [chromium] › e2e\smoke.spec.ts:123:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM 
+
+    TimeoutError: page.waitForSelector: Timeout 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Search catalog to add..."]') to be visible
+
+
+      137 |     // Navigate directly to create order page
+      138 |     await page.goto('http://localhost:3000/store-portal-jl/dashboard/orders/create')
+    > 139 |     await page.waitForSelector('input[placeholder="Search catalog to add..."]', { timeout: 60000 })
+          |                ^
+      140 |
+      141 |     // ── 2. Add seeded product to POS cart ─────────────────────────────────
+      142 |     // Wait for product catalog to load from /api/products before searching
+        at e:\jessy-luxury-website\jessy-luxury\e2e\smoke.spec.ts:139:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    Error Context: test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\smoke-Jessy-Luxury-CRM-POS-b03ad-er-and-navigate-through-CRM-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15 failed
+    [chromium] › e2e\analytics.spec.ts:114:7 › Jessy Luxury Executive Analytics E2E Test › verify historical cost, product identity snapshots and channel analytics 
+    [chromium] › e2e\settings\import-export.spec.ts:140:7 › Configuration Import/Export › should import valid configuration successfully 
+    [chromium] › e2e\settings\shell-integration.spec.ts:12:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings page is accessible and displays main UI 
+    [chromium] › e2e\settings\shell-integration.spec.ts:25:7 › Settings Shell Integration - P11-T054 Checkpoint › All 7 settings tabs are present on the page 
+    [chromium] › e2e\settings\shell-integration.spec.ts:39:7 › Settings Shell Integration - P11-T054 Checkpoint › Tab navigation structure is intact 
+    [chromium] › e2e\settings\shell-integration.spec.ts:54:7 › Settings Shell Integration - P11-T054 Checkpoint › Settings link is present in admin dashboard navigation 
+    [chromium] › e2e\settings\shell-integration.spec.ts:68:7 › Settings Shell Integration - P11-T054 Checkpoint › P11-T054: Settings shell integration is complete and functional 
+    [chromium] › e2e\settings\shell.spec.ts:12:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page loads successfully 
+    [chromium] › e2e\settings\shell.spec.ts:20:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: All 7 tabs visible and accessible 
+    [chromium] › e2e\settings\shell.spec.ts:30:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Tab navigation works - switching between tabs 
+    [chromium] › e2e\settings\shell.spec.ts:89:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T052: Settings page has responsive layout 
+    [chromium] › e2e\settings\shell.spec.ts:121:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings page provides admin-only access (integration checkpoint) 
+    [chromium] › e2e\settings\shell.spec.ts:137:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Tab state persists during navigation 
+    [chromium] › e2e\settings\shell.spec.ts:157:7 › Settings Shell Integration - P11-T052, P11-T053, P11-T054 › P11-T054: Settings shell is fully accessible and functioning 
+    [chromium] › e2e\smoke.spec.ts:123:7 › Jessy Luxury CRM & POS E2E Smoke Test › checkout POS order and navigate through CRM 
+  16 passed (11.3m)

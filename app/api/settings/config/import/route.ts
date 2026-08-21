@@ -73,19 +73,8 @@ export async function POST(request: Request) {
       })
     }
 
-    // Check for unmasked secrets in payment settings
-    if (config.paymentSettings) {
-      const ps = config.paymentSettings
-      // Check if any secret fields contain real secrets (not masked format)
-      // Masked format contains bullets and should look like "ab••••••••9a21"
-      // Raw secrets typically start with specific prefixes like 'sk_' for stripe
-      if (ps.bankAccountNumber && !ps.bankAccountNumber.includes('•')) {
-        errors.push('Cannot import unmasked bank account numbers. Use masked format or empty.')
-      }
-      if (ps.paymentProviderApiKey && !ps.paymentProviderApiKey.includes('•') && ps.paymentProviderApiKey.length > 10) {
-        errors.push('Cannot import unmasked payment API keys. Use masked format or empty.')
-      }
-    }
+    // Check for unmasked secrets in payment settings — no longer needed,
+    // bank details are plain text and safe to import
 
     if (config.notificationSettings) {
       const ns = config.notificationSettings
@@ -186,21 +175,22 @@ export async function POST(request: Request) {
         }
       }
 
-      // Import payment settings (masked values are kept as-is, meaning they won't update secrets)
+      // Import payment settings
       if (config.paymentSettings) {
         const ps = config.paymentSettings
-        // Don't import masked secret values - only import non-secret fields
         await tx.paymentSettings.upsert({
           where: { id: 1 },
           update: {
+            bankAccountNumber: ps.bankAccountNumber || null,
             bankAccountName: ps.bankAccountName || null,
-            merchantId: ps.merchantId || null,
+            bankName: ps.bankName || null,
             updatedAt: new Date()
           },
           create: {
             id: 1,
+            bankAccountNumber: ps.bankAccountNumber || null,
             bankAccountName: ps.bankAccountName || null,
-            merchantId: ps.merchantId || null,
+            bankName: ps.bankName || null,
             updatedAt: new Date()
           }
         })

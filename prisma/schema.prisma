@@ -270,14 +270,12 @@ model OrderTimeline {
 }
 
 model PaymentSettings {
-  id                    Int      @id @default(1)
-  bankAccountNumber     String?
-  bankRoutingNumber     String?
-  bankAccountName       String?
-  paymentProviderApiKey String?
-  merchantId            String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime
+  id                Int      @id @default(1)
+  bankAccountNumber String?
+  bankAccountName   String?
+  bankName          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
 }
 
 model PriceAdjustmentLog {

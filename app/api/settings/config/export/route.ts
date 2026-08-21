@@ -26,14 +26,6 @@ export async function GET(request: Request) {
       prisma.systemDefaults.findUnique({ where: { id: 1 } })
     ])
 
-    // Apply secret masking to payment settings
-    const maskedPaymentSettings = paymentSettings ? {
-      ...paymentSettings,
-      bankAccountNumber: maskSecret(paymentSettings.bankAccountNumber),
-      bankRoutingNumber: maskSecret(paymentSettings.bankRoutingNumber),
-      paymentProviderApiKey: maskSecret(paymentSettings.paymentProviderApiKey)
-    } : null
-
     // Apply secret masking to notification settings
     const maskedNotificationSettings = notificationSettings ? {
       ...notificationSettings,
@@ -60,7 +52,7 @@ export async function GET(request: Request) {
       businessProfile: businessProfile || null,
       storeLocations: normalizedLocations,
       staffAccounts: staffAccounts || [],
-      paymentSettings: maskedPaymentSettings,
+      paymentSettings: paymentSettings || null,
       notificationSettings: maskedNotificationSettings,
       systemDefaults: systemDefaults || null
     }

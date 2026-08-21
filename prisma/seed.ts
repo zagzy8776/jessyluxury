@@ -13,10 +13,8 @@ async function seedSettings() {
     create: {
       id: 1,
       bankAccountNumber: null,
-      bankRoutingNumber: null,
       bankAccountName: null,
-      paymentProviderApiKey: null,
-      merchantId: null,
+      bankName: null,
       updatedAt: new Date(),
     },
   });
