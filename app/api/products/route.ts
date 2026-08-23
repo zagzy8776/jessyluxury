@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
 import { broadcastOneSignalPush } from '@/lib/notifications/client'
 import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
