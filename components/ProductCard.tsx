@@ -1,8 +1,7 @@
 'use client'
 import Link from 'next/link'
-import { Heart, ShoppingBag, Star } from 'lucide-react'
+import { Heart, ShoppingBag, Star, ImageOff } from 'lucide-react'
 import { useCart } from './CartProvider'
-import Bottle from './Bottle'
 import type { Product } from '@/lib/products'
 import { formatNaira } from '@/lib/products'
 
@@ -51,37 +50,28 @@ export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd
       <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)] shadow-card transition duration-300 group-hover:-translate-y-1 group-hover:shadow-card-hover">
         <Link href={`/shop/${p.id}`} className="relative block aspect-[4/5] cursor-pointer" aria-label={p.name}>
           {p.badge && (
-            <span
-              className={`absolute left-3 top-3 z-10 rounded-full px-2.5 py-1 text-[9px] font-bold tracking-[0.16em] ${badge!.cls}`}
-            >
+            <span className={`absolute left-3 top-3 z-10 rounded-full px-2.5 py-1 text-[9px] font-bold tracking-[0.16em] ${badge!.cls}`}>
               {badge!.label}
             </span>
           )}
 
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imageUrl}
-              alt={p.name}
-              className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
-              loading="lazy"
-            />
+            <img src={imageUrl} alt={p.name} className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]" loading="lazy" />
           ) : (
-            <span className="flex h-full w-full items-center justify-center">
-              <span className="block scale-90 transition duration-700 group-hover:scale-100">
-                <Bottle tone={p.tone} />
+            <span className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[var(--bg-secondary)] text-center">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-dashed border-[var(--border)] text-[var(--text-muted)]">
+                <ImageOff size={22} />
               </span>
+              <span className="px-6 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-muted)]">Product image unavailable</span>
             </span>
           )}
 
           {outOfStock && (
-            <span className="absolute inset-x-0 bottom-0 z-10 bg-stone-950/70 py-2 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
-              Sold out
-            </span>
+            <span className="absolute inset-x-0 bottom-0 z-10 bg-stone-950/70 py-2 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">Sold out</span>
           )}
         </Link>
 
-        {/* Wishlist */}
         <button
           onClick={(e) => {
             e.preventDefault()
@@ -94,7 +84,6 @@ export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd
           <Heart size={15} className={wished ? 'fill-[var(--accent)] text-[var(--accent)]' : 'text-stone-600'} />
         </button>
 
-        {/* Desktop hover add-to-cart */}
         {showAdd && !outOfStock && (
           <div className="absolute inset-x-3 bottom-3 z-10 hidden translate-y-2 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
             <button
@@ -110,17 +99,9 @@ export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd
         )}
       </div>
 
-      {/* Info */}
       <div className="flex flex-1 flex-col px-0.5 pt-3.5">
-        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-          {p.brand} · {p.volume}
-        </p>
-        <Link
-          href={`/shop/${p.id}`}
-          className="mt-1 block font-display text-lg font-bold leading-snug text-[var(--text-primary)] transition hover:text-[var(--accent)]"
-        >
-          {p.name}
-        </Link>
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">{p.brand} · {p.volume}</p>
+        <Link href={`/shop/${p.id}`} className="mt-1 block font-display text-lg font-bold leading-snug text-[var(--text-primary)] transition hover:text-[var(--accent)]">{p.name}</Link>
 
         {rating ? (
           <p className="mt-1 flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
@@ -135,23 +116,12 @@ export default function ProductCard({ p, showAdd = true }: { p: Product; showAdd
         <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-baseline gap-x-2">
-              <span className="text-base font-bold tabular-nums text-[var(--accent)]">
-                {formatNaira(price)}
-              </span>
-              {hasSale && (
-                <span className="text-xs tabular-nums text-[var(--text-muted)] line-through">
-                  {formatNaira(p.price)}
-                </span>
-              )}
+              <span className="text-base font-bold tabular-nums text-[var(--accent)]">{formatNaira(price)}</span>
+              {hasSale && <span className="text-xs tabular-nums text-[var(--text-muted)] line-through">{formatNaira(p.price)}</span>}
             </div>
-            {hasSale && (
-              <span className="mt-1 inline-block rounded-full bg-[var(--champagne-soft)] px-2 py-0.5 text-[9px] font-bold tracking-[0.08em] text-[#7a5c22]">
-                SAVE {formatNaira(save)}
-              </span>
-            )}
+            {hasSale && <span className="mt-1 inline-block rounded-full bg-[var(--champagne-soft)] px-2 py-0.5 text-[9px] font-bold tracking-[0.08em] text-[#7a5c22]">SAVE {formatNaira(save)}</span>}
           </div>
 
-          {/* Mobile quick add — always visible on touch */}
           {showAdd && !outOfStock && (
             <button
               onClick={() => {
