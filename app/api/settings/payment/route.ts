@@ -64,21 +64,35 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json()
-    const { bankAccountNumber, bankAccountName, bankName } = body
+    const bankAccountNumber = body.bankAccountNumber === undefined ? undefined : String(body.bankAccountNumber).trim()
+    const bankAccountName = body.bankAccountName === undefined ? undefined : String(body.bankAccountName).trim()
+    const bankName = body.bankName === undefined ? undefined : String(body.bankName).trim()
+
+    if (bankAccountNumber !== undefined && bankAccountNumber !== '' && !/^\d{10}$/.test(bankAccountNumber)) {
+      return NextResponse.json({ error: 'Account number must be exactly 10 digits' }, { status: 400 })
+    }
+
+    if (bankName !== undefined && bankName.length > 120) {
+      return NextResponse.json({ error: 'Bank name is too long' }, { status: 400 })
+    }
+
+    if (bankAccountName !== undefined && (bankAccountName.length < 2 || bankAccountName.length > 160)) {
+      return NextResponse.json({ error: 'Account name must be between 2 and 160 characters' }, { status: 400 })
+    }
 
     const updated = await prisma.paymentSettings.upsert({
       where: { id: 1 },
       update: {
-        ...(bankAccountNumber !== undefined && { bankAccountNumber: bankAccountNumber ? String(bankAccountNumber).trim() : null }),
-        ...(bankAccountName !== undefined && { bankAccountName: bankAccountName ? String(bankAccountName).trim() : null }),
-        ...(bankName !== undefined && { bankName: bankName ? String(bankName).trim() : null }),
+        ...(bankAccountNumber !== undefined && { bankAccountNumber: bankAccountNumber || null }),
+        ...(bankAccountName !== undefined && { bankAccountName: bankAccountName || null }),
+        ...(bankName !== undefined && { bankName: bankName || null }),
         updatedAt: new Date(),
       },
       create: {
         id: 1,
-        bankAccountNumber: bankAccountNumber ? String(bankAccountNumber).trim() : null,
-        bankAccountName: bankAccountName ? String(bankAccountName).trim() : null,
-        bankName: bankName ? String(bankName).trim() : null,
+        bankAccountNumber: bankAccountNumber || null,
+        bankAccountName: bankAccountName || null,
+        bankName: bankName || null,
         updatedAt: new Date(),
       },
     })
