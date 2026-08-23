@@ -20,7 +20,7 @@ function loadDotEnv() {
   }
 }
 
-function run(cmd: string) {
+function run(cmd) {
   const [bin, ...args] = cmd.split(' ')
   return spawnSync(bin, args, {
     cwd: root,
