@@ -10,11 +10,10 @@ async function checkAuth(request: Request) {
   return requireStaffAuth(request, 'settings')
 }
 
-function maskSecret(value: string | null | undefined): string | null {
+function maskAccountNumber(value: string | null | undefined): string | null {
   if (!value) return null
   if (value.length <= 4) return '••••'
-  if (value.length <= 8) return `${value.slice(0, 1)}••••${value.slice(-2)}`
-  return `${value.slice(0, 2)}••••••••${value.slice(-4)}`
+  return `••••••${value.slice(-4)}`
 }
 
 function toSafeResponse(settings: {
@@ -22,20 +21,14 @@ function toSafeResponse(settings: {
   bankAccountNumber: string | null
   bankAccountName: string | null
   bankName: string | null
-  bankRoutingNumber: string | null
-  paymentProviderApiKey: string | null
-  merchantId: string | null
   createdAt: Date
   updatedAt: Date
 }) {
   return {
     id: settings.id,
-    bankAccountNumber: maskSecret(settings.bankAccountNumber),
+    bankAccountNumber: maskAccountNumber(settings.bankAccountNumber),
     bankAccountName: settings.bankAccountName,
     bankName: settings.bankName,
-    bankRoutingNumber: maskSecret(settings.bankRoutingNumber),
-    paymentProviderApiKey: maskSecret(settings.paymentProviderApiKey),
-    merchantId: settings.merchantId,
     createdAt: settings.createdAt,
     updatedAt: settings.updatedAt,
   }
@@ -47,22 +40,18 @@ export async function GET(request: Request) {
 
   try {
     const settings = await prisma.paymentSettings.findUnique({ where: { id: 1 } })
-
-    if (!settings) {
-      return NextResponse.json({
-        id: 1,
-        bankAccountNumber: null,
-        bankAccountName: null,
-        bankName: null,
-        bankRoutingNumber: null,
-        paymentProviderApiKey: null,
-        merchantId: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      })
-    }
-
-    return NextResponse.json(toSafeResponse(settings))
+    return NextResponse.json(
+      settings
+        ? toSafeResponse(settings)
+        : {
+            id: 1,
+            bankAccountNumber: null,
+            bankAccountName: null,
+            bankName: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }
+    )
   } catch (error) {
     console.error('[PAYMENT_SETTINGS] GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -75,55 +64,34 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json()
-    const {
-      bankAccountNumber,
-      bankAccountName,
-      bankName,
-      bankRoutingNumber,
-      paymentProviderApiKey,
-      merchantId,
-    } = body
-
-    const existing = await prisma.paymentSettings.findUnique({ where: { id: 1 } })
+    const { bankAccountNumber, bankAccountName, bankName } = body
 
     const updated = await prisma.paymentSettings.upsert({
       where: { id: 1 },
       update: {
-        ...(bankAccountNumber !== undefined && { bankAccountNumber: bankAccountNumber || null }),
-        ...(bankAccountName !== undefined && { bankAccountName: bankAccountName || null }),
-        ...(bankName !== undefined && { bankName: bankName || null }),
-        ...(bankRoutingNumber !== undefined && { bankRoutingNumber: bankRoutingNumber || null }),
-        ...(paymentProviderApiKey !== undefined && { paymentProviderApiKey: paymentProviderApiKey || null }),
-        ...(merchantId !== undefined && { merchantId: merchantId || null }),
+        ...(bankAccountNumber !== undefined && { bankAccountNumber: bankAccountNumber ? String(bankAccountNumber).trim() : null }),
+        ...(bankAccountName !== undefined && { bankAccountName: bankAccountName ? String(bankAccountName).trim() : null }),
+        ...(bankName !== undefined && { bankName: bankName ? String(bankName).trim() : null }),
         updatedAt: new Date(),
       },
       create: {
         id: 1,
-        bankAccountNumber: bankAccountNumber || null,
-        bankAccountName: bankAccountName || null,
-        bankName: bankName || null,
-        bankRoutingNumber: bankRoutingNumber || null,
-        paymentProviderApiKey: paymentProviderApiKey || null,
-        merchantId: merchantId || null,
+        bankAccountNumber: bankAccountNumber ? String(bankAccountNumber).trim() : null,
+        bankAccountName: bankAccountName ? String(bankAccountName).trim() : null,
+        bankName: bankName ? String(bankName).trim() : null,
         updatedAt: new Date(),
       },
     })
-
-    const changedFields = {
-      ...(bankAccountName !== undefined && { bankAccountName: updated.bankAccountName }),
-      ...(bankName !== undefined && { bankName: updated.bankName }),
-      ...(merchantId !== undefined && { merchantId: updated.merchantId }),
-      ...(bankAccountNumber !== undefined && { bankAccountNumber: '[REDACTED]' }),
-      ...(bankRoutingNumber !== undefined && { bankRoutingNumber: '[REDACTED]' }),
-      ...(paymentProviderApiKey !== undefined && { paymentProviderApiKey: '[REDACTED]' }),
-      previousConfigured: Boolean(existing),
-    }
 
     await createAuditLog(
       'PAYMENT_SETTINGS_UPDATED',
       'PaymentSettings',
       '1',
-      changedFields,
+      {
+        bankAccountName: updated.bankAccountName,
+        bankName: updated.bankName,
+        bankAccountNumberChanged: bankAccountNumber !== undefined,
+      },
       'Admin'
     )
 
