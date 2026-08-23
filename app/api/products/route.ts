@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
 import { broadcastOneSignalPush } from '@/lib/notifications/client'
 import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
@@ -56,7 +55,6 @@ export async function GET(request: Request) {
     }
 
     const decorated = await decorateProductsWithWholesale(products, customerId)
-    // Prisma exposes these relations capitalized; remap to the lowercase public contract
     const normalized = decorated.map((p: any) => {
       const { Category, Review, ...rest } = p
       return { ...rest, category: Category ?? null, reviews: Review ?? [] }
@@ -108,7 +106,7 @@ export async function POST(request: Request) {
         notes,
         topNotes,
         middleNotes,
- baseNotes,
+        baseNotes,
         description,
         tone: tone || 'amber',
         stock: Number(stock) || 10,
@@ -119,11 +117,10 @@ export async function POST(request: Request) {
       },
     })
 
-    // Broadcast push notification to all subscribed customers about the new product
     try {
       const priceStr = product.salePrice ? `N${product.salePrice}` : `N${product.price}`
       const promoMsg = `Discover our new arrival: ${product.name} by ${product.brand}. notes: ${product.notes || 'delightful scents'}. Buy now for ${priceStr}!`
-      broadcastOneSignalPush(`New Scent Added! ✨`, promoMsg, `/products/${product.id}`).catch((err) => {
+      broadcastOneSignalPush(`New Scent Added! ✨`, promoMsg, `/shop/${product.id}`).catch((err) => {
         console.error('Failed to broadcast product push notification:', err)
       })
     } catch (err) {
