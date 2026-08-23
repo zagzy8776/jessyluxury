@@ -4,6 +4,7 @@
 // can be synchronized before compiling the application. We deliberately avoid
 // --accept-data-loss so a production build cannot silently apply destructive
 // schema changes.
+// Vercel redeploy trigger: 2026-08-24
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
