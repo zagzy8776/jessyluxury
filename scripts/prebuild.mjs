@@ -1,10 +1,9 @@
 // scripts/prebuild.mjs
 // Runs before `next build` on every platform (Vercel, Render, local).
-// - Syncs the Prisma schema to the database with `prisma db push`
-//   when DATABASE_URL is set and reachable.
-// - Never fails the build: if DATABASE_URL is missing or the DB is
-//   unreachable, it warns loudly but lets the build continue so a
-//   deploy can never be blocked by database configuration.
+// When DATABASE_URL is configured, the build verifies that the Prisma schema
+// can be synchronized before compiling the application. We deliberately avoid
+// --accept-data-loss so a production build cannot silently apply destructive
+// schema changes.
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
@@ -12,9 +11,6 @@ import { readFileSync, existsSync } from 'node:fs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
-// Minimal .env loader (no dependency) so local `npm run prebuild` sees
-// DATABASE_URL from the project .env, matching Prisma CLI behaviour.
-// On Vercel/Render the platform env vars are already in process.env.
 function loadDotEnv() {
   const file = resolve(root, '.env')
   if (!existsSync(file)) return
@@ -24,13 +20,13 @@ function loadDotEnv() {
   }
 }
 
-function run(cmd) {
+function run(cmd: string) {
   const [bin, ...args] = cmd.split(' ')
   return spawnSync(bin, args, {
     cwd: root,
     stdio: 'inherit',
     shell: true,
-  }).status
+  }).status ?? 1
 }
 
 loadDotEnv()
@@ -38,18 +34,18 @@ const dbUrl = process.env.DATABASE_URL
 
 if (!dbUrl) {
   console.warn(
-    '\n⚠️  DATABASE_URL is NOT set — skipping `prisma db push`.\n' +
-      '   The build will continue, but DB-backed API routes (/api/products, /api/orders)\n' +
-      '   will not work until DATABASE_URL is added to your platform environment variables.\n'
+    '\n⚠️  DATABASE_URL is not set — skipping database schema sync.\n' +
+      '   Configure DATABASE_URL before production deployment so DB-backed routes work.\n'
   )
 } else {
-  console.log('\n→ DATABASE_URL found — syncing schema with `prisma db push`...\n')
-  const status = run('npx prisma db push --accept-data-loss')
+  console.log('\n→ DATABASE_URL found — verifying Prisma schema with `prisma db push --dry-run`...\n')
+  const status = run('npx prisma db push --dry-run')
   if (status !== 0) {
-    console.warn(
-      '\n⚠️  `prisma db push` failed (database unreachable or invalid string?).\n' +
-        `   Continuing the build anyway — fix DATABASE_URL (status: ${status}).\n`
+    console.error(
+      '\n❌ Prisma schema verification failed.\n' +
+        '   Fix the database connection or schema mismatch before building for deployment.\n'
     )
+    process.exit(status)
   }
 }
 
