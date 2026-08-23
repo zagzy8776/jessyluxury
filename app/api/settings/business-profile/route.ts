@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 import { requireStaffAuth } from '@/lib/staff-auth'
 import { validateEmail, validatePhone, validateRequired } from '@/lib/validation'
 import { createAuditLog } from '@/lib/audit'
