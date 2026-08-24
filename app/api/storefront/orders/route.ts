@@ -11,6 +11,11 @@ function isPublicShippingZone(name: string) {
   return !/e2e|test|fixture|smoke/i.test(name)
 }
 
+type CartItem = {
+  productId: number
+  quantity: number
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -38,7 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Your cart is empty or too large to process' }, { status: 400 })
     }
 
-    const parsedItems = items.map((item: any) => ({
+    const parsedItems: CartItem[] = items.map((item: any) => ({
       productId: Number(item.productId),
       quantity: Number(item.quantity),
     }))
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
 
     const cleanPhone = normalizePhoneNumber(customerPhone)
     const cleanWhatsapp = normalizePhoneNumber(customerWhatsapp || customerPhone)
-    const productIds = Array.from(new Set(parsedItems.map((item) => item.productId)))
+    const productIds = Array.from(new Set(parsedItems.map((item: CartItem) => item.productId)))
 
     await prisma.$queryRaw`SELECT 1`
 
