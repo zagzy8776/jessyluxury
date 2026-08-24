@@ -5,7 +5,16 @@ import { isValidTokenSignature } from '@/lib/auth-crypto'
 export async function middleware(request: NextRequest) {
   const adminToken = request.cookies.get('jl_admin_token')?.value
   const staffToken = request.cookies.get('jl_staff_token')?.value
-  
+
+  // Customer storefront checkout is public. Keep staff/POS order handling on
+  // the existing protected endpoint and transparently route guest POSTs to the
+  // hardened storefront checkout endpoint.
+  if (request.nextUrl.pathname === '/api/orders' && request.method === 'POST' && !adminToken && !staffToken) {
+    const storefrontUrl = request.nextUrl.clone()
+    storefrontUrl.pathname = '/api/storefront/orders'
+    return NextResponse.rewrite(storefrontUrl)
+  }
+
   let isValidAdmin = false
   let isValidStaff = false
 
@@ -18,9 +27,8 @@ export async function middleware(request: NextRequest) {
     const { isValid } = await isValidTokenSignature(staffToken)
     isValidStaff = isValid
   }
-  
-  if (!isValidAdmin && !isValidStaff) {
-    // Redirect to login if token is invalid or missing
+
+  if (request.nextUrl.pathname.startsWith('/store-portal-jl/dashboard/') && !isValidAdmin && !isValidStaff) {
     const loginUrl = new URL('/store-portal-jl', request.url)
     return NextResponse.redirect(loginUrl)
   }
@@ -29,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/store-portal-jl/dashboard/:path*'],
+  matcher: ['/store-portal-jl/dashboard/:path*', '/api/orders'],
 }
