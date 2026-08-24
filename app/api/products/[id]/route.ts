@@ -36,7 +36,6 @@ export async function GET(
     }
 
     const [decorated] = await decorateProductsWithWholesale([product], customerId)
-    // Prisma exposes these relations capitalized; remap to the lowercase public contract
     const { Category, Review, ...rest } = decorated as any
     const normalized = { ...rest, category: Category ?? null, reviews: Review ?? [] }
     return NextResponse.json(normalized)
@@ -56,6 +55,20 @@ export async function PUT(
   try {
     const productId = parseInt(params.id, 10)
     const body = await request.json()
+    const categoryId = Number(body.categoryId)
+
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      return NextResponse.json({ error: 'Please select a valid product category' }, { status: 400 })
+    }
+
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+      select: { id: true },
+    })
+
+    if (!category) {
+      return NextResponse.json({ error: 'The selected product category no longer exists' }, { status: 400 })
+    }
 
     const product = await prisma.product.update({
       where: { id: productId },
@@ -65,7 +78,7 @@ export async function PUT(
         price: Number(body.price),
         salePrice: body.salePrice ? Number(body.salePrice) : null,
         badge: body.badge || null,
-        categoryId: Number(body.categoryId),
+        categoryId,
         volume: body.volume,
         notes: body.notes,
         topNotes: body.topNotes,
@@ -96,9 +109,30 @@ export async function DELETE(
 
   try {
     const productId = parseInt(params.id, 10)
-    await prisma.product.delete({
+    if (isNaN(productId)) {
+      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
+    }
+
+    const product = await prisma.product.findUnique({
       where: { id: productId },
+      select: { id: true, name: true },
     })
+
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    const historicalOrderItems = await prisma.orderItem.count({
+      where: { productId },
+    })
+
+    if (historicalOrderItems > 0) {
+      return NextResponse.json({
+        error: 'This product is part of existing orders and cannot be deleted. Set its stock to 0 or remove it from featured collections instead.',
+      }, { status: 409 })
+    }
+
+    await prisma.product.delete({ where: { id: productId } })
 
     return NextResponse.json({ success: true })
   } catch (error) {
