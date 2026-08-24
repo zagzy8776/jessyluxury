@@ -29,7 +29,7 @@ const NAV = [
   { label: 'Analytics', href: '/store-portal-jl/dashboard/analytics', icon: BarChart3 },
   { label: 'Shipping', href: '/store-portal-jl/dashboard/shipping', icon: Truck },
   { label: 'Notifications', href: '/store-portal-jl/dashboard/notifications', icon: Bell },
-  { label: 'Settings', href: '/store-portal-jl/dashboard/settings', icon: Settings },
+  { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 function bellIcon(type: string) {

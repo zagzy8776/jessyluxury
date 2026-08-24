@@ -16,16 +16,7 @@ export interface PromoRewardConfig {
   minPurchase?: number         // ₦ amount, optional
   expiryDate?: string          // ISO string, optional
   imageUrl?: string            // optional fragrance image
-}
-
-const DEFAULT_CONFIG: PromoRewardConfig = {
-  enabled: true,
-  title: 'Congratulations ✨',
-  message: "You've unlocked an exclusive shopping reward just for visiting today.",
-  discountLabel: '₦2,000 OFF',
-  couponCode: 'JESSY2000',
-  ctaText: 'Shop & Use Coupon',
-  displayDelay: 4000,
+  displayFreqHrs?: number      // hours, default 24
 }
 
 const STORAGE_KEY = 'jl_promo_dismissed'
@@ -33,23 +24,23 @@ const SESSION_KEY = 'jl_promo_seen'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function isDismissed(): boolean {
+function isDismissed(code: string, freqHrs: number): boolean {
   try {
     const val = localStorage.getItem(STORAGE_KEY)
     if (!val) return false
-    const { code, until } = JSON.parse(val)
-    // Dismiss persists for 24 h per coupon code
-    return code === DEFAULT_CONFIG.couponCode && Date.now() < until
+    const { code: storedCode, until } = JSON.parse(val)
+    // Dismiss persists for configured hours per coupon code
+    return storedCode === code && Date.now() < until
   } catch {
     return false
   }
 }
 
-function markDismissed(code: string) {
+function markDismissed(code: string, freqHrs: number) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       code,
-      until: Date.now() + 24 * 60 * 60 * 1000,
+      until: Date.now() + (freqHrs * 60 * 60 * 1000),
     }))
     sessionStorage.setItem(SESSION_KEY, '1')
   } catch { /* ignore */ }
@@ -66,7 +57,7 @@ interface Props {
   config?: PromoRewardConfig
 }
 
-export default function PromoRewardPopup({ config = DEFAULT_CONFIG }: Props) {
+export default function PromoRewardPopup({ config }: Props) {
   const router = useRouter()
   const [visible, setVisible] = useState(false)
   const [animating, setAnimating] = useState(false)
@@ -75,7 +66,11 @@ export default function PromoRewardPopup({ config = DEFAULT_CONFIG }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const cfg = { ...DEFAULT_CONFIG, ...config }
+  // If no config prop provided, component doesn't render
+  if (!config) return null
+
+  const cfg = config
+  const freqHrs = cfg.displayFreqHrs || 24
 
   // Detect reduced motion preference
   useEffect(() => {
@@ -87,7 +82,7 @@ export default function PromoRewardPopup({ config = DEFAULT_CONFIG }: Props) {
   useEffect(() => {
     if (!cfg.enabled) return
     if (isExpired(cfg.expiryDate)) return
-    if (isDismissed()) return
+    if (isDismissed(cfg.couponCode, freqHrs)) return
     // Don't show again in same session if already seen
     try {
       if (sessionStorage.getItem(SESSION_KEY)) return
@@ -99,7 +94,7 @@ export default function PromoRewardPopup({ config = DEFAULT_CONFIG }: Props) {
     }, cfg.displayDelay ?? 4000)
 
     return () => clearTimeout(timer)
-  }, [cfg.enabled, cfg.expiryDate, cfg.displayDelay])
+  }, [cfg.enabled, cfg.expiryDate, cfg.displayDelay, cfg.couponCode, freqHrs])
 
   // Focus trap — move focus to close button when popup opens
   useEffect(() => {
@@ -119,12 +114,23 @@ export default function PromoRewardPopup({ config = DEFAULT_CONFIG }: Props) {
   }, [visible])
 
   const dismiss = useCallback(() => {
+    // Immediately mark as seen in session to prevent re-display during navigation
+    try {
+      sessionStorage.setItem(SESSION_KEY, '1')
+    } catch { /* ignore */ }
+    
     setVisible(false)
     setTimeout(() => {
       setAnimating(false)
-      markDismissed(cfg.couponCode)
+      // Mark dismissed in localStorage for long-term suppression
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          code: cfg.couponCode,
+          until: Date.now() + (freqHrs * 60 * 60 * 1000),
+        }))
+      } catch { /* ignore */ }
     }, prefersReducedMotion ? 0 : 320)
-  }, [cfg.couponCode, prefersReducedMotion])
+  }, [cfg.couponCode, freqHrs, prefersReducedMotion])
 
   const handleCopy = useCallback(async () => {
     try {

@@ -9,7 +9,7 @@ import CartDrawer from '@/components/CartDrawer'
 import OneSignalInit from '@/components/OneSignalInit'
 import StorefrontAnnouncement from '@/components/StorefrontAnnouncement'
 import BottomNav from '@/components/storefront/BottomNav'
-import PromoRewardPopup from '@/components/PromoRewardPopup'
+import PromoRewardWrapper from '@/components/PromoRewardWrapper'
 import DeviceFilePickerGuard from '@/components/DeviceFilePickerGuard'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <DeviceFilePickerGuard />
         <OneSignalInit />
         <StorefrontAnnouncement />
-        <PromoRewardPopup />
+        <PromoRewardWrapper />
         <CartProvider>
           <Header />
           <div className="pb-[calc(4.25rem+env(safe-area-inset-bottom))] lg:pb-0">

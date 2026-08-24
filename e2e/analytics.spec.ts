@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { PrismaClient } from '@prisma/client'
-import { generateAdminToken } from '../lib/auth-crypto'
+import { loginAsOwner, getOwnerSessionCookie } from './helpers/admin-login'
 import fs from 'fs'
 import path from 'path'
 
@@ -25,7 +25,6 @@ loadDotEnv()
 const prisma = new PrismaClient()
 
 test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
-  let authToken: string
   let testCategory: any
   let testProduct: any
   let testCustomer: any
@@ -73,16 +72,14 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
       },
     })
 
-    // 2. Generate authorization cookie token
-    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } })
-    const sessionVersion = config?.sessionVersion ?? 1
-    authToken = await generateAdminToken(sessionVersion)
-
-    // Warm the dev-server compile cache for the POS page. Next.js compiles
+    // 2. Warm the dev-server compile cache for the POS page. Next.js compiles
     // routes on demand; a cold compile of this page can exceed the 60s
     // selector timeout below, so pre-render it once here.
+    // Authentication uses a REAL login (server-issued session cookie) —
+    // no client-side token generation.
+    const sessionCookie = await getOwnerSessionCookie()
     await fetch('http://localhost:3000/store-portal-jl/dashboard/orders/create', {
-      headers: { Cookie: `jl_admin_token=${authToken}` },
+      headers: { Cookie: `${sessionCookie.name}=${sessionCookie.value}` },
     }).catch(() => {})
   })
 
@@ -112,22 +109,17 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
   })
 
   test('verify historical cost, product identity snapshots and channel analytics', async ({ page }) => {
-    test.setTimeout(180000)
-    await page.context().addCookies([
-      {
-        name: 'jl_admin_token',
-        value: authToken,
-        domain: 'localhost',
-        path: '/',
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Lax',
-      },
-    ])
+    test.setTimeout(300000)
+    // Establish an authenticated session through the real login endpoint;
+    // the server-issued cookie persists in this page's browser context.
+    await loginAsOwner(page)
 
-    // Go to POS create order page
+    // Go to POS create order page.
+    // 180s selector budget: on a cold dev server this page's on-demand compile
+    // plus hydration can exceed 60s (verified via failure screenshot showing the
+    // page fully rendered shortly after the 60s timeout fired).
     await page.goto('http://localhost:3000/store-portal-jl/dashboard/orders/create')
-    await page.waitForSelector('input[placeholder="Search catalog to add..."]', { timeout: 60000 })
+    await page.waitForSelector('input[placeholder="Search catalog to add…"]', { timeout: 280000 })
 
     // Wait for product catalog to load
     await page.waitForFunction(
@@ -143,13 +135,14 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
 
     // Search product
     const productName = `Analytics Initial Name ${ns}`
-    await page.fill('input[placeholder="Search catalog to add..."]', productName)
+    await page.fill('input[placeholder="Search catalog to add…"]', productName)
     await expect(page.getByText(productName, { exact: false })).toBeVisible({ timeout: 10000 })
 
     // Add to cart
     const productRow = page.locator('div').filter({ hasText: new RegExp(productName) }).filter({ has: page.locator('button:has-text("Add")') }).last()
     await productRow.locator('button:has-text("Add")').click()
-    await expect(page.getByText('Order Summary (1 items)')).toBeVisible({ timeout: 5000 })
+    // Cart panel heading renders as "Cart ({cartItems.length})"
+    await expect(page.locator('h2:has-text("Cart (1)")')).toBeVisible({ timeout: 10000 })
 
     // Fill customer details
     await page.fill('input[placeholder="e.g. Blessing Okafor"]', testCustomerName)
@@ -161,13 +154,14 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
     await page.waitForSelector('h2:has-text("Order Recorded Successfully!")', { timeout: 60000 })
 
     // Extract Order Number from receipt screen
-    const orderNumberEl = page.locator('p.text-amber-500').first()
+    // Receipt renders: <p class="mt-1 font-mono text-lg font-bold ...">#{orderNumber}</p>
+    const orderNumberEl = page.locator('p.font-mono:has-text("JL-")').first()
     const orderNumber = (await orderNumberEl.innerText()).trim().replace(/^#/, '')
 
     // Verify DB snapshots immediately
     const dbOrder = await prisma.order.findUnique({
       where: { orderNumber },
-      include: { items: true },
+      include: { OrderItem: true },
     })
     expect(dbOrder).toBeDefined()
     createdOrderId = dbOrder!.id
@@ -175,7 +169,7 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
     // Check salesChannel is recorded as "Physical"
     expect(dbOrder!.salesChannel).toBe('Physical')
 
-    const dbItem = dbOrder!.items[0]
+    const dbItem = dbOrder!.OrderItem[0]
     expect(dbItem.unitCost).toBe(15000)
     expect(dbItem.productNameSnapshot).toBe(`Analytics Initial Name ${ns}`)
     expect(dbItem.brandSnapshot).toBe('Initial Brand')
@@ -193,26 +187,31 @@ test.describe('Jessy Luxury Executive Analytics E2E Test', () => {
 
     // Fetch analytics and verify snapshots are preserved
     await page.goto('http://localhost:3000/store-portal-jl/dashboard/analytics')
-    await page.waitForSelector('h1:has-text("Executive Analytics Hub")')
+    // Dashboard h1 renders "Analytics"
+    await page.waitForSelector('h1:has-text("Analytics")')
 
-    // Check KPI profit card is visible
+    // Check KPI profit card is visible (data loads asynchronously; the page
+    // renders skeletons while fetching, so allow a generous budget)
     const profitValueEl = page.locator('div:has(span:has-text("Profit after Discounts")) > p.font-display').first()
-    await expect(profitValueEl).toBeVisible()
+    await expect(profitValueEl).toBeVisible({ timeout: 120000 })
     const profitText = await profitValueEl.innerText()
     expect(profitText).toContain('₦')
 
     // Switch to Products Tab
-    await page.click('button:has-text("Products Report")')
+    await page.getByRole('button', { name: 'Products', exact: true }).click()
 
     const bestSellersCard = page.locator('div').filter({ hasText: 'Top Selling Fragrances' }).last()
     // Historic name and brand should still display in the transaction snapshot list
-    await expect(bestSellersCard.locator(`text=Analytics Initial Name ${ns}`)).toBeVisible()
-    await expect(bestSellersCard.locator('text=Initial Brand')).toBeVisible()
-    await expect(bestSellersCard.locator(`text=Analytics Modified Name ${ns}`)).not.toBeVisible()
+    // Best-sellers list may render the same product in multiple rows (historic
+    // snapshot + current), so target the first match and assert the modified
+    // name is absent (count-based) rather than relying on single-element matches.
+    await expect(bestSellersCard.getByText(`Analytics Initial Name ${ns}`).first()).toBeVisible()
+    await expect(bestSellersCard.getByText('Initial Brand').first()).toBeVisible()
+    await expect(bestSellersCard.getByText(`Analytics Modified Name ${ns}`)).toHaveCount(0)
 
     // Switch to Channels Tab
-    await page.click('button:has-text("Channels Report")')
+    await page.getByRole('button', { name: 'Channels', exact: true }).click()
     // Recorded salesChannel is Physical
-    await expect(page.locator('span:has-text("Physical")')).toBeVisible()
+    await expect(page.locator('span:has-text("Physical")').first()).toBeVisible({ timeout: 15000 })
   })
 })

@@ -122,8 +122,8 @@ test.describe('Configuration Import/Export', () => {
     const invalidConfig = {
       schemaVersion: 1,
       exportTimestamp: new Date().toISOString(),
-      paymentSettings: {
-        paymentProviderApiKey: 'sk_live_actual_secret_key_12345' // Raw secret
+      notificationSettings: {
+        resendApiKey: 're_live_actual_secret_key_1234567890' // Raw secret
       }
     }
 
@@ -268,6 +268,16 @@ test.describe('Configuration Import/Export', () => {
   })
 
   test('should create audit log on successful import', async ({ request }) => {
+    // Snapshot the current configuration first: this import performs a FULL
+    // REPLACE of store locations, so without a restore step it would leave
+    // its fixture data ("Store for Audit Test") behind as the permanent
+    // default and break subsequent suites (single-default invariant).
+    const snapshotRes = await request.get(`${BASE_URL}/api/settings/config/export`, {
+      headers: { 'Cookie': `jl_admin_token=${authToken}` }
+    })
+    expect(snapshotRes.status()).toBe(200)
+    const snapshot = await snapshotRes.json()
+
     const importData = {
       schemaVersion: 1,
       exportTimestamp: new Date().toISOString(),
@@ -282,6 +292,16 @@ test.describe('Configuration Import/Export', () => {
     })
 
     expect(response.status()).toBe(200)
+
+    // Restore the previous configuration (export payloads are guaranteed
+    // restorable: exactly-one-default invariant holds in exported data).
+    if (snapshot.storeLocations?.length > 0) {
+      const restoreRes = await request.post(`${BASE_URL}/api/settings/config/import`, {
+        data: { ...snapshot, exportTimestamp: new Date().toISOString() },
+        headers: { 'Cookie': `jl_admin_token=${authToken}` }
+      })
+      expect(restoreRes.status()).toBe(200)
+    }
 
     // Note: In a real test, you'd verify the audit log was created by checking the database
     // or by calling an audit log endpoint if available

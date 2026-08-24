@@ -270,12 +270,15 @@ model OrderTimeline {
 }
 
 model PaymentSettings {
-  id                Int      @id @default(1)
-  bankAccountNumber String?
-  bankAccountName   String?
-  bankName          String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime
+  id                    Int      @id @default(1)
+  bankAccountNumber     String?
+  bankRoutingNumber     String?
+  bankAccountName       String?
+  bankName              String?
+  paymentProviderApiKey String?
+  merchantId            String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime
 }
 
 model PriceAdjustmentLog {
@@ -413,6 +416,22 @@ model SystemDefaults {
   orderNumberPrefix        String   @default("JL")
   createdAt                DateTime @default(now())
   updatedAt                DateTime
+}
+
+model PromoPopupConfig {
+  id             Int       @id @default(1)
+  enabled        Boolean   @default(false)
+  title          String    @default("Congratulations ✨")
+  message        String    @default("You've unlocked an exclusive shopping reward just for visiting today.")
+  discountLabel  String    @default("10% OFF")
+  couponCode     String    @default("")
+  ctaText        String    @default("Shop & Use Coupon")
+  displayDelay   Int       @default(4000)
+  minPurchase    Int?
+  expiryDate     DateTime?
+  displayFreqHrs Int       @default(24)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
 }
 
 model WholesalePriceRule {

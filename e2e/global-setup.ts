@@ -58,8 +58,19 @@ export const TEST_ACCOUNTS = {
     role: 'Manager' as const,
     permissions: ['orders', 'products'],
     active: false
+  },
+  managerWithSettings: {
+    name: 'Test Manager Settings',
+    email: 'manager-settings@jessy.test',
+    password: 'managersettings123',
+    role: 'Manager' as const,
+    permissions: ['orders', 'products', 'settings'],
+    active: true
   }
 }
+
+// Alias for backward compatibility
+export const testUsers = TEST_ACCOUNTS;
 
 async function globalSetup() {
   console.log('\n🔧 [Global Setup] Starting test account provisioning...\n')

@@ -26,6 +26,14 @@ test.describe('Phase 11 - Store Locations List API', () => {
     const sessionVersion = config.sessionVersion
     authToken = await generateAdminToken(sessionVersion)
 
+    // Demote any pre-existing defaults before seeding our own default.
+    // The partial unique index (StoreLocation_isDefault_key) correctly rejects
+    // a second default, and other suites may leave a default behind.
+    await prisma.storeLocation.updateMany({
+      where: { isDefault: true },
+      data: { isDefault: false },
+    })
+
     // Create test locations
     testLocation1 = await prisma.storeLocation.create({
       data: {
@@ -68,6 +76,20 @@ test.describe('Phase 11 - Store Locations List API', () => {
     }
     if (testLocation3?.id) {
       await prisma.storeLocation.delete({ where: { id: testLocation3.id } }).catch(() => {})
+    }
+
+    // Invariant repair: our beforeAll demoted all defaults, so if no other
+    // suite's data holds the default flag, promote the oldest remaining
+    // location so the DB never ends with zero defaults.
+    const anyDefault = await prisma.storeLocation.findFirst({ where: { isDefault: true } })
+    if (!anyDefault) {
+      const fallback = await prisma.storeLocation.findFirst({ orderBy: { id: 'asc' } })
+      if (fallback) {
+        await prisma.storeLocation.update({
+          where: { id: fallback.id },
+          data: { isDefault: true },
+        })
+      }
     }
 
     await prisma.$disconnect()

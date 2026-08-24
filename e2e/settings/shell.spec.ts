@@ -69,7 +69,8 @@ test.describe('Settings Shell Integration - P11-T052, P11-T053, P11-T054', () =>
       if (await tabButton.isVisible()) {
         await tabButton.click()
         await page.waitForTimeout(300)
-        await expect(page.locator(`h2:has-text("${section}")`)).toBeVisible()
+        // .first() avoids strict-mode collisions (e.g. "Expenses" heading vs "Expenses Manager")
+        await expect(page.locator(`h2:has-text("${section}")`).first()).toBeVisible()
       }
     }
   })

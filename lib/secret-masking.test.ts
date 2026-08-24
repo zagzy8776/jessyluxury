@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { maskSecret } from './secret-masking.js';
+import { maskSecret } from './secret-masking.ts';
 
 test('maskSecret returns empty string for null', () => {
   assert.strictEqual(maskSecret(null), '');

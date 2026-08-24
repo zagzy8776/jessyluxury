@@ -9,14 +9,11 @@ test.describe('Settings Shell Integration - P11-T054 Checkpoint', () => {
     await loginAsOwner(page)
   })
 
-  test('Settings page is accessible and displays main UI', async ({ page, context }) => {
+  test('Settings page is accessible and displays main UI', async ({ page }) => {
     page.setDefaultTimeout(10000)
     
     await page.goto('/admin/settings', { waitUntil: 'domcontentloaded' })
-    
-    // Wait for the page to fully load
-    await page.waitForLoadState('networkidle')
-    
+
     // Check that the settings page title is visible
     const title = page.locator('h1')
     await expect(title).toContainText('Settings')
@@ -26,8 +23,7 @@ test.describe('Settings Shell Integration - P11-T054 Checkpoint', () => {
     page.setDefaultTimeout(10000)
     
     await page.goto('/admin/settings', { waitUntil: 'domcontentloaded' })
-    await page.waitForLoadState('networkidle')
-    
+
     // Check that tab button elements exist
     const tabButtons = page.locator('[role="tab"]')
     const count = await tabButtons.count()
@@ -40,8 +36,7 @@ test.describe('Settings Shell Integration - P11-T054 Checkpoint', () => {
     page.setDefaultTimeout(10000)
     
     await page.goto('/admin/settings', { waitUntil: 'domcontentloaded' })
-    await page.waitForLoadState('networkidle')
-    
+
     // Check for tab list and panels
     const tabList = page.locator('[role="tablist"]')
     const tabPanels = page.locator('[role="tabpanel"]')
@@ -55,8 +50,7 @@ test.describe('Settings Shell Integration - P11-T054 Checkpoint', () => {
     page.setDefaultTimeout(10000)
     
     await page.goto('/store-portal-jl/dashboard', { waitUntil: 'domcontentloaded' })
-    await page.waitForLoadState('networkidle')
-    
+
     // Look for settings link
     const settingsLink = page.locator('a[href="/admin/settings"], button:has-text("Settings")')
     
@@ -70,8 +64,7 @@ test.describe('Settings Shell Integration - P11-T054 Checkpoint', () => {
     
     // Navigate to settings
     await page.goto('/admin/settings', { waitUntil: 'domcontentloaded' })
-    await page.waitForLoadState('networkidle')
-    
+
     // Verify the page structure
     const mainContent = page.locator('div.min-h-screen')
     await expect(mainContent).toBeVisible()

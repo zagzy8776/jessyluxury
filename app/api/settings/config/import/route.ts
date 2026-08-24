@@ -84,6 +84,9 @@ export async function POST(request: Request) {
       if (ns.oneSignalApiKey && !ns.oneSignalApiKey.includes('•') && ns.oneSignalApiKey.length > 10) {
         errors.push('Cannot import unmasked OneSignal API keys. Use masked format or empty.')
       }
+      if (ns.oneSignalAppId && !ns.oneSignalAppId.includes('•') && ns.oneSignalAppId.length > 10) {
+        errors.push('Cannot import unmasked OneSignal App ID. Use masked format or empty.')
+      }
     }
 
     // Return errors if any validation failed
@@ -258,7 +261,7 @@ export async function POST(request: Request) {
           changedBy: 'Admin'
         }
       })
-    })
+    }, { timeout: 30000, maxWait: 10000 })
 
     return NextResponse.json({
       success: true,
