@@ -12,14 +12,12 @@ import { wa } from '@/lib/site'
 export default function CartDrawer() {
   const { drawer, setDrawer, items, updateQty, remove, subtotal, count, clear } = useCart()
 
-  // Checkout states
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
   const [shippingZones, setShippingZones] = useState<any[]>([])
   const [selectedZone, setSelectedZone] = useState<any>(null)
 
-  // Coupon states
   const [couponCode, setCouponCode] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
   const [couponError, setCouponError] = useState('')
@@ -29,32 +27,40 @@ export default function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState('')
 
   useEffect(() => {
-    if (drawer) {
-      fetchShippingZones()
-      // Auto-fill coupon code if one was set by the promo popup
-      try {
-        const pending = sessionStorage.getItem('jl_pending_coupon')
-        if (pending && !couponCode && !appliedCoupon) {
-          setCouponCode(pending)
-          sessionStorage.removeItem('jl_pending_coupon')
-        }
-      } catch { /* ignore */ }
+    if (!drawer) return
+
+    fetchShippingZones()
+    try {
+      const pending = sessionStorage.getItem('jl_pending_coupon')
+      if (pending && !couponCode && !appliedCoupon) {
+        setCouponCode(pending)
+        sessionStorage.removeItem('jl_pending_coupon')
+      }
+    } catch {
+      // Ignore storage restrictions.
     }
   }, [drawer])
 
   async function fetchShippingZones() {
     try {
-      const res = await fetch('/api/shipping')
+      const res = await fetch('/api/shipping', { cache: 'no-store' })
       const data = await res.json()
-      if (Array.isArray(data) && data.length > 0) {
-        const activeZones = data.filter((z: any) => z.active)
-        setShippingZones(activeZones)
-        if (activeZones.length > 0 && !selectedZone) {
-          setSelectedZone(activeZones[0])
-        }
+      if (!res.ok || !Array.isArray(data)) {
+        setShippingZones([])
+        setSelectedZone(null)
+        return
       }
-    } catch (e) {
-      console.error('Failed loading shipping options', e)
+
+      const activeZones = data.filter((z: any) => z.active)
+      setShippingZones(activeZones)
+      setSelectedZone((current: any) => {
+        if (current && activeZones.some((z: any) => z.id === current.id)) return current
+        return activeZones[0] ?? null
+      })
+    } catch (error) {
+      console.error('Failed loading shipping options', error)
+      setShippingZones([])
+      setSelectedZone(null)
     }
   }
 
@@ -77,9 +83,9 @@ export default function CartDrawer() {
         setCouponError(data.error || 'Invalid coupon code')
         setAppliedCoupon(null)
       }
-    } catch (err) {
-      console.error('Error applying coupon', err)
-      setCouponError('Failed to validate promo code')
+    } catch (error) {
+      console.error('Error applying coupon', error)
+      setCouponError('We could not validate that promo code. Please try again.')
     } finally {
       setCouponLoading(false)
     }
@@ -89,14 +95,31 @@ export default function CartDrawer() {
   const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0
   const finalTotal = Math.max(0, subtotal - discountAmount + shippingFee)
 
-  async function handleCheckout(e: React.FormEvent) {
+  async function handleCheckout(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault()
+    setCheckoutError('')
+
     if (!name.trim() || !phone.trim()) {
-      setCheckoutError('Please enter your Name and Phone Number')
+      setCheckoutError('Please enter your name and phone number.')
       return
     }
+
+    if (!selectedZone) {
+      setCheckoutError('Please select a delivery option.')
+      return
+    }
+
+    if (!selectedZone.isPickup && !address.trim()) {
+      setCheckoutError('Please enter your delivery address.')
+      return
+    }
+
+    if (items.length === 0) {
+      setCheckoutError('Your cart is empty.')
+      return
+    }
+
     setOrdering(true)
-    setCheckoutError('')
 
     try {
       const res = await fetch('/api/orders', {
@@ -107,45 +130,46 @@ export default function CartDrawer() {
           customerPhone: phone.trim(),
           customerWhatsapp: phone.trim(),
           shippingAddress: address.trim(),
-          shippingZoneId: selectedZone?.id,
-          shippingFee,
-          subtotal,
-          discountAmount,
+          shippingZoneId: selectedZone.id,
           couponCode: appliedCoupon?.code,
-          items: items.map((i) => ({
-            productId: i.id,
-            quantity: i.quantity,
-            price: i.price,
+          items: items.map((item) => ({
+            productId: item.id,
+            quantity: item.quantity,
           })),
         }),
       })
 
-      const orderData = await res.json()
-      const orderNum = orderData.orderNumber || `JL-${Math.floor(100000 + Math.random() * 900000)}`
+      const orderData = await res.json().catch(() => ({}))
+
+      if (!res.ok || !orderData.success || !orderData.orderNumber) {
+        setCheckoutError(orderData.error || 'We could not place your order right now. Please try again.')
+        return
+      }
+
+      const orderNum = orderData.orderNumber
+      const confirmedTotal = Number(orderData.total)
+      const displayTotal = Number.isFinite(confirmedTotal) ? confirmedTotal : finalTotal
 
       const lines = items
-        .map((i) => `• ${i.name} (${i.brand}) x${i.quantity} — ${formatNaira(i.price * i.quantity)}`)
+        .map((item) => `• ${item.name} (${item.brand}) x${item.quantity} — ${formatNaira(item.price * item.quantity)}`)
         .join('\n')
 
       const waMsg = `Hello Jessy Luxury! I placed an order on your website.\n\n` +
         `Order #: ${orderNum}\n` +
         `Name: ${name}\n` +
         `Phone: ${phone}\n` +
-        `Delivery Zone: ${selectedZone?.name || 'Standard'} (${formatNaira(shippingFee)})\n` +
+        `Delivery Zone: ${selectedZone.name} (${formatNaira(shippingFee)})\n` +
         `${address ? `Address: ${address}\n` : ''}\n` +
         `Items:\n${lines}\n\n` +
-        `Subtotal: ${formatNaira(subtotal)}\n` +
-        `${discountAmount > 0 ? `Coupon Discount (${appliedCoupon.code}): -${formatNaira(discountAmount)}\n` : ''}` +
-        `Shipping Fee: ${formatNaira(shippingFee)}\n` +
-        `Total: ${formatNaira(finalTotal)}\n\n` +
-        `Please confirm availability and share payment details. Thank you!`
+        `Order Total: ${formatNaira(displayTotal)}\n\n` +
+        `Please confirm the order and share the current payment details. Thank you!`
 
       clear()
       setDrawer(false)
-      window.open(wa(waMsg), '_blank')
-    } catch (err) {
-      console.error('Error completing checkout', err)
-      setCheckoutError('Could not process order. Please try again.')
+      window.open(wa(waMsg), '_blank', 'noopener,noreferrer')
+    } catch (error) {
+      console.error('Error completing checkout', error)
+      setCheckoutError('We could not place your order right now. Please try again.')
     } finally {
       setOrdering(false)
     }
@@ -162,7 +186,6 @@ export default function CartDrawer() {
         aria-modal="true"
         aria-label="Shopping cart"
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
           <h2 className="font-display text-xl font-bold">
             Your Cart <span className="text-[var(--accent)]">({count})</span>
@@ -183,205 +206,92 @@ export default function CartDrawer() {
             </div>
             <div>
               <p className="font-display text-xl font-bold text-[var(--text-primary)]">Your cart is empty</p>
-              <p className="mt-1 text-xs text-[var(--text-muted)]">
-                Discover a scent that feels like you.
-              </p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Discover a scent that feels like you.</p>
             </div>
-            <button
-              onClick={() => setDrawer(false)}
-              className="btn-primary !px-6 !py-3"
-            >
+            <button onClick={() => setDrawer(false)} className="btn-primary !px-6 !py-3">
               Browse fragrances
             </button>
           </div>
         ) : (
           <>
             <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4 sm:px-6">
-              {/* Items */}
               <div className="space-y-3">
-                {items.map((i) => (
-                  <div
-                    key={i.id}
-                    className="flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)]/60 p-3"
-                  >
+                {items.map((item) => (
+                  <div key={item.id} className="flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)]/60 p-3">
                     <div className="flex h-20 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
-                      <span className="scale-[0.28]">
-                        <Bottle tone={i.tone} />
-                      </span>
+                      <span className="scale-[0.28]"><Bottle tone={item.tone} /></span>
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="truncate text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                            {i.brand} · {i.volume}
-                          </p>
-                          <p className="truncate font-display text-base font-bold">{i.name}</p>
+                          <p className="truncate text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">{item.brand} · {item.volume}</p>
+                          <p className="truncate font-display text-base font-bold">{item.name}</p>
                         </div>
-                        <button
-                          onClick={() => remove(i.id)}
-                          className="rounded-full p-1.5 text-[var(--text-muted)] transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
-                          aria-label={`Remove ${i.name}`}
-                        >
+                        <button onClick={() => remove(item.id)} className="rounded-full p-1.5 text-[var(--text-muted)] transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10" aria-label={`Remove ${item.name}`}>
                           <Trash2 size={14} />
                         </button>
                       </div>
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card-bg)] px-1 py-0.5">
-                          <button
-                            onClick={() => updateQty(i.id, i.quantity - 1)}
-                            className="rounded-full p-1.5 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold tabular-nums">{i.quantity}</span>
-                          <button
-                            onClick={() => updateQty(i.id, i.quantity + 1)}
-                            className="rounded-full p-1.5 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus size={12} />
-                          </button>
+                          <button onClick={() => updateQty(item.id, item.quantity - 1)} className="rounded-full p-1.5 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]" aria-label="Decrease quantity"><Minus size={12} /></button>
+                          <span className="w-5 text-center text-xs font-bold tabular-nums">{item.quantity}</span>
+                          <button onClick={() => updateQty(item.id, item.quantity + 1)} className="rounded-full p-1.5 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]" aria-label="Increase quantity"><Plus size={12} /></button>
                         </div>
-                        <p className="text-sm font-bold tabular-nums text-[var(--accent)]">
-                          {formatNaira(i.price * i.quantity)}
-                        </p>
+                        <p className="text-sm font-bold tabular-nums text-[var(--accent)]">{formatNaira(item.price * item.quantity)}</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Coupon */}
               <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)]/60 p-4">
-                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
-                  <Ticket size={13} /> Promo code
-                </label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--accent)]"><Ticket size={13} /> Promo code</label>
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                  <input
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    placeholder="Enter code e.g. JESSY10"
-                    className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] shadow-card outline-none transition focus:border-[var(--accent)]"
-                  />
-                  <button
-                    type="submit"
-                    disabled={couponLoading}
-                    className="rounded-xl bg-[var(--charcoal)] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--bg-primary)] transition hover:opacity-85 disabled:opacity-50"
-                  >
-                    {couponLoading ? '…' : 'Apply'}
-                  </button>
+                  <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="Enter code e.g. JESSY10" className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] shadow-card outline-none transition focus:border-[var(--accent)]" />
+                  <button type="submit" disabled={couponLoading} className="rounded-xl bg-[var(--charcoal)] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--bg-primary)] transition hover:opacity-85 disabled:opacity-50">{couponLoading ? '…' : 'Apply'}</button>
                 </form>
-                {appliedCoupon && (
-                  <p className="flex items-center gap-1 text-[11px] font-bold text-[var(--success)]">
-                    <CheckCircle2 size={13} /> Code <strong>{appliedCoupon.code}</strong> applied — you save{' '}
-                    {formatNaira(appliedCoupon.discountAmount)}
-                  </p>
-                )}
-                {couponError && (
-                  <p className="flex items-center gap-1 text-[11px] font-bold text-[var(--danger)]">
-                    <AlertCircle size={13} /> {couponError}
-                  </p>
-                )}
+                {appliedCoupon && <p className="flex items-center gap-1 text-[11px] font-bold text-[var(--success)]"><CheckCircle2 size={13} /> Code <strong>{appliedCoupon.code}</strong> applied — you save {formatNaira(appliedCoupon.discountAmount)}</p>}
+                {couponError && <p className="flex items-center gap-1 text-[11px] font-bold text-[var(--danger)]"><AlertCircle size={13} /> {couponError}</p>}
               </div>
 
-              {/* Delivery details */}
               <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)]/60 p-4">
-                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
-                  <User size={13} /> Your details
-                </label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--accent)]"><User size={13} /> Delivery details</label>
 
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name *"
-                  required
-                  className="field-input !py-2.5 text-xs"
-                />
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name *" required className="field-input !py-2.5 text-xs" />
+                <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone number (WhatsApp) *" required className="field-input !py-2.5 text-xs" />
+                <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address *" className="field-input !py-2.5 text-xs" />
 
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone number (WhatsApp) *"
-                  required
-                  className="field-input !py-2.5 text-xs"
-                />
-
-                <input
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Delivery address / city (optional)"
-                  className="field-input !py-2.5 text-xs"
-                />
-
-                {shippingZones.length > 0 && (
+                {shippingZones.length > 0 ? (
                   <div>
-                    <label className="mb-1.5 flex items-center gap-1 text-[10px] font-bold text-[var(--text-secondary)]">
-                      <Truck size={12} className="text-[var(--accent)]" /> Shipping destination
-                    </label>
-                    <select
-                      value={selectedZone?.id || ''}
-                      onChange={(e) => {
-                        const z = shippingZones.find((x) => x.id === Number(e.target.value))
-                        setSelectedZone(z)
-                      }}
-                      className="field-input !py-2.5 text-xs font-semibold"
-                    >
-                      {shippingZones.map((z) => (
-                        <option key={z.id} value={z.id}>
-                          {z.name} — {z.fee === 0 ? 'FREE' : formatNaira(z.fee)} ({z.estimatedDays})
-                        </option>
+                    <label className="mb-1.5 flex items-center gap-1 text-[10px] font-bold text-[var(--text-secondary)]"><Truck size={12} className="text-[var(--accent)]" /> Delivery option</label>
+                    <select value={selectedZone?.id || ''} onChange={(e) => setSelectedZone(shippingZones.find((z) => z.id === Number(e.target.value)) || null)} className="field-input !py-2.5 text-xs font-semibold">
+                      <option value="" disabled>Select a delivery option</option>
+                      {shippingZones.map((zone) => (
+                        <option key={zone.id} value={zone.id}>{zone.name} — {zone.fee === 0 ? 'FREE' : formatNaira(zone.fee)} ({zone.estimatedDays})</option>
                       ))}
                     </select>
                   </div>
+                ) : (
+                  <p className="text-xs font-semibold text-[var(--danger)]">Delivery options are temporarily unavailable. Please try again shortly.</p>
                 )}
               </div>
             </div>
 
-            {/* Summary & checkout */}
             <div className="space-y-3 border-t border-[var(--border)] bg-[var(--card-bg)] px-5 py-4 sm:px-6">
               <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Subtotal</span>
-                  <span className="font-bold tabular-nums text-[var(--text-primary)]">{formatNaira(subtotal)}</span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between font-bold text-[var(--success)]">
-                    <span>Discount ({appliedCoupon?.code})</span>
-                    <span className="tabular-nums">−{formatNaira(discountAmount)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Shipping{selectedZone ? ` · ${selectedZone.name}` : ''}</span>
-                  <span className={`font-bold tabular-nums ${shippingFee === 0 ? 'text-[var(--success)]' : 'text-[var(--text-primary)]'}`}>
-                    {shippingFee === 0 ? 'FREE' : formatNaira(shippingFee)}
-                  </span>
-                </div>
-                <div className="flex items-baseline justify-between border-t border-[var(--border)] pt-2.5">
-                  <span className="text-sm font-bold">Total</span>
-                  <span className="font-display text-2xl font-bold tabular-nums text-[var(--accent)]">
-                    {formatNaira(finalTotal)}
-                  </span>
-                </div>
+                <div className="flex justify-between text-[var(--text-secondary)]"><span>Subtotal</span><span className="font-bold tabular-nums text-[var(--text-primary)]">{formatNaira(subtotal)}</span></div>
+                {discountAmount > 0 && <div className="flex justify-between font-bold text-[var(--success)]"><span>Discount ({appliedCoupon?.code})</span><span className="tabular-nums">−{formatNaira(discountAmount)}</span></div>}
+                <div className="flex justify-between text-[var(--text-secondary)]"><span>Shipping{selectedZone ? ` · ${selectedZone.name}` : ''}</span><span className={`font-bold tabular-nums ${shippingFee === 0 ? 'text-[var(--success)]' : 'text-[var(--text-primary)]'}`}>{shippingFee === 0 ? 'FREE' : formatNaira(shippingFee)}</span></div>
+                <div className="flex items-baseline justify-between border-t border-[var(--border)] pt-2.5"><span className="text-sm font-bold">Total</span><span className="font-display text-2xl font-bold tabular-nums text-[var(--accent)]">{formatNaira(finalTotal)}</span></div>
               </div>
 
-              {checkoutError && (
-                <p className="flex items-center justify-center gap-1.5 text-xs font-bold text-[var(--danger)]">
-                  <AlertCircle size={13} /> {checkoutError}
-                </p>
-              )}
+              {checkoutError && <p className="flex items-center justify-center gap-1.5 text-xs font-bold text-[var(--danger)]"><AlertCircle size={13} /> {checkoutError}</p>}
 
-              <button
-                onClick={handleCheckout}
-                disabled={ordering}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-emerald-600 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-md transition hover:bg-emerald-500 disabled:opacity-50"
-              >
+              <button onClick={handleCheckout} disabled={ordering || !selectedZone} className="flex w-full items-center justify-center gap-2 rounded-full bg-emerald-600 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white shadow-md transition hover:bg-emerald-500 disabled:opacity-50">
                 <MessageCircle size={16} />
                 {ordering ? 'Processing order…' : 'Confirm & order via WhatsApp'}
               </button>
-              <p className="text-center text-[10px] text-[var(--text-muted)]">
-                You&apos;ll confirm payment & delivery in WhatsApp — no card required.
-              </p>
+              <p className="text-center text-[10px] text-[var(--text-muted)]">You&apos;ll confirm payment & delivery in WhatsApp — no card required.</p>
             </div>
           </>
         )}
