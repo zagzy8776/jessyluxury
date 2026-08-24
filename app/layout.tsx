@@ -1,4 +1,5 @@
 import './globals.css'
+import './category-art.css'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import type { Metadata } from 'next'
 import CartProvider from '@/components/CartProvider'
