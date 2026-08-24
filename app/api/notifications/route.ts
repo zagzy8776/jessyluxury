@@ -31,18 +31,22 @@ export async function GET(request: Request) {
 
     const notifications = await prisma.notification.findMany({
       where,
-      include: {
-        NotificationDelivery: {
-          select: {
-            channel: true,
-            provider: true,
-            status: true,
-            attempts: true,
-            errorMessage: true,
-            sentAt: true,
-          },
-        },
-      },
+      ...(isAdmin
+        ? {
+            include: {
+              NotificationDelivery: {
+                select: {
+                  channel: true,
+                  provider: true,
+                  status: true,
+                  attempts: true,
+                  errorMessage: true,
+                  sentAt: true,
+                },
+              },
+            },
+          }
+        : {}),
       orderBy: {
         createdAt: 'desc',
       },
@@ -55,7 +59,6 @@ export async function GET(request: Request) {
   }
 }
 
-// Bulk action: Mark all as read
 export async function PUT(request: Request) {
   try {
     const isAdmin = await isAdminAuthenticated(request)
