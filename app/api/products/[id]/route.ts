@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
 import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
 import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
@@ -10,23 +10,14 @@ export async function GET(
 ) {
   try {
     const productId = parseInt(params.id, 10)
-    if (isNaN(productId)) {
-      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
-    }
+    if (isNaN(productId)) return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: {
-        Category: true,
-        Review: {
-          orderBy: { createdAt: 'desc' },
-        },
-      },
+      include: { Category: true, Review: { orderBy: { createdAt: 'desc' } } },
     })
 
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-    }
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
     let customerId = await isCustomerAuthenticated(request)
     const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
@@ -37,8 +28,18 @@ export async function GET(
 
     const [decorated] = await decorateProductsWithWholesale([product], customerId)
     const { Category, Review, ...rest } = decorated as any
-    const normalized = { ...rest, category: Category ?? null, reviews: Review ?? [] }
-    return NextResponse.json(normalized)
+
+    if (isStaff) {
+      return NextResponse.json({ ...rest, category: Category ?? null, reviews: Review ?? [] })
+    }
+
+    const { costPrice: _costPrice, reserved, ...publicProduct } = rest
+    return NextResponse.json({
+      ...publicProduct,
+      stock: Math.max(0, Number(product.stock || 0) - Number(reserved || 0)),
+      category: Category ?? null,
+      reviews: Review ?? [],
+    })
   } catch (error) {
     console.error('Error fetching product:', error)
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
@@ -61,14 +62,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Please select a valid product category' }, { status: 400 })
     }
 
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
-      select: { id: true },
-    })
-
-    if (!category) {
-      return NextResponse.json({ error: 'The selected product category no longer exists' }, { status: 400 })
-    }
+    const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true } })
+    if (!category) return NextResponse.json({ error: 'The selected product category no longer exists' }, { status: 400 })
 
     const product = await prisma.product.update({
       where: { id: productId },
@@ -109,23 +104,12 @@ export async function DELETE(
 
   try {
     const productId = parseInt(params.id, 10)
-    if (isNaN(productId)) {
-      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
-    }
+    if (isNaN(productId)) return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
 
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      select: { id: true, name: true },
-    })
+    const product = await prisma.product.findUnique({ where: { id: productId }, select: { id: true } })
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-    }
-
-    const historicalOrderItems = await prisma.orderItem.count({
-      where: { productId },
-    })
-
+    const historicalOrderItems = await prisma.orderItem.count({ where: { productId } })
     if (historicalOrderItems > 0) {
       return NextResponse.json({
         error: 'This product is part of existing orders and cannot be deleted. Set its stock to 0 or remove it from featured collections instead.',
@@ -133,7 +117,6 @@ export async function DELETE(
     }
 
     await prisma.product.delete({ where: { id: productId } })
-
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting product:', error)
