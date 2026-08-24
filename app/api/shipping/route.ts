@@ -4,7 +4,18 @@ import { requireStaffAuth } from '@/lib/staff-auth'
 
 export async function GET() {
   try {
+    // Only active, customer-facing delivery zones are returned here.
+    // Test/fixture zones must never leak into the storefront checkout.
     const zones = await prisma.shippingZone.findMany({
+      where: {
+        active: true,
+        NOT: [
+          { name: { contains: 'e2e', mode: 'insensitive' } },
+          { name: { contains: 'test', mode: 'insensitive' } },
+          { name: { contains: 'fixture', mode: 'insensitive' } },
+          { name: { contains: 'smoke', mode: 'insensitive' } },
+        ],
+      },
       orderBy: { fee: 'asc' },
     })
     return NextResponse.json(zones)
