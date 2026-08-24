@@ -21,10 +21,6 @@ import { prisma } from '@/lib/prisma'
 import { processPendingDeliveries } from '../notifications/worker'
 import { sendResendEmail, sendOneSignalPushToSubscriptions } from '../notifications/client'
 
-/**
- * Centrally dispatches business events AFTER the database transaction commits successfully.
- * Isolated from route handlers to enable modular notification triggers (Resend/OneSignal).
- */
 export async function publishBusinessEvent(eventName: BusinessEventName, payload: any) {
   console.log(`[Event Dispatcher] Emitting event: "${eventName}"`, {
     timestamp: new Date().toISOString(),
@@ -39,7 +35,6 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
     let customerName = payload?.customerName
     let customerId = payload?.customerId
 
-    // If orderId is provided, enrich missing fields dynamically from the database to guarantee customer alerts succeed.
     if (orderId) {
       const dbOrder = await prisma.order.findUnique({
         where: { id: Number(orderId) },
@@ -54,7 +49,6 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
       }
     }
 
-    // Define policies mapping Event -> Channels/Content
     const dispatches: Array<{
       recipientType: 'ADMIN' | 'CUSTOMER'
       recipientId?: number
@@ -67,18 +61,14 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
     const orderNum = orderNumber || `JL-${orderId}`
     const formattedTotal = total ? `₦${total.toLocaleString('en-NG')}` : '₦0'
 
-    // Determine customer authentication status
     let isCustomerAuthed = !!payload.isAuthenticated
     if (customerId && !isCustomerAuthed) {
       const subCount = await prisma.customerPushSubscription.count({
-        where: { customerId: Number(customerId), active: true }
+        where: { customerId: Number(customerId), active: true },
       })
-      if (subCount > 0) {
-        isCustomerAuthed = true
-      }
+      if (subCount > 0) isCustomerAuthed = true
     }
 
-    // 1. Admin Alerts (Legacy, unchanged)
     if (eventName === 'order.created') {
       dispatches.push({
         recipientType: 'ADMIN',
@@ -96,9 +86,7 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `order:${orderNum}:paid:ADMIN`,
         title: 'Order Paid',
         message: `Order #${orderNum} has been marked as paid.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } }],
       })
     } else if (eventName === 'order.processing') {
       dispatches.push({
@@ -106,9 +94,7 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `order:${orderNum}:processing:ADMIN`,
         title: 'Order In Processing',
         message: `Order #${orderNum} is now in processing state.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } }],
       })
     } else if (eventName === 'order.shipped') {
       dispatches.push({
@@ -127,9 +113,7 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `order:${orderNum}:delivered:ADMIN`,
         title: 'Order Delivered',
         message: `Order #${orderNum} has been successfully delivered.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } }],
       })
     } else if (eventName === 'order.cancelled') {
       dispatches.push({
@@ -137,9 +121,7 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `order:${orderNum}:cancelled:ADMIN`,
         title: 'Order Cancelled',
         message: `Order #${orderNum} has been cancelled.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } }],
       })
     } else if (eventName === 'order.returned') {
       dispatches.push({
@@ -147,9 +129,7 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `order:${orderNum}:returned:ADMIN`,
         title: 'Order Return Logged',
         message: `Order #${orderNum} return has been completed.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload: { orderId } }],
       })
     } else if (eventName === 'inventory.low') {
       const keyName = productName || `Product ${payload?.productId}`
@@ -180,13 +160,10 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
         eventKey: `coupon:${payload?.couponCode}:used:${payload?.orderId}:ADMIN`,
         title: 'Coupon Redeemed',
         message: `Coupon "${payload?.couponCode}" was redeemed on order #${payload?.orderNumber}.`,
-        channels: [
-          { channel: 'IN_APP', provider: 'INTERNAL', payload },
-        ],
+        channels: [{ channel: 'IN_APP', provider: 'INTERNAL', payload }],
       })
     }
 
-    // 2. Customer Transactional Alerts (New, unified routing)
     const customerEvents = ['order.created', 'order.paid', 'order.processing', 'order.shipped', 'order.delivered', 'order.cancelled']
     if (customerEvents.includes(eventName) && (email || customerId)) {
       let customerTitle = ''
@@ -214,40 +191,33 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
 
       if (customerTitle) {
         if (isCustomerAuthed) {
-          // Authenticated customer: Queue via persistent outbox
           const customerChannels: any[] = []
-          if (email) {
-            customerChannels.push({ channel: 'EMAIL', provider: 'RESEND', payload: { email, orderId } })
-          }
+          if (email) customerChannels.push({ channel: 'EMAIL', provider: 'RESEND', payload: { email, orderId } })
           customerChannels.push({ channel: 'PUSH', provider: 'ONESIGNAL', payload: { orderId } })
-
           dispatches.push({
             recipientType: 'CUSTOMER',
             recipientId: customerId,
             eventKey: `order:${orderNum}:${eventName.split('.')[1]}:CUSTOMER`,
             title: customerTitle,
             message: customerMessage,
-            channels: customerChannels
+            channels: customerChannels,
           })
         } else {
-          // Anonymous Guest: Dispatch directly in non-blocking background thread
           Promise.resolve().then(async () => {
             try {
-              // A. Send email immediately
               if (email && process.env.RESEND_API_KEY) {
                 await sendResendEmail(email, customerTitle, customerMessage).catch(err => {
-                  console.error(`[Events] Guest email send error:`, err)
+                  console.error('[Events] Guest email send error:', err)
                 })
               }
-              // B. Send push immediately if active subscriptions exist
               if (customerId) {
                 const subs = await prisma.customerPushSubscription.findMany({
-                  where: { customerId, active: true }
+                  where: { customerId, active: true },
                 })
                 if (subs.length > 0) {
                   const tokens = subs.map(s => s.pushToken)
                   await sendOneSignalPushToSubscriptions(tokens, customerTitle, customerMessage, { orderId }).catch(err => {
-                    console.error(`[Events] Guest push send error:`, err)
+                    console.error('[Events] Guest push send error:', err)
                   })
                 }
               }
@@ -259,14 +229,9 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
       }
     }
 
-    // Persist notifications and queue delivery outbox records
     for (const dispatch of dispatches) {
       try {
-        // Enforce idempotency: upsert or skip duplicate eventKey
-        const existing = await prisma.notification.findUnique({
-          where: { eventKey: dispatch.eventKey },
-        })
-
+        const existing = await prisma.notification.findUnique({ where: { eventKey: dispatch.eventKey } })
         if (existing) continue
 
         const notification = await prisma.notification.create({
@@ -281,7 +246,6 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
           },
         })
 
-        // Insert deliveries outbox mapping
         for (const channelItem of dispatch.channels) {
           const initialStatus = channelItem.channel === 'IN_APP' ? 'SENT' : 'PENDING'
           await prisma.notificationDelivery.create({
@@ -300,25 +264,23 @@ export async function publishBusinessEvent(eventName: BusinessEventName, payload
       }
     }
 
-    // Async trigger worker post-commit
     Promise.resolve().then(async () => {
       try {
-        const secret = process.env.WORKER_SECRET || 'secret'
-        // Internal direct execution
         await processPendingDeliveries()
-        // Non-blocking loopback fetch trigger
-        fetch('http://localhost:3000/api/notifications/worker', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-worker-secret': secret,
-          },
-        }).catch(() => {})
+        const secret = process.env.WORKER_SECRET
+        if (secret) {
+          await fetch('http://localhost:3000/api/notifications/worker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-worker-secret': secret,
+            },
+          }).catch(() => {})
+        }
       } catch (wErr) {
         console.error('Failed to trigger immediate background worker:', wErr)
       }
     })
-
   } catch (error) {
     console.error('Error dispatching notifications:', error)
   }
