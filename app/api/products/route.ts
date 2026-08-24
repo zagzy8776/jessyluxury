@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { requireStaffAuth, getStaffIdFromToken } from '@/lib/staff-auth'
 import { broadcastOneSignalPush } from '@/lib/notifications/client'
 import { decorateProductsWithWholesale } from '@/lib/wholesale/pricing'
 import { isAdminAuthenticated, isCustomerAuthenticated } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
   try {
@@ -15,19 +15,9 @@ export async function GET(request: Request) {
 
     const where: any = {}
 
-    if (category && category !== 'All') {
-      where.category = {
-        name: category,
-      }
-    }
-
-    if (featured === 'true') {
-      where.featured = true
-    }
-
-    if (gift === 'true') {
-      where.gift = true
-    }
+    if (category && category !== 'All') where.category = { name: category }
+    if (featured === 'true') where.featured = true
+    if (gift === 'true') where.gift = true
 
     if (search) {
       where.OR = [
@@ -39,13 +29,8 @@ export async function GET(request: Request) {
 
     const products = await prisma.product.findMany({
       where,
-      include: {
-        Category: true,
-        Review: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      include: { Category: true, Review: true },
+      orderBy: { createdAt: 'desc' },
     })
 
     let customerId = await isCustomerAuthenticated(request)
@@ -56,10 +41,19 @@ export async function GET(request: Request) {
     }
 
     const decorated = await decorateProductsWithWholesale(products, customerId)
-    const normalized = decorated.map((p: any) => {
-      const { Category, Review, ...rest } = p
-      return { ...rest, category: Category ?? null, reviews: Review ?? [] }
+    const normalized = decorated.map((product: any) => {
+      const { Category, Review, ...rest } = product
+      if (isStaff) return { ...rest, category: Category ?? null, reviews: Review ?? [] }
+
+      const { costPrice: _costPrice, reserved, ...publicProduct } = rest
+      return {
+        ...publicProduct,
+        stock: Math.max(0, Number(product.stock || 0) - Number(reserved || 0)),
+        category: Category ?? null,
+        reviews: Review ?? [],
+      }
     })
+
     return NextResponse.json(normalized)
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -74,24 +68,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const {
-      name,
-      brand,
-      price,
-      salePrice,
-      costPrice,
-      badge,
-      categoryId,
-      volume,
-      notes,
-      topNotes,
-      middleNotes,
-      baseNotes,
-      description,
-      tone,
-      stock,
-      featured,
-      gift,
-      images,
+      name, brand, price, salePrice, costPrice, badge, categoryId, volume, notes,
+      topNotes, middleNotes, baseNotes, description, tone, stock, featured, gift, images,
     } = body
 
     const normalizedCategoryId = Number(categoryId)
@@ -99,36 +77,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please select a valid product category' }, { status: 400 })
     }
 
-    const category = await prisma.category.findUnique({
-      where: { id: normalizedCategoryId },
-      select: { id: true },
-    })
-
+    const category = await prisma.category.findUnique({ where: { id: normalizedCategoryId }, select: { id: true } })
     if (!category) {
       return NextResponse.json({ error: 'The selected product category no longer exists' }, { status: 400 })
     }
 
     const product = await prisma.product.create({
       data: {
-        name,
-        brand,
-        price: Number(price),
-        salePrice: salePrice ? Number(salePrice) : null,
-        costPrice: costPrice ? Number(costPrice) : 0,
-        badge,
-        categoryId: normalizedCategoryId,
-        volume: volume || '100ml EDP',
-        notes,
-        topNotes,
-        middleNotes,
-        baseNotes,
-        description,
-        tone: tone || 'amber',
-        stock: Number(stock) || 10,
-        featured: Boolean(featured),
-        gift: Boolean(gift),
-        images: Array.isArray(images) ? images : [],
-        updatedAt: new Date(),
+        name, brand, price: Number(price), salePrice: salePrice ? Number(salePrice) : null,
+        costPrice: costPrice ? Number(costPrice) : 0, badge, categoryId: normalizedCategoryId,
+        volume: volume || '100ml EDP', notes, topNotes, middleNotes, baseNotes, description,
+        tone: tone || 'amber', stock: Number(stock) || 10, featured: Boolean(featured),
+        gift: Boolean(gift), images: Array.isArray(images) ? images : [], updatedAt: new Date(),
       },
     })
 
