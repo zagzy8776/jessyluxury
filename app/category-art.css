@@ -1,10 +1,34 @@
-/* Category artwork: real product photo wins; generated premium campaign art is the fallback. */
+/* Category artwork: real product images win when present; embedded campaign photography is the fallback. */
 
-.category-art-fallback {
+.collection-art-photo {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   object-position: center !important;
+}
+
+/* The homepage already renders an <img> as the second child in each card.
+   Replace only that fallback image source visually with the generated photo SVGs. */
+a[href*="filter=best"] > img:nth-child(2) {
+  content: url('/category-art/best-sellers-photo.svg') !important;
+}
+a[href*="filter=new"] > img:nth-child(2) {
+  content: url('/category-art/new-arrivals-photo.svg') !important;
+}
+a[href*="Oud%20%26%20Amber"] > img:nth-child(2),
+a[href*="Oud+%26+Amber"] > img:nth-child(2) {
+  content: url('/category-art/oud-amber-photo.svg') !important;
+}
+a[href*="cat=Fresh"] > img:nth-child(2) {
+  content: url('/category-art/fresh-floral-photo.svg') !important;
+}
+a[href*="Sweet%20%26%20Gourmand"] > img:nth-child(2),
+a[href*="Sweet+%26+Gourmand"] > img:nth-child(2) {
+  content: url('/category-art/sweet-gourmand-photo.svg') !important;
+}
+a[href*="Gift%20Sets"] > img:nth-child(2),
+a[href*="Gift+Sets"] > img:nth-child(2) {
+  content: url('/category-art/gift-sets-photo.svg') !important;
 }
