@@ -1,0 +1,43 @@
+/* Premium category artwork fallback. Real product images remain the first choice. */
+a[href="/shop?filter=best"] > span:nth-child(2),
+a[href="/shop?filter=new"] > span:nth-child(2),
+a[href="/shop?cat=Oud+%26+Amber"] > span:nth-child(2),
+a[href="/shop?cat=Fresh"] > span:nth-child(2),
+a[href="/shop?cat=Sweet+%26+Gourmand"] > span:nth-child(2),
+a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) {
+  inset: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: cover !important;
+  opacity: 1 !important;
+}
+
+a[href="/shop?filter=best"] > span:nth-child(2) {
+  background-image: url('/category-art/best-sellers.svg') !important;
+}
+
+a[href="/shop?filter=new"] > span:nth-child(2) {
+  background-image: url('/category-art/new-arrivals.svg') !important;
+}
+
+a[href="/shop?cat=Oud+%26+Amber"] > span:nth-child(2) {
+  background-image: url('/category-art/oud-amber.svg') !important;
+}
+
+a[href="/shop?cat=Fresh"] > span:nth-child(2) {
+  background-image: url('/category-art/fresh-floral.svg') !important;
+}
+
+a[href="/shop?cat=Sweet+%26+Gourmand"] > span:nth-child(2) {
+  background-image: url('/category-art/sweet-gourmand.svg') !important;
+}
+
+a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) {
+  background-image: url('/category-art/gift-sets.svg') !important;
+}
