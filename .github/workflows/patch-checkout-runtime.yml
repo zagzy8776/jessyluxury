@@ -48,6 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add components/CartDrawer.tsx .github/workflows/patch-checkout-runtime.yml
-          git commit -m "fix(checkout): handle customer order failures safely" || exit 0
+          git rm .github/workflows/patch-checkout-runtime.yml
+          git add components/CartDrawer.tsx
+          git commit -m "fix(checkout): handle customer order failures safely"
           git push
