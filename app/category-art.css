@@ -35,3 +35,5 @@ a[href="/shop?cat=Oud+%26+Amber"] > span:nth-child(2) { background-position-x: 4
 a[href="/shop?cat=Fresh"] > span:nth-child(2) { background-position-x: 60% !important; }
 a[href="/shop?cat=Sweet+%26+Gourmand"] > span:nth-child(2) { background-position-x: 80% !important; }
 a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) { background-position-x: 100% !important; }
+
+/* Production trigger: force a fresh Vercel build from the current main branch. */
