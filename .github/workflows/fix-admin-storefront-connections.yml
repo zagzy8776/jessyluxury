@@ -1,0 +1,51 @@
+name: Fix Admin Storefront Connections
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch admin product editor
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs')
+          const path = 'app/store-portal-jl/dashboard/products/add/page.tsx'
+          let text = fs.readFileSync(path, 'utf8')
+
+          const captureLine = '            capture="environment"\n'
+          if (!text.includes(captureLine)) throw new Error('Expected camera capture attribute not found')
+          text = text.replace(captureLine, '')
+
+          const editFetch = `        await fetch(\`/api/products/\${editId}\`, {\n          method: 'PUT',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify(payload),\n        })\n        showToast('Fragrance updated successfully!')`
+          const editFetchFixed = `        const editRes = await fetch(\`/api/products/\${editId}\`, {\n          method: 'PUT',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify(payload),\n        })\n        if (!editRes.ok) {\n          const data = await editRes.json().catch(() => ({}))\n          throw new Error(data.error || 'Failed to update fragrance')\n        }\n        showToast('Fragrance updated successfully!')`
+          if (!text.includes(editFetch)) throw new Error('Expected edit save block not found')
+          text = text.replace(editFetch, editFetchFixed)
+
+          const createFetch = `        await fetch('/api/products', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify(payload),\n        })\n        showToast('Fragrance added to catalog!')`
+          const createFetchFixed = `        const createRes = await fetch('/api/products', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify(payload),\n        })\n        if (!createRes.ok) {\n          const data = await createRes.json().catch(() => ({}))\n          throw new Error(data.error || 'Failed to add fragrance')\n        }\n        showToast('Fragrance added to catalog!')`
+          if (!text.includes(createFetch)) throw new Error('Expected create save block not found')
+          text = text.replace(createFetch, createFetchFixed)
+
+          fs.writeFileSync(path, text)
+          NODE
+
+      - name: Commit fixes and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/store-portal-jl/dashboard/products/add/page.tsx
+          git rm .github/workflows/fix-admin-storefront-connections.yml
+          git commit -m "fix(admin): use device gallery and handle product save failures"
+          git push
