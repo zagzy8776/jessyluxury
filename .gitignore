@@ -5,6 +5,13 @@
 
 # testing
 /coverage
+/test-results/
+playwright-report/
+e2e-results.json
+test-results.json
+test-results2.json
+e2e-sequential-output.txt
+e2e-sequential.log
 
 # next.js
 /.next/
@@ -43,7 +50,41 @@ next-env.d.ts
 /prisma/*.sql
 /prisma/backup-*.json
 
-# logs and test results
-build.log
-test-results/
-playwright-report/
+# logs and local run artifacts (do not commit)
+*.log
+*.err.log
+auth-*.log
+build_*.txt
+build_clean.txt
+build_final.txt
+build_next*.txt
+build_output*.txt
+build_success.txt
+dev-server*.log
+keepalive*.log
+migrate.log
+out.txt
+p0-*.txt
+p11t*.log
+par2-run*.log
+seq-run*.log
+targeted*.log
+test_output.txt
+ts_errors*.txt
+tsc-errors.txt
+wd*.log
+keepalive.cjs
+list-nodes.ps1
+diagnostic.ps1
+kill-keepalive.ps1
+run-*.cmd
+start-*.cmd
+run-build.bat
+
+# visual review screenshots (local)
+/visual-review/
+visual-review*.mjs
+
+# probe / one-off scripts that may contain local paths
+probe*.cjs
+db-check.cjs
