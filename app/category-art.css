@@ -18,26 +18,9 @@ a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) {
   opacity: 1 !important;
 }
 
-a[href="/shop?filter=best"] > span:nth-child(2) {
-  background-image: url('/category-art/best-sellers.svg') !important;
-}
-
-a[href="/shop?filter=new"] > span:nth-child(2) {
-  background-image: url('/category-art/new-arrivals.svg') !important;
-}
-
-a[href="/shop?cat=Oud+%26+Amber"] > span:nth-child(2) {
-  background-image: url('/category-art/oud-amber.svg') !important;
-}
-
-a[href="/shop?cat=Fresh"] > span:nth-child(2) {
-  background-image: url('/category-art/fresh-floral.svg') !important;
-}
-
-a[href="/shop?cat=Sweet+%26+Gourmand"] > span:nth-child(2) {
-  background-image: url('/category-art/sweet-gourmand.svg') !important;
-}
-
-a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) {
-  background-image: url('/category-art/gift-sets.svg') !important;
-}
+a[href="/shop?filter=best"] > span:nth-child(2) { background-image: url('/category-art/best-sellers-final.svg') !important; }
+a[href="/shop?filter=new"] > span:nth-child(2) { background-image: url('/category-art/new-arrivals-final.svg') !important; }
+a[href="/shop?cat=Oud+%26+Amber"] > span:nth-child(2) { background-image: url('/category-art/oud-amber-final.svg') !important; }
+a[href="/shop?cat=Fresh"] > span:nth-child(2) { background-image: url('/category-art/fresh-floral-final.svg') !important; }
+a[href="/shop?cat=Sweet+%26+Gourmand"] > span:nth-child(2) { background-image: url('/category-art/sweet-gourmand-final.svg') !important; }
+a[href="/shop?cat=Gift+Sets"] > span:nth-child(2) { background-image: url('/category-art/gift-sets-final.svg') !important; }
