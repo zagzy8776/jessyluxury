@@ -88,3 +88,7 @@ visual-review*.mjs
 # probe / one-off scripts that may contain local paths
 probe*.cjs
 db-check.cjs
+check_migrations.cjs
+ensure-index.mjs
+prisma.config.ts
+prisma/migration_lock.toml

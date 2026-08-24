@@ -10,7 +10,35 @@ function normalisePhone(phone: string): string {
   return phone.replace(/\D/g, '')
 }
 
+// In-memory rate limiting for coupon validation (prevents brute-force enumeration)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+
+function isRateLimited(ip: string, limit: number = 10, windowMs: number = 60000): boolean {
+  const now = Date.now()
+  const userLimit = rateLimitMap.get(ip)
+  
+  if (!userLimit || now > userLimit.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs })
+    return false
+  }
+  
+  userLimit.count++
+  if (userLimit.count > limit) {
+    return true
+  }
+  return false
+}
+
 export async function POST(request: Request) {
+  // Rate limit: 10 validation attempts per minute per IP
+  const ip = request.headers.get('x-forwarded-for') || 'unknown'
+  
+  if (isRateLimited(ip, 10, 60000)) {
+    return NextResponse.json(
+      { error: 'Too many validation attempts. Please try again in a minute.' },
+      { status: 429 }
+    )
+  }
   try {
     const body = await request.json()
     const { code, customerId, subtotal, items } = body
