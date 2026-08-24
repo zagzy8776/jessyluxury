@@ -4,15 +4,13 @@ import { timingSafeEqual } from 'crypto'
 
 function isAuthorized(request: Request): boolean {
   const incoming = request.headers.get('x-worker-secret') || ''
-  const secret = process.env.WORKER_SECRET || 'secret'
+  const secret = process.env.WORKER_SECRET
+  if (!secret) return false
 
   try {
-    // Constant time string comparison to prevent timing side-channel attacks
     const incomingBuf = Buffer.from(incoming)
     const secretBuf = Buffer.from(secret)
-    if (incomingBuf.length !== secretBuf.length) {
-      return false
-    }
+    if (incomingBuf.length !== secretBuf.length) return false
     return timingSafeEqual(incomingBuf, secretBuf)
   } catch {
     return false
@@ -20,6 +18,10 @@ function isAuthorized(request: Request): boolean {
 }
 
 export async function POST(request: Request) {
+  if (!process.env.WORKER_SECRET) {
+    return NextResponse.json({ error: 'Worker authentication is not configured' }, { status: 503 })
+  }
+
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
