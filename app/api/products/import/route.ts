@@ -85,6 +85,9 @@ export async function POST(request: Request) {
         continue
       }
 
+      // Product.notes is required by Prisma, so use an empty string when the CSV omits it.
+      const notes = String(row.notes || '').trim()
+
       const data = {
         name,
         brand,
@@ -94,11 +97,11 @@ export async function POST(request: Request) {
         badge: row.badge ? String(row.badge).trim() : null,
         categoryId,
         volume: String(row.volume || '100ml EDP').trim(),
-        notes: row.notes || null,
-        topNotes: row.topnotes || null,
-        middleNotes: row.middlenotes || null,
-        baseNotes: row.basenotes || null,
-        description: row.description || null,
+        notes,
+        topNotes: row.topnotes ? String(row.topnotes).trim() : null,
+        middleNotes: row.middlenotes ? String(row.middlenotes).trim() : null,
+        baseNotes: row.basenotes ? String(row.basenotes).trim() : null,
+        description: row.description ? String(row.description).trim() : null,
         tone: String(row.tone || 'amber').trim(),
         stock: Math.max(0, Math.trunc(toNumber(row.stock, 0))),
         featured: toBool(row.featured),
