@@ -5,7 +5,7 @@ import { setStaffCookie, clearStaffCookie, getStaffIdFromToken } from '@/lib/sta
 
 const rateLimit = new Map<string, { count: number; resetTime: number }>()
 const MAX_ATTEMPTS = 5
-const WINDOW_MS = 15 * 60 * 1000 // 15 minutes
+const WINDOW_MS = 15 * 60 * 1000
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
@@ -16,9 +16,7 @@ function checkRateLimit(ip: string): boolean {
     return true
   }
 
-  if (record.count >= MAX_ATTEMPTS) {
-    return false
-  }
+  if (record.count >= MAX_ATTEMPTS) return false
 
   record.count += 1
   return true
@@ -30,12 +28,8 @@ export async function GET(request: Request) {
 
   let staffAuthed = false
   if (staffId) {
-    const staff = await prisma.staffAccount.findUnique({
-      where: { id: staffId }
-    })
-    if (staff && staff.active) {
-      staffAuthed = true
-    }
+    const staff = await prisma.staffAccount.findUnique({ where: { id: staffId } })
+    if (staff?.active) staffAuthed = true
   }
 
   return NextResponse.json({ authenticated: adminAuthed || staffAuthed })
@@ -55,17 +49,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Password is required' }, { status: 400 })
     }
 
-    // 1. Fetch SystemConfig for master admin
     let config = await prisma.systemConfig.findUnique({ where: { id: 1 } })
     if (!config) {
       try {
         config = await prisma.systemConfig.create({
-          data: {
-            id: 1,
-            adminPasswordHash: null,
-            sessionVersion: 1,
-            updatedAt: new Date(),
-          }
+          data: { id: 1, adminPasswordHash: null, sessionVersion: 1, updatedAt: new Date() },
         })
       } catch {
         config = await prisma.systemConfig.findUnique({ where: { id: 1 } })
@@ -76,26 +64,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to authenticate: Server error' }, { status: 500 })
     }
 
-    // 2. Staff Login (if email is provided)
     if (email) {
       const staff = await prisma.staffAccount.findUnique({
-        where: { email: email.trim().toLowerCase() }
+        where: { email: email.trim().toLowerCase() },
       })
 
-      if (!staff) {
-        return NextResponse.json({ error: 'Incorrect email or password. Try again.' }, { status: 401 })
-      }
+      if (!staff) return NextResponse.json({ error: 'Incorrect email or password. Try again.' }, { status: 401 })
+      if (!staff.active) return NextResponse.json({ error: 'Account is inactive' }, { status: 403 })
+      if (!staff.passwordHash) return NextResponse.json({ error: 'Staff account credentials not set' }, { status: 401 })
 
-      if (!staff.active) {
-        return NextResponse.json({ error: 'Account is inactive' }, { status: 403 })
-      }
-
-      if (!staff.passwordHash) {
-        return NextResponse.json({ error: 'Staff account credentials not set' }, { status: 401 })
-      }
-
-      const isMatch = verifyPassword(password, staff.passwordHash)
-      if (isMatch) {
+      if (verifyPassword(password, staff.passwordHash)) {
         const response = NextResponse.json({ ok: true, role: staff.role })
         await setStaffCookie(response, staff.id, config.sessionVersion)
         rateLimit.delete(ip)
@@ -105,46 +83,47 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Incorrect email or password. Try again.' }, { status: 401 })
     }
 
-    // 3. Master Admin Login (if email is not provided)
-    const envAdminPassword = process.env.ADMIN_PASSWORD || 'jessyluxuryadmin2024'
     let isMatch = false
-    let currentHash = config.adminPasswordHash
+    const currentHash = config.adminPasswordHash
 
     if (currentHash) {
       isMatch = verifyPassword(password, currentHash)
     } else {
-      // First-time migration fallback
+      const envAdminPassword = process.env.ADMIN_PASSWORD
+      if (!envAdminPassword) {
+        return NextResponse.json({ error: 'Admin authentication is not configured on this server.' }, { status: 503 })
+      }
+
       if (password === envAdminPassword) {
         isMatch = true
         const newHash = hashPassword(password)
         try {
           config = await prisma.systemConfig.update({
             where: { id: 1 },
-            data: { adminPasswordHash: newHash }
+            data: { adminPasswordHash: newHash },
           })
-        } catch (e) {
-          console.error('Failed to save migrated password hash:', e)
+        } catch (error) {
+          console.error('Failed to save migrated password hash:', error)
         }
       }
     }
 
-    if (isMatch) {
-      const response = NextResponse.json({ ok: true, role: 'Owner' })
-      try {
-        await setAdminCookie(response, config.sessionVersion)
-      } catch (cookieErr) {
-        console.error('setAdminCookie failed:', cookieErr)
-        return NextResponse.json({ error: 'ADMIN_SESSION_SECRET is not configured on this server.' }, { status: 500 })
-      }
-      rateLimit.delete(ip)
-      return response
+    if (!isMatch) {
+      return NextResponse.json({ error: 'Incorrect password. Try again.' }, { status: 401 })
     }
 
-    return NextResponse.json({ error: 'Incorrect password. Try again.' }, { status: 401 })
+    const response = NextResponse.json({ ok: true, role: 'Owner' })
+    try {
+      await setAdminCookie(response, config.sessionVersion)
+    } catch (cookieErr) {
+      console.error('setAdminCookie failed:', cookieErr)
+      return NextResponse.json({ error: 'Admin authentication is not configured on this server.' }, { status: 503 })
+    }
+    rateLimit.delete(ip)
+    return response
   } catch (error) {
     console.error('Login error:', error)
-    const msg = error instanceof Error ? error.message : 'Bad request'
-    return NextResponse.json({ error: msg }, { status: 400 })
+    return NextResponse.json({ error: 'Unable to process login request.' }, { status: 400 })
   }
 }
 
@@ -154,5 +133,3 @@ export async function DELETE() {
   clearStaffCookie(response)
   return response
 }
-
-
