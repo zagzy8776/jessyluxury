@@ -1,34 +1,64 @@
-/* Category artwork: real product images win when present; embedded campaign photography is the fallback. */
+/*
+ * Collection art deep fix.
+ *
+ * The previous implementation was forcing the old mock SVG bottles from
+ * `*-final.svg` onto the cards. The repo already contains the real generated
+ * photographic collection strip at `collection-art-strip-photo.svg`.
+ *
+ * Each card uses one sixth of that strip as its visual background. Live
+ * product photography in the page remains the data-driven source of truth
+ * when a product image is actually present; this layer is only the visual
+ * fallback for the collection cards.
+ */
 
-.collection-art-photo {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center !important;
+/* Hide the old per-card gradient/photo layers for these collection cards. */
+a[href*="filter=best"] > span:first-child,
+a[href*="filter=new"] > span:first-child,
+a[href*="Oud%20%26%20Amber"] > span:first-child,
+a[href*="Oud+%26+Amber"] > span:first-child,
+a[href*="cat=Fresh"] > span:first-child,
+a[href*="Sweet%20%26%20Gourmand"] > span:first-child,
+a[href*="Sweet+%26+Gourmand"] > span:first-child,
+a[href*="Gift%20Sets"] > span:first-child,
+a[href*="Gift+Sets"] > span:first-child {
+  display: none !important;
 }
 
-/* The homepage already renders an <img> as the second child in each card.
-   Replace only that fallback image source visually with the generated photo SVGs. */
-a[href*="filter=best"] > img:nth-child(2) {
-  content: url('/category-art/best-sellers-photo.svg') !important;
-}
-a[href*="filter=new"] > img:nth-child(2) {
-  content: url('/category-art/new-arrivals-photo.svg') !important;
-}
+/* The homepage's second child is its <img>. Hide that generic hero fallback
+   so the generated collection strip is the actual fallback shown. */
+a[href*="filter=best"] > img:nth-child(2),
+a[href*="filter=new"] > img:nth-child(2),
 a[href*="Oud%20%26%20Amber"] > img:nth-child(2),
-a[href*="Oud+%26+Amber"] > img:nth-child(2) {
-  content: url('/category-art/oud-amber-photo.svg') !important;
-}
-a[href*="cat=Fresh"] > img:nth-child(2) {
-  content: url('/category-art/fresh-floral-photo.svg') !important;
-}
+a[href*="Oud+%26+Amber"] > img:nth-child(2),
+a[href*="cat=Fresh"] > img:nth-child(2),
 a[href*="Sweet%20%26%20Gourmand"] > img:nth-child(2),
-a[href*="Sweet+%26+Gourmand"] > img:nth-child(2) {
-  content: url('/category-art/sweet-gourmand-photo.svg') !important;
-}
+a[href*="Sweet+%26+Gourmand"] > img:nth-child(2),
 a[href*="Gift%20Sets"] > img:nth-child(2),
 a[href*="Gift+Sets"] > img:nth-child(2) {
-  content: url('/category-art/gift-sets-photo.svg') !important;
+  display: none !important;
 }
+
+/* One real photographic strip = 6 equal collection panels. */
+a[href*="filter=best"],
+a[href*="filter=new"],
+a[href*="Oud%20%26%20Amber"],
+a[href*="Oud+%26+Amber"],
+a[href*="cat=Fresh"],
+a[href*="Sweet%20%26%20Gourmand"],
+a[href*="Sweet+%26+Gourmand"],
+a[href*="Gift%20Sets"],
+a[href*="Gift+Sets"] {
+  background-image: url('/category-art/collection-art-strip-photo.svg') !important;
+  background-repeat: no-repeat !important;
+  background-size: 600% 100% !important;
+}
+
+a[href*="filter=best"] { background-position: 0% 50% !important; }
+a[href*="filter=new"] { background-position: 20% 50% !important; }
+a[href*="Oud%20%26%20Amber"],
+a[href*="Oud+%26+Amber"] { background-position: 40% 50% !important; }
+a[href*="cat=Fresh"] { background-position: 60% 50% !important; }
+a[href*="Sweet%20%26%20Gourmand"],
+a[href*="Sweet+%26+Gourmand"] { background-position: 80% 50% !important; }
+a[href*="Gift%20Sets"],
+a[href*="Gift+Sets"] { background-position: 100% 50% !important; }
