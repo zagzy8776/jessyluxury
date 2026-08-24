@@ -23,7 +23,10 @@ async function main() {
     await prisma.category.upsert({
       where: { slug: c.slug },
       update: {},
-      create: c,
+      create: {
+        ...c,
+        updatedAt: new Date(),
+      },
     })
   }
   console.log('✅ Categories ready')
@@ -77,8 +80,12 @@ async function main() {
         description: z.description,
         active: z.active,
         isPickup: z.isPickup || false,
+        updatedAt: new Date(),
       },
-      create: z,
+      create: {
+        ...z,
+        updatedAt: new Date(),
+      },
     })
   }
   console.log('✅ Shipping zones ready')
@@ -94,7 +101,10 @@ async function main() {
     await prisma.coupon.upsert({
       where: { code: c.code },
       update: {},
-      create: c,
+      create: {
+        ...c,
+        updatedAt: new Date(),
+      },
     })
   }
   console.log('✅ Starter coupons ready')

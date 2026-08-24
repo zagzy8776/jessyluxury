@@ -348,3 +348,110 @@ export async function PUT(
     return NextResponse.json({ error: error.message || 'Failed to update order' }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const authErr = await requireStaffAuth(request, 'orders')
+  if (authErr) return authErr
+
+  try {
+    const orderId = parseInt(params.id, 10)
+    if (isNaN(orderId)) {
+      return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 })
+    }
+
+    const currentOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { OrderItem: true },
+      select: {
+        id: true,
+        orderNumber: true,
+        status: true,
+        paymentStatus: true,
+        customerId: true,
+        total: true,
+        OrderItem: {
+          select: {
+            productId: true,
+            quantity: true,
+          },
+        },
+      },
+    })
+
+    if (!currentOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    // Pre-warm the database connection
+    await prisma.$queryRaw`SELECT 1`
+
+    // Execute Transaction
+    await prisma.$transaction(async (tx) => {
+      const actor = 'Admin'
+
+      // 1. Revert stock allocations depending on current state
+      const isPaid = currentOrder.paymentStatus === 'PAID'
+      const isCancelled = currentOrder.status === 'CANCELLED'
+      const isReturned = currentOrder.status === 'RETURNED'
+
+      if (!isCancelled && !isReturned) {
+        // Only revert stock if not already cancelled/returned
+        for (const item of currentOrder.OrderItem) {
+          if (isPaid) {
+            await cancelPaidSale(tx, item.productId, item.quantity, actor)
+          } else if (currentOrder.paymentStatus === 'UNPAID' || currentOrder.paymentStatus === 'PARTIALLY_PAID') {
+            await releaseReservation(tx, item.productId, item.quantity, actor)
+          }
+        }
+      }
+
+      // 2. Update customer stats (remove this order from their totals)
+      if (currentOrder.customerId) {
+        await updateCustomerStats(
+          tx,
+          currentOrder.customerId,
+          {
+            paymentStatus: currentOrder.paymentStatus,
+            status: currentOrder.status,
+            total: currentOrder.total,
+          },
+          null // null = order is being deleted
+        )
+      }
+
+      // 3. Delete related records (foreign key dependencies)
+      await tx.orderTimeline.deleteMany({ where: { orderId } })
+      await tx.priceAdjustmentLog.deleteMany({ where: { orderId } })
+      await tx.couponRedemption.deleteMany({ where: { orderId } })
+      await tx.orderItem.deleteMany({ where: { orderId } })
+
+      // 4. Delete the order
+      await tx.order.delete({ where: { id: orderId } })
+
+      // 5. Log audit trail
+      await tx.auditLog.create({
+        data: {
+          action: 'ORDER_DELETED',
+          entity: 'Order',
+          entityId: String(orderId),
+          details: `Order #${currentOrder.orderNumber} permanently deleted. Stock restored.`,
+          changedBy: actor,
+        },
+      })
+    }, { timeout: 30000, maxWait: 15000 })
+
+    // Dispatch event POST-COMMIT
+    await publishBusinessEvent('order.deleted', { orderId: currentOrder.id, orderNumber: currentOrder.orderNumber })
+
+    return NextResponse.json({
+      message: 'Order deleted successfully',
+      orderNumber: currentOrder.orderNumber,
+    })
+  } catch (error: any) {
+    console.error('Error deleting order:', error)
+    return NextResponse.json({ error: error.message || 'Failed to delete order' }, { status: 500 })
+  }
+}
