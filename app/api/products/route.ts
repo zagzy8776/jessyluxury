@@ -94,6 +94,20 @@ export async function POST(request: Request) {
       images,
     } = body
 
+    const normalizedCategoryId = Number(categoryId)
+    if (!Number.isInteger(normalizedCategoryId) || normalizedCategoryId <= 0) {
+      return NextResponse.json({ error: 'Please select a valid product category' }, { status: 400 })
+    }
+
+    const category = await prisma.category.findUnique({
+      where: { id: normalizedCategoryId },
+      select: { id: true },
+    })
+
+    if (!category) {
+      return NextResponse.json({ error: 'The selected product category no longer exists' }, { status: 400 })
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -102,7 +116,7 @@ export async function POST(request: Request) {
         salePrice: salePrice ? Number(salePrice) : null,
         costPrice: costPrice ? Number(costPrice) : 0,
         badge,
-        categoryId: Number(categoryId),
+        categoryId: normalizedCategoryId,
         volume: volume || '100ml EDP',
         notes,
         topNotes,
