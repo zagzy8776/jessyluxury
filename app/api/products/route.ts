@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     const where: any = {}
 
-    if (category && category !== 'All') where.category = { name: category }
+    if (category && category !== 'All') where.Category = { name: category }
     if (featured === 'true') where.featured = true
     if (gift === 'true') where.gift = true
 
