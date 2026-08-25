@@ -401,8 +401,20 @@ export default function AdminDashboardPage() {
               ))}
             </div>
           ) : recentOrdersSlice.length === 0 ? (
-            <div className="admin-card py-12 text-center text-xs font-medium text-[var(--admin-text-muted)]">
-              No recent orders recorded yet.
+            <div className="admin-card py-16 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/10">
+                <ShoppingBag size={28} className="text-blue-600" />
+              </div>
+              <p className="mt-4 font-display text-lg font-bold">No orders yet</p>
+              <p className="mt-1 text-xs text-[var(--admin-text-muted)] max-w-sm mx-auto">
+                Orders will appear here as customers make purchases. Create your first sale using the POS system.
+              </p>
+              <Link
+                href="/store-portal-jl/dashboard/orders/create"
+                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-xs font-bold text-white transition hover:bg-[var(--accent-strong)]"
+              >
+                <Plus size={14} /> Create First Sale
+              </Link>
             </div>
           ) : (
             <>

@@ -193,11 +193,31 @@ export default function AdminProductsPage() {
           ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="admin-card py-16 text-center">
-          <Package size={30} className="mx-auto text-[var(--admin-text-muted)]" />
-          <p className="mt-3 font-display text-lg font-bold">No products found</p>
-          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">Try a different search or add your first product.</p>
-          <Link href="/store-portal-jl/dashboard/products/add" className="btn-primary mt-4 !rounded-lg !px-5 !py-2.5 !text-[11px]">
+        <div className="admin-card py-20 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent-soft)]">
+            <Package size={32} className="text-[var(--accent)]" />
+          </div>
+          <p className="mt-5 font-display text-xl font-bold">Your catalog is empty</p>
+          <p className="mt-2 text-sm text-[var(--admin-text-muted)] max-w-md mx-auto">
+            {search ? 'No products match your search. Try different keywords.' : 'Start building your fragrance collection by adding your first product.'}
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link 
+              href="/store-portal-jl/dashboard/products/add" 
+              className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-bold text-white transition hover:bg-[var(--accent-strong)]"
+            >
+              <Plus size={16} /> Add Your First Product
+            </Link>
+            {search && (
+              <button 
+                onClick={() => setSearch('')}
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-6 py-3 text-sm font-bold transition hover:border-[var(--accent)]"
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        </div>
             <Plus size={14} /> Add product
           </Link>
         </div>
