@@ -1,4 +1,7 @@
 import { Shield } from 'lucide-react'
+import { pageMetadata } from '@/lib/seo-metadata'
+
+export const metadata = pageMetadata.privacy
 
 export default function PrivacyPage() {
   return (

@@ -1,7 +1,43 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { ArrowRight, BadgeCheck, Gem, HeartHandshake, ShieldCheck } from 'lucide-react'
 import Bottle from '@/components/Bottle'
 import { site, wa } from '@/lib/site'
+
+export const metadata: Metadata = {
+  title: 'About Jessy Luxury | Authentic Fragrances in Owerri, Nigeria',
+  description: 'Learn about Jessy Luxury Fragrance — 100% authentic designer and Arabian perfumes, oils, and gift sets. Based in Owerri, Imo State, Nigeria. Over 10 years of fragrance expertise.',
+  keywords: [
+    'Jessy Luxury about',
+    'fragrance retailer Owerri',
+    'authentic perfumes Nigeria',
+    'Jessy Luxury story',
+    'luxury perfume store',
+  ],
+  openGraph: {
+    title: 'About Jessy Luxury Fragrance',
+    description: 'Authentic designer and Arabian fragrances from Owerri, Nigeria. Personal curation, 100% genuine products, WhatsApp service.',
+    url: 'https://jessyluxury.com/about',
+    type: 'website',
+    images: [
+      {
+        url: 'https://jessyluxury.com/logo.png.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'Jessy Luxury Fragrance - Owerri',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Jessy Luxury | Authentic Fragrances',
+    description: 'Learn our story — 100% authentic designer and Arabian perfumes in Owerri, Nigeria.',
+    images: ['https://jessyluxury.com/logo.png.jpeg'],
+  },
+  alternates: {
+    canonical: 'https://jessyluxury.com/about',
+  },
+}
 
 const values = [
   { icon: ShieldCheck, t: '100% Authentic', d: 'Every piece is sourced from trusted distributors — no fakes, ever.' },

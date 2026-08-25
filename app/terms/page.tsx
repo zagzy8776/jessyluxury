@@ -1,4 +1,7 @@
 import { FileText } from 'lucide-react'
+import { pageMetadata } from '@/lib/seo-metadata'
+
+export const metadata = pageMetadata.terms
 
 export default function TermsPage() {
   return (

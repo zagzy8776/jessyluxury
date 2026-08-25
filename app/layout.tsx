@@ -11,6 +11,7 @@ import StorefrontAnnouncement from '@/components/StorefrontAnnouncement'
 import BottomNav from '@/components/storefront/BottomNav'
 import PromoRewardWrapper from '@/components/PromoRewardWrapper'
 import DeviceFilePickerGuard from '@/components/DeviceFilePickerGuard'
+import { organizationSchema, websiteSchema } from '@/lib/seo-metadata'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const display = Cormorant_Garamond({
@@ -169,6 +170,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${display.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteSchema),
+          }}
+        />
         <DeviceFilePickerGuard />
         <OneSignalInit />
         <StorefrontAnnouncement />

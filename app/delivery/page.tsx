@@ -1,5 +1,8 @@
 import { CheckCircle2, MapPin, MessageCircle, Store, Truck, Waypoints } from 'lucide-react'
 import { wa } from '@/lib/site'
+import { pageMetadata, createFAQSchema } from '@/lib/seo-metadata'
+
+export const metadata = pageMetadata.delivery
 
 const methods = [
   {

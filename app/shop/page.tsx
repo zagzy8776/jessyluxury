@@ -1,8 +1,12 @@
 'use client'
 import { Suspense, useEffect, useMemo, useState } from 'react'
+import type { Metadata } from 'next'
 import { useSearchParams } from 'next/navigation'
 import { PackageSearch, Search, ChevronLeft, ChevronRight, RefreshCw, X } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
+
+// NOTE: This page is client-side rendered, so metadata is handled at layout level or via dynamic route
+// For better SEO, consider moving core content to server component with generateMetadata
 
 const PER_PAGE = 9
 

@@ -1,4 +1,7 @@
 import { RefreshCw } from 'lucide-react'
+import { pageMetadata, createFAQSchema } from '@/lib/seo-metadata'
+
+export const metadata = pageMetadata.returns
 
 export default function ReturnsPage() {
   return (

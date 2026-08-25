@@ -1,4 +1,7 @@
 import Bottle from '@/components/Bottle'
+import { pageMetadata } from '@/lib/seo-metadata'
+
+export const metadata = pageMetadata.gallery
 
 const tiles: { label: string; tone: string; note: string }[] = [
   { label: 'Oud collection', tone: 'oud', note: 'Deep & resinous' },

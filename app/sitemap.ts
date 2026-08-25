@@ -7,36 +7,44 @@ const BASE_URL = 'https://jessyluxury.com'
 const LAST_MODIFIED = '2025-01-01'
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Static pages - all public indexable pages
   const staticPages = [
-    { path: '/', priority: 1.0 },
-    { path: '/about', priority: 0.8 },
-    { path: '/contact', priority: 0.8 },
-    { path: '/shop', priority: 0.9 },
-    { path: '/shop?filter=best', priority: 0.8 },
-    { path: '/shop?filter=new', priority: 0.8 },
-    { path: '/gifts', priority: 0.7 },
-    { path: '/delivery', priority: 0.6 },
-    { path: '/track', priority: 0.6 },
-    { path: '/account', priority: 0.5 },
-    { path: '/terms', priority: 0.3 },
-    { path: '/privacy', priority: 0.3 },
-    { path: '/returns', priority: 0.3 },
+    { path: '/', priority: 1.0, changefreq: 'weekly' as const },
+    { path: '/about', priority: 0.8, changefreq: 'monthly' as const },
+    { path: '/contact', priority: 0.8, changefreq: 'monthly' as const },
+    { path: '/shop', priority: 0.95, changefreq: 'daily' as const },
+    { path: '/blog', priority: 0.7, changefreq: 'weekly' as const },
+    { path: '/gallery', priority: 0.6, changefreq: 'weekly' as const },
+    { path: '/gifts', priority: 0.8, changefreq: 'weekly' as const },
+    { path: '/delivery', priority: 0.7, changefreq: 'monthly' as const },
+    { path: '/track', priority: 0.6, changefreq: 'weekly' as const },
+    { path: '/perfume-finder', priority: 0.6, changefreq: 'monthly' as const },
+    { path: '/returns', priority: 0.5, changefreq: 'monthly' as const },
+    { path: '/terms', priority: 0.3, changefreq: 'yearly' as const },
+    { path: '/privacy', priority: 0.3, changefreq: 'yearly' as const },
+    // NOTE: /account removed - this is login page, should not be indexed
   ]
 
+  // Category/filter pages with proper URL encoding
   const categoryPages = [
-    '/shop?cat=Oud+%26+Amber',
-    '/shop?cat=Fresh',
-    '/shop?cat=Sweet+%26+Gourmand',
-    '/shop?cat=Gift+Sets',
-    '/shop?cat=Perfume+Oils',
-  ].map((path) => ({ path, priority: 0.8 }))
+    { path: '/shop?cat=Oud%26Amber', priority: 0.8 },
+    { path: '/shop?cat=Fresh', priority: 0.8 },
+    { path: '/shop?cat=Sweet%26Gourmand', priority: 0.8 },
+    { path: '/shop?cat=Gift Sets', priority: 0.8 },
+    { path: '/shop?cat=Perfume Oils', priority: 0.8 },
+    { path: '/shop?filter=best', priority: 0.8 },
+    { path: '/shop?filter=new', priority: 0.8 },
+  ]
 
-  const allPages = [...staticPages, ...categoryPages]
+  const allPages = [
+    ...staticPages.map(p => ({ path: p.path, priority: p.priority, changeFrequency: p.changefreq })),
+    ...categoryPages.map(p => ({ path: p.path, priority: p.priority, changeFrequency: 'weekly' as const })),
+  ]
 
-  return allPages.map(({ path, priority }) => ({
+  return allPages.map(({ path, priority, changeFrequency }) => ({
     url: `${BASE_URL}${path}`,
     lastModified: LAST_MODIFIED,
-    changeFrequency: 'weekly' as const,
+    changeFrequency,
     priority,
   }))
 }
