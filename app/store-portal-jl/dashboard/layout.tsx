@@ -29,7 +29,7 @@ const NAV = [
   { label: 'Analytics', href: '/store-portal-jl/dashboard/analytics', icon: BarChart3 },
   { label: 'Shipping', href: '/store-portal-jl/dashboard/shipping', icon: Truck },
   { label: 'Notifications', href: '/store-portal-jl/dashboard/notifications', icon: Bell },
-  { label: 'Settings', href: '/admin/settings', icon: Settings },
+  { label: 'Settings', href: '/store-portal-jl/dashboard/settings', icon: Settings },
 ]
 
 function bellIcon(type: string) {
@@ -136,8 +136,13 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       >
         <div className="flex h-full flex-col">
           <div className="flex h-16 shrink-0 items-center justify-between border-b border-[var(--admin-sidebar-border)] px-5">
-            <Link href="/store-portal-jl/dashboard" className="font-display text-base font-bold tracking-[0.18em] text-white">
-              JESSY<span className="ml-1 text-[#c9a35d]">LUXURY</span>
+            <Link href="/store-portal-jl/dashboard" className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/logo.png.jpeg" 
+                alt="Jessy Luxury" 
+                className="h-10 w-auto object-contain"
+              />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}

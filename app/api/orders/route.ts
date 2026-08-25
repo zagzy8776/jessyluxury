@@ -492,7 +492,14 @@ export async function GET(request: Request) {
       },
     })
 
-    return NextResponse.json(orders)
+    // The admin UI reads order line items as `items`. Prisma returns the relation
+    // as `OrderItem`, so normalize the payload to keep the frontend contract stable.
+    const normalized = orders.map(({ OrderItem, ...order }) => ({
+      ...order,
+      items: OrderItem,
+    }))
+
+    return NextResponse.json(normalized)
   } catch (error) {
     console.error('Error fetching orders:', error)
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 })

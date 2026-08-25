@@ -16,7 +16,13 @@ export default function AdminProductsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast, showToast, clearToast } = useToast()
 
-  useEffect(() => { fetchProducts() }, [search])
+  useEffect(() => {
+    // Debounce so typing does not fire a network request per keystroke.
+    const timer = setTimeout(() => {
+      fetchProducts()
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   async function fetchProducts() {
     try {

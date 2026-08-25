@@ -196,6 +196,33 @@ function AddProductFormInner() {
       showToast('Product name and retail price are required', 'error')
       return
     }
+
+    const retail = Number(form.price)
+    const cost = form.costPrice === '' ? 0 : Number(form.costPrice)
+    const sale = form.salePrice === '' ? null : Number(form.salePrice)
+    const stockQty = Number(form.stock)
+
+    if (!Number.isFinite(retail) || retail <= 0) {
+      showToast('Retail price must be a positive amount', 'error')
+      return
+    }
+    if (!Number.isFinite(cost) || cost < 0) {
+      showToast('Cost price cannot be negative', 'error')
+      return
+    }
+    if (sale !== null && (!Number.isFinite(sale) || sale < 0)) {
+      showToast('Sale price cannot be negative', 'error')
+      return
+    }
+    if (sale !== null && sale >= retail) {
+      showToast('Sale price must be lower than the retail price', 'error')
+      return
+    }
+    if (!Number.isFinite(stockQty) || stockQty < 0) {
+      showToast('Stock quantity cannot be negative', 'error')
+      return
+    }
+
     setSaving(true)
 
     const payload = {
@@ -453,6 +480,8 @@ function AddProductFormInner() {
               <label className={lbl}>Retail Price (₦) *</label>
               <input
                 type="number"
+                min="1"
+                step="1"
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
                 placeholder="36000"
@@ -465,6 +494,8 @@ function AddProductFormInner() {
               <label className={lbl}>Cost Price (₦) [Internal]</label>
               <input
                 type="number"
+                min="0"
+                step="1"
                 value={form.costPrice}
                 onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
                 placeholder="22000"
@@ -476,6 +507,8 @@ function AddProductFormInner() {
               <label className={lbl}>Sale Price (₦) [Optional]</label>
               <input
                 type="number"
+                min="0"
+                step="1"
                 value={form.salePrice}
                 onChange={(e) => setForm({ ...form, salePrice: e.target.value })}
                 placeholder="32000"
@@ -508,6 +541,8 @@ function AddProductFormInner() {
               <label className={lbl}>Stock Quantity *</label>
               <input
                 type="number"
+                min="0"
+                step="1"
                 value={form.stock}
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
                 placeholder="10"

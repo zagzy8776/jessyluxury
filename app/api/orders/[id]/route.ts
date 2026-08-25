@@ -50,7 +50,14 @@ export async function GET(
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    return NextResponse.json(order)
+    // Expose line items as `items` (the frontend contract) in addition to the
+    // Prisma `OrderItem` relation name.
+    const { OrderItem, ...rest } = order
+    return NextResponse.json({
+      ...rest,
+      OrderItem,
+      items: OrderItem,
+    })
   } catch (error) {
     console.error('Error fetching order details:', error)
     return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 })

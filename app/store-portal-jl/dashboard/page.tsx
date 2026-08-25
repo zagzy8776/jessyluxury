@@ -215,7 +215,11 @@ export default function AdminDashboardPage() {
             Business overview
           </p>
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-            Today at Jessy Luxury
+            {dateRange === 'today' ? 'Today at Jessy Luxury' : 
+             dateRange === 'yesterday' ? 'Yesterday at Jessy Luxury' :
+             dateRange === 'week' ? 'This Week at Jessy Luxury' :
+             dateRange === 'month' ? 'This Month at Jessy Luxury' :
+             'Jessy Luxury Overview'}
           </h1>
         </div>
 

@@ -20,14 +20,14 @@ const CATEGORY_CARDS = [
     href: '/shop?filter=best', 
     tone: 'oud', 
     kind: 'best',
-    fallbackImage: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=500&fit=crop&q=80'
   },
   { 
     label: 'New Arrivals', 
     href: '/shop?filter=new', 
     tone: 'fresh', 
     kind: 'new',
-    fallbackImage: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=500&fit=crop&q=80'
   },
   { 
     label: 'Oud & Amber', 
@@ -35,7 +35,7 @@ const CATEGORY_CARDS = [
     tone: 'oud', 
     kind: 'category', 
     category: 'Oud & Amber',
-    fallbackImage: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=400&h=500&fit=crop&q=80'
   },
   { 
     label: 'Fresh & Floral', 
@@ -43,7 +43,7 @@ const CATEGORY_CARDS = [
     tone: 'fresh', 
     kind: 'category', 
     category: 'Fresh',
-    fallbackImage: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59d75?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&h=500&fit=crop&q=80'
   },
   { 
     label: 'Sweet & Gourmand', 
@@ -51,7 +51,7 @@ const CATEGORY_CARDS = [
     tone: 'sweet', 
     kind: 'category', 
     category: 'Sweet & Gourmand',
-    fallbackImage: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=500&fit=crop&q=80'
   },
   { 
     label: 'Gift Sets', 
@@ -59,7 +59,7 @@ const CATEGORY_CARDS = [
     tone: 'amber', 
     kind: 'category', 
     category: 'Gift Sets',
-    fallbackImage: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?w=400&h=500&fit=crop'
+    fallbackImage: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?w=400&h=500&fit=crop&q=80'
   },
 ] as const
 
