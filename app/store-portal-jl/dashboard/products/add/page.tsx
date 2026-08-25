@@ -7,14 +7,6 @@ import {
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
-const CATEGORIES = [
-  { id: 1, name: 'Oud & Amber' },
-  { id: 2, name: 'Fresh & Floral' },
-  { id: 3, name: 'Sweet & Gourmand' },
-  { id: 4, name: 'Perfume Oils' },
-  { id: 5, name: 'Gift Sets' },
-]
-
 function AddProductFormInner() {
   const params = useSearchParams()
   const router = useRouter()
@@ -28,7 +20,7 @@ function AddProductFormInner() {
     salePrice: '',
     costPrice: '',
     badge: '',
-    categoryId: '1',
+    categoryId: '',
     notes: '',
     topNotes: '',
     middleNotes: '',
@@ -48,13 +40,47 @@ function AddProductFormInner() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [loadingEdit, setLoadingEdit] = useState(Boolean(editId))
+  const [categories, setCategories] = useState<any[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/categories')
+        const data = await res.json()
+        if (res.ok && Array.isArray(data)) {
+          setCategories(data)
+          // For a fresh create form (no edit target), default the select to the
+          // first real category loaded from the database rather than a hardcoded ID.
+          if (!editId && data.length > 0) {
+            setForm((f) => {
+              if (f.categoryId) return f
+              return { ...f, categoryId: String(data[0].id) }
+            })
+          }
+        } else {
+          showToast('Failed to load categories', 'error')
+        }
+      } catch {
+        showToast('Failed to load categories', 'error')
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+    loadCategories()
+  }, [editId])
 
   useEffect(() => {
     if (editId) {
       const loadProduct = async () => {
         try {
           const res = await fetch(`/api/products/${editId}`)
+          if (!res.ok) {
+            showToast('Failed to load product details', 'error')
+            setLoadingEdit(false)
+            return
+          }
           const p = await res.json()
           if (p && p.id) {
             const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : ''
@@ -65,7 +91,7 @@ function AddProductFormInner() {
               salePrice: p.salePrice ? p.salePrice.toString() : '',
               costPrice: p.costPrice ? p.costPrice.toString() : '',
               badge: p.badge || '',
-              categoryId: p.categoryId ? p.categoryId.toString() : '1',
+              categoryId: p.categoryId ? p.categoryId.toString() : '',
               notes: p.notes || '',
               topNotes: p.topNotes || '',
               middleNotes: p.middleNotes || '',
@@ -184,26 +210,40 @@ function AddProductFormInner() {
     }
 
     try {
+      let response: Response
       if (editId) {
-        await fetch(`/api/products/${editId}`, {
+        response = await fetch(`/api/products/${editId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-        showToast('Fragrance updated successfully!')
       } else {
-        await fetch('/api/products', {
+        response = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-        showToast('Fragrance added to catalog!')
       }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to save product' }))
+        showToast(errorData.error || 'Failed to save product', 'error')
+        return
+      }
+
+      const savedProduct = await response.json()
+      if (!savedProduct || !savedProduct.id) {
+        showToast('Product saved but no ID returned. Please verify.', 'error')
+        return
+      }
+
+      showToast(editId ? 'Fragrance updated successfully!' : 'Fragrance added to catalog!')
       setTimeout(() => {
         router.push('/store-portal-jl/dashboard/products')
       }, 1000)
-    } catch {
-      showToast('Failed to save product', 'error')
+    } catch (error) {
+      console.error('Error saving product:', error)
+      showToast('Failed to save product. Network error.', 'error')
     } finally {
       setSaving(false)
     }
@@ -248,7 +288,7 @@ function AddProductFormInner() {
   const inp = 'w-full rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] p-3 text-[var(--text-primary)] text-xs outline-none transition placeholder:text-[var(--text-muted)] focus:border-brand-gold font-sans font-medium'
   const lbl = 'block text-[10px] font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider'
 
-  if (loadingEdit) {
+  if (loadingEdit || loadingCategories) {
     return <div className="py-24 text-center text-xs font-semibold text-[var(--text-muted)] animate-pulse">Loading product editor…</div>
   }
 
@@ -392,7 +432,6 @@ function AddProductFormInner() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0]
@@ -483,10 +522,15 @@ function AddProductFormInner() {
                 value={form.categoryId}
                 onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
                 className={inp}
+                required
               >
-                {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                {categories.length === 0 ? (
+                  <option value="">No categories available</option>
+                ) : (
+                  categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))
+                )}
               </select>
             </div>
 

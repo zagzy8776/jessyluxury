@@ -364,7 +364,6 @@ export async function DELETE(
 
     const currentOrder = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { OrderItem: true },
       select: {
         id: true,
         orderNumber: true,
@@ -418,7 +417,9 @@ export async function DELETE(
             status: currentOrder.status,
             total: currentOrder.total,
           },
-          null // null = order is being deleted
+          // The order no longer exists, so represent its "after" state as a
+          // non-completed order. This correctly decrements completed-order counts.
+          { paymentStatus: 'UNPAID', status: 'CANCELLED', total: 0 }
         )
       }
 

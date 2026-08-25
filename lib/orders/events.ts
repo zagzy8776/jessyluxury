@@ -7,6 +7,7 @@ export type BusinessEventName =
   | 'order.delivered'
   | 'order.cancelled'
   | 'order.returned'
+  | 'order.deleted'
   | 'inventory.low'
   | 'inventory.out_of_stock'
   | 'inventory.adjusted'

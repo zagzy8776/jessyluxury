@@ -30,7 +30,7 @@ export async function GET(
     const { Category, Review, ...rest } = decorated as any
 
     if (isStaff) {
-      return NextResponse.json({ ...rest, category: Category ?? null, reviews: Review ?? [] })
+      return NextResponse.json({ ...rest, category: Category ?? null, reviews: Review ?? [] }, { headers: { 'Cache-Control': 'no-store' } })
     }
 
     const { costPrice: _costPrice, reserved, ...publicProduct } = rest
@@ -39,10 +39,10 @@ export async function GET(
       stock: Math.max(0, Number(product.stock || 0) - Number(reserved || 0)),
       category: Category ?? null,
       reviews: Review ?? [],
-    })
+    }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Error fetching product:', error)
-    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
   }
 }
 

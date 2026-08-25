@@ -54,10 +54,10 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json(normalized)
+    return NextResponse.json(normalized, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Error fetching products:', error)
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
   }
 }
 
@@ -72,6 +72,20 @@ export async function POST(request: Request) {
       topNotes, middleNotes, baseNotes, description, tone, stock, featured, gift, images,
     } = body
 
+    // Validate all required fields before hitting the database.
+    const normalizedName = typeof name === 'string' ? name.trim() : ''
+    if (!normalizedName) {
+      return NextResponse.json({ error: 'Product name is required' }, { status: 400 })
+    }
+
+    const normalizedBrand = typeof brand === 'string' && brand.trim() ? brand.trim() : 'Jessy Selection'
+    const normalizedPrice = Number(price)
+    if (!Number.isFinite(normalizedPrice) || normalizedPrice <= 0) {
+      return NextResponse.json({ error: 'A valid positive retail price is required' }, { status: 400 })
+    }
+
+    const normalizedStock = Number.isFinite(Number(stock)) ? Math.max(0, Math.trunc(Number(stock))) : 10
+
     const normalizedCategoryId = Number(categoryId)
     if (!Number.isInteger(normalizedCategoryId) || normalizedCategoryId <= 0) {
       return NextResponse.json({ error: 'Please select a valid product category' }, { status: 400 })
@@ -84,11 +98,25 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.create({
       data: {
-        name, brand, price: Number(price), salePrice: salePrice ? Number(salePrice) : null,
-        costPrice: costPrice ? Number(costPrice) : 0, badge, categoryId: normalizedCategoryId,
-        volume: volume || '100ml EDP', notes, topNotes, middleNotes, baseNotes, description,
-        tone: tone || 'amber', stock: Number(stock) || 10, featured: Boolean(featured),
-        gift: Boolean(gift), images: Array.isArray(images) ? images : [], updatedAt: new Date(),
+        name: normalizedName,
+        brand: normalizedBrand,
+        price: normalizedPrice,
+        salePrice: salePrice !== undefined && salePrice !== null && salePrice !== '' ? Number(salePrice) : null,
+        costPrice: costPrice ? Number(costPrice) : 0,
+        badge: badge || null,
+        categoryId: normalizedCategoryId,
+        volume: volume || '100ml EDP',
+        notes: typeof notes === 'string' ? notes : '',
+        topNotes: topNotes || null,
+        middleNotes: middleNotes || null,
+        baseNotes: baseNotes || null,
+        description: description || null,
+        tone: tone || 'amber',
+        stock: normalizedStock,
+        featured: Boolean(featured),
+        gift: Boolean(gift),
+        images: Array.isArray(images) ? images : [],
+        updatedAt: new Date(),
       },
     })
 

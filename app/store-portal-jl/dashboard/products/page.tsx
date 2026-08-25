@@ -35,11 +35,19 @@ export default function AdminProductsPage() {
   async function handleDelete(id: number) {
     if (!confirm('Delete this product? This cannot be undone.')) return
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' })
+      const response = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to delete product' }))
+        showToast(errorData.error || 'Failed to delete product', 'error')
+        return
+      }
+
       showToast('Product deleted successfully')
       fetchProducts()
-    } catch {
-      showToast('Failed to delete product', 'error')
+    } catch (error) {
+      console.error('Delete error:', error)
+      showToast('Failed to delete product. Network error.', 'error')
     }
   }
 
@@ -47,12 +55,42 @@ export default function AdminProductsPage() {
     if (!file) return
     setImporting(true)
     try {
-      await new Promise((r) => setTimeout(r, 1200))
-      showToast('CSV Parsed! Products updated from catalog file.')
+      // Send the raw CSV text. The /api/products/import handler parses the body
+      // as CSV text directly (not multipart), so FormData would break parsing.
+      const csvText = await file.text()
+
+      const response = await fetch('/api/products/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/csv; charset=utf-8' },
+        body: csvText,
+      })
+
+      let result: any = {}
+      try { result = await response.json() } catch {}
+
+      // 207 = partial import (some rows failed validation).
+      if (!response.ok && response.status !== 207) {
+        showToast(result.error || 'CSV import failed', 'error')
+        return
+      }
+
+      const created = Number(result.created ?? 0)
+      const updated = Number(result.updated ?? 0)
+      const errors = Array.isArray(result.errors) ? result.errors : []
+
+      if (errors.length > 0) {
+        showToast(
+          `Imported ${created} product(s) (${updated} updated) with ${errors.length} row error(s). ${errors[0] ?? ''}`,
+          'error'
+        )
+      } else {
+        showToast(`CSV imported successfully! ${created} product(s) created, ${updated} updated.`)
+      }
       setShowImportModal(false)
       fetchProducts()
-    } catch {
-      showToast('CSV import failed', 'error')
+    } catch (error) {
+      console.error('Import error:', error)
+      showToast('CSV import failed. Network error.', 'error')
     } finally {
       setImporting(false)
     }
@@ -334,7 +372,7 @@ export default function AdminProductsPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv,.xlsx"
+                accept=".csv,text/csv"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0]
