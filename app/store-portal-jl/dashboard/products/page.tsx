@@ -17,7 +17,6 @@ export default function AdminProductsPage() {
   const { toast, showToast, clearToast } = useToast()
 
   useEffect(() => {
-    // Debounce so typing does not fire a network request per keystroke.
     const timer = setTimeout(() => {
       fetchProducts()
     }, 300)
@@ -33,28 +32,26 @@ export default function AdminProductsPage() {
     finally { setLoading(false) }
   }
 
-  // Calculate Metrics
   const totalRetailValue = products.reduce((sum, p) => sum + (p.price || 0) * (p.stock || 0), 0)
   const totalInventoryValue = products.reduce((sum, p) => sum + (p.costPrice || p.price * 0.6) * (p.stock || 0), 0)
   const outOfStockCount = products.filter((p) => (p.stock || 0) === 0).length
 
   async function handleDelete(id: number) {
-    if (!confirm('Hide this product from the storefront? Existing orders and order history will remain intact.')) return
+    if (!confirm('Delete this product from the catalog? It will be removed from the admin list and the customer storefront. Existing orders remain intact.')) return
     try {
       const response = await fetch(`/api/products/${id}`, { method: 'DELETE' })
-      
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to hide product' }))
-        showToast(errorData.error || 'Failed to hide product', 'error')
+        const errorData = await response.json().catch(() => ({ error: 'Failed to delete product' }))
+        showToast(errorData.error || 'Failed to delete product', 'error')
         return
       }
 
-      // Optimistically remove from current admin list UI
       setProducts((prev) => prev.filter((p) => p.id !== id))
-      showToast('Product hidden from storefront successfully')
+      showToast('Product deleted from catalog')
     } catch (error) {
       console.error('Delete error:', error)
-      showToast('Failed to hide product. Network error.', 'error')
+      showToast('Failed to delete product. Network error.', 'error')
     }
   }
 
@@ -62,8 +59,6 @@ export default function AdminProductsPage() {
     if (!file) return
     setImporting(true)
     try {
-      // Send the raw CSV text. The /api/products/import handler parses the body
-      // as CSV text directly (not multipart), so FormData would break parsing.
       const csvText = await file.text()
 
       const response = await fetch('/api/products/import', {
@@ -75,7 +70,6 @@ export default function AdminProductsPage() {
       let result: any = {}
       try { result = await response.json() } catch {}
 
-      // 207 = partial import (some rows failed validation).
       if (!response.ok && response.status !== 207) {
         showToast(result.error || 'CSV import failed', 'error')
         return
@@ -107,7 +101,6 @@ export default function AdminProductsPage() {
     <div className="space-y-5">
       {toast && <Toast message={toast.message} type={toast.type} onClose={clearToast} />}
 
-      {/* Header */}
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Inventory</p>
@@ -133,7 +126,6 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Metric blocks */}
       <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         <div className="admin-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
@@ -175,7 +167,6 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Search */}
       <div className="relative w-full sm:w-80">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)]" />
         <input
@@ -186,7 +177,6 @@ export default function AdminProductsPage() {
         />
       </div>
 
-      {/* Table */}
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2, 3].map((i) => (
@@ -203,14 +193,14 @@ export default function AdminProductsPage() {
             {search ? 'No products match your search. Try different keywords.' : 'Start building your fragrance collection by adding your first product.'}
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link 
-              href="/store-portal-jl/dashboard/products/add" 
+            <Link
+              href="/store-portal-jl/dashboard/products/add"
               className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-bold text-white transition hover:bg-[var(--accent-strong)]"
             >
               <Plus size={16} /> Add Your First Product
             </Link>
             {search && (
-              <button 
+              <button
                 onClick={() => setSearch('')}
                 className="inline-flex items-center gap-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-card-bg)] px-6 py-3 text-sm font-bold transition hover:border-[var(--accent)]"
               >
@@ -221,7 +211,6 @@ export default function AdminProductsPage() {
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] shadow-sm">
-          {/* Mobile cards */}
           <div className="space-y-3 p-3 md:hidden">
             {products.map((p) => {
               const img = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null
@@ -248,9 +237,6 @@ export default function AdminProductsPage() {
                         }`}>
                           {p.stock === 0 ? 'OUT OF STOCK' : `${p.stock} in stock`}
                         </span>
-                        {p.isActive === false && (
-                          <span className="rounded px-2 py-0.5 text-[9px] font-bold bg-stone-500/15 text-stone-600">HIDDEN</span>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -273,7 +259,6 @@ export default function AdminProductsPage() {
             })}
           </div>
 
-          {/* Desktop table */}
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-[var(--admin-border)] bg-[var(--admin-table-header)] text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">
@@ -329,20 +314,15 @@ export default function AdminProductsPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex flex-col gap-1">
-                          <span className={`rounded-md px-2.5 py-1 font-mono text-[11px] font-bold ${
-                            p.stock === 0
-                              ? 'border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400'
-                              : p.stock <= 5
-                              ? 'border border-[var(--champagne)]/40 bg-[var(--champagne-soft)] text-[#7a5c22]'
-                              : 'border border-[var(--admin-border)] bg-[var(--admin-bg)]'
-                          }`}>
-                            {p.stock === 0 ? 'Out of Stock' : `${p.stock} Qty`}
-                          </span>
-                          {p.isActive === false && (
-                            <span className="rounded px-2 py-0.5 text-[9px] font-bold bg-stone-500/15 text-stone-600 w-fit">HIDDEN</span>
-                          )}
-                        </div>
+                        <span className={`rounded-md px-2.5 py-1 font-mono text-[11px] font-bold ${
+                          p.stock === 0
+                            ? 'border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400'
+                            : p.stock <= 5
+                            ? 'border border-[var(--champagne)]/40 bg-[var(--champagne-soft)] text-[#7a5c22]'
+                            : 'border border-[var(--admin-border)] bg-[var(--admin-bg)]'
+                        }`}>
+                          {p.stock === 0 ? 'Out of Stock' : `${p.stock} Qty`}
+                        </span>
                       </td>
                       <td className="hidden px-4 py-3 lg:table-cell">
                         {p.badge ? (
@@ -378,7 +358,6 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* CSV Import Modal */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm">
           <div className="w-full max-w-md space-y-4 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] p-6 shadow-2xl">
