@@ -430,22 +430,35 @@ export async function DELETE(
         )
       }
 
-      // 3. Delete related records (foreign key dependencies)
+      // 3. Recalculate coupon usage BEFORE removing the redemption, so the
+      // counter reflects reality after the order is gone.
+      const redemption = await tx.couponRedemption.findUnique({
+        where: { orderId },
+        select: { couponId: true },
+      })
+      if (redemption) {
+        await tx.coupon.update({
+          where: { id: redemption.couponId },
+          data: { usedCount: { decrement: 1 } },
+        })
+      }
+
+      // 4. Delete related records (foreign key dependencies)
       await tx.orderTimeline.deleteMany({ where: { orderId } })
       await tx.priceAdjustmentLog.deleteMany({ where: { orderId } })
       await tx.couponRedemption.deleteMany({ where: { orderId } })
       await tx.orderItem.deleteMany({ where: { orderId } })
 
-      // 4. Delete the order
+      // 5. Delete the order
       await tx.order.delete({ where: { id: orderId } })
 
-      // 5. Log audit trail
+      // 6. Log audit trail
       await tx.auditLog.create({
         data: {
           action: 'ORDER_DELETED',
           entity: 'Order',
           entityId: String(orderId),
-          details: `Order #${currentOrder.orderNumber} permanently deleted. Stock restored.`,
+          details: `Order #${currentOrder.orderNumber} permanently deleted. Stock restored.${redemption ? ' Coupon usage recalculated.' : ''}`,
           changedBy: actor,
         },
       })

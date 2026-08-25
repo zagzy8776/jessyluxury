@@ -427,7 +427,42 @@ export async function POST(request: Request) {
       maxWait: 15000, // 15s max time waiting to acquire transaction connection
     })
 
-    // 4. Publish business events POST-COMMIT
+    // 4. Create admin notification for new order
+    try {
+      const notification = await prisma.notification.create({
+        data: {
+          eventKey: `order:${order.id}:ADMIN_ALERT`,
+          type: 'order.new',
+          title: `New Order: ${order.orderNumber}`,
+          message: `${customerName} ordered ${items.length} item(s) - ₦${order.total.toLocaleString('en-NG')}. Payment: ${paymentStatus}`,
+          payload: {
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            customerName,
+            total: order.total,
+            itemCount: items.length,
+            paymentStatus,
+          },
+          recipientType: 'ADMIN',
+          recipientId: null, // All admins
+        },
+      })
+
+      // Queue OneSignal push delivery for admin
+      await prisma.notificationDelivery.create({
+        data: {
+          notificationId: notification.id,
+          channel: 'PUSH',
+          provider: 'ONESIGNAL',
+          status: 'PENDING',
+        },
+      })
+    } catch (notifError) {
+      console.error('Failed to create admin notification:', notifError)
+      // Don't fail order creation if notification fails
+    }
+
+    // 5. Publish business events POST-COMMIT
     await publishBusinessEvent('order.created', { orderId: order.id, orderNumber: order.orderNumber, total: order.total, isAuthenticated: !!customerId })
     if (order.paymentStatus === 'PAID') {
       await publishBusinessEvent('order.paid', { orderId: order.id, orderNumber: order.orderNumber, total: order.total, isAuthenticated: !!customerId })

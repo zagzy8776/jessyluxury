@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   ShoppingBag, Search, Truck, Phone, MessageCircle, CheckCircle,
-  X, MapPin, Plus, AlertCircle, Clock, FileText, ChevronRight,
+  X, MapPin, Plus, AlertCircle, Clock, FileText, ChevronRight, Trash2,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
@@ -17,6 +17,7 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
   const [activeModalTab, setActiveModalTab] = useState<'form' | 'timeline'>('form')
   const [restockState, setRestockState] = useState<Record<number, boolean>>({})
+  const [deletingOrder, setDeletingOrder] = useState(false)
   const { toast, showToast, clearToast } = useToast()
 
   const [statusForm, setStatusForm] = useState({
@@ -68,6 +69,8 @@ export default function AdminOrdersPage() {
       setLoading(false)
     }
   }
+
+
 
   // Counters (unfiltered total counts)
   const totalOrdersCount = orders.length
@@ -126,6 +129,33 @@ export default function AdminOrdersPage() {
       }
     } catch {
       showToast('Error updating order status', 'error')
+    }
+  }
+
+  async function handleDeleteOrder(orderId: number, orderNumber: string) {
+    if (!confirm(`Are you sure you want to permanently delete order ${orderNumber}?\n\nThis will restore stock and cannot be undone.`)) {
+      return
+    }
+
+    setDeletingOrder(true)
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: 'DELETE',
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        showToast(`Order ${orderNumber} deleted successfully`)
+        setSelectedOrder(null)
+        fetchOrders()
+      } else {
+        showToast(data.error || 'Failed to delete order', 'error')
+      }
+    } catch {
+      showToast('Error deleting order', 'error')
+    } finally {
+      setDeletingOrder(false)
     }
   }
 
@@ -302,6 +332,13 @@ export default function AdminOrdersPage() {
                     >
                       <MessageCircle size={13} /> Receipt
                     </a>
+                    <button
+                      onClick={() => handleDeleteOrder(o.id, o.orderNumber)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-[11px] font-bold text-red-600 transition hover:bg-red-500 hover:text-white"
+                      title="Delete order"
+                    >
+                      <X size={13} /> Delete
+                    </button>
                     <ChevronRight size={16} className="hidden text-[var(--admin-text-muted)] sm:block" />
                   </div>
                 </div>
@@ -616,21 +653,32 @@ export default function AdminOrdersPage() {
 
             {/* Panel footer */}
             {activeModalTab === 'form' && (
-              <div className="flex items-center justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--admin-border)] px-6 py-4">
                 <button
                   type="button"
-                  onClick={() => setSelectedOrder(null)}
-                  className="rounded-lg border border-[var(--admin-border)] px-5 py-2.5 text-xs font-bold text-[var(--admin-text-secondary)] transition hover:text-[var(--admin-text-primary)]"
+                  onClick={() => selectedOrder && handleDeleteOrder(selectedOrder.id, selectedOrder.orderNumber)}
+                  disabled={deletingOrder}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-500 hover:text-white disabled:opacity-60 dark:text-red-400"
                 >
-                  Cancel
+                  <Trash2 size={13} /> {deletingOrder ? 'Deleting…' : 'Delete Order'}
                 </button>
-                <button
-                  type="submit"
-                  form="fulfill-form"
-                  className="rounded-lg bg-[var(--accent)] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)]"
-                >
-                  Save Dispatch Info
-                </button>
+                <div className="ml-auto flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrder(null)}
+                    className="rounded-lg border border-[var(--admin-border)] px-5 py-2.5 text-xs font-bold text-[var(--admin-text-secondary)] transition hover:text-[var(--admin-text-primary)]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    form="fulfill-form"
+                    disabled={deletingOrder}
+                    className="rounded-lg bg-[var(--accent)] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)] disabled:opacity-60"
+                  >
+                    Save Dispatch Info
+                  </button>
+                </div>
               </div>
             )}
           </aside>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Phone, MessageCircle, Search, MapPin, ShoppingBag, DollarSign,
-  X, Save, Sparkles, Users, UserCheck, RefreshCw, Mail, BellRing,
+  X, Save, Sparkles, Users, UserCheck, RefreshCw, Mail, BellRing, Trash2,
 } from 'lucide-react'
 import { Toast, useToast } from '@/components/Toast'
 
@@ -27,6 +27,7 @@ export default function AdminCustomersPage() {
   const [customerGroupId, setCustomerGroupId] = useState<string>('')
   const [customerGroups, setCustomerGroups] = useState<any[]>([])
   const [savingDrawer, setSavingDrawer] = useState(false)
+  const [deletingCustomer, setDeletingCustomer] = useState(false)
 
   const { toast, showToast, clearToast } = useToast()
 
@@ -99,6 +100,41 @@ export default function AdminCustomersPage() {
       showToast('Error updating customer profile', 'error')
     } finally {
       setSavingDrawer(false)
+    }
+  }
+
+  async function handleDeleteCustomer() {
+    if (!selectedCustomer) return
+
+    const hasOrders = (selectedCustomer.orders?.length || 0) > 0
+    const confirmed = confirm(
+      hasOrders
+        ? `"${selectedCustomer.name}" has historical orders. Deleting will anonymize this account (contact details removed, sales history preserved). Continue?`
+        : `Permanently delete "${selectedCustomer.name}"? This cannot be undone.`
+    )
+    if (!confirmed) return
+
+    setDeletingCustomer(true)
+    try {
+      const res = await fetch(`/api/customers/${selectedCustomer.id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        showToast(data?.error || 'Failed to delete customer', 'error')
+        return
+      }
+
+      // Server decides: hard delete vs anonymize. Surface whichever happened.
+      showToast(data?.message || 'Customer deleted')
+      setSelectedCustomer(null)
+      fetchCustomersData()
+    } catch {
+      showToast('Network error while deleting customer', 'error')
+    } finally {
+      setDeletingCustomer(false)
     }
   }
 
@@ -420,10 +456,20 @@ export default function AdminCustomersPage() {
 
                 <button
                   type="submit"
-                  disabled={savingDrawer}
+                  disabled={savingDrawer || deletingCustomer}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] py-3 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[var(--accent-strong)] disabled:opacity-60"
                 >
                   <Save size={14} /> {savingDrawer ? 'Saving File...' : 'Save CRM File'}
+                </button>
+
+                {/* Danger zone — kept visually separate so it can't be tapped by accident */}
+                <button
+                  type="button"
+                  onClick={handleDeleteCustomer}
+                  disabled={deletingCustomer || savingDrawer}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-red-500/5 py-3 text-xs font-bold uppercase tracking-wider text-red-600 transition hover:bg-red-500 hover:text-white disabled:opacity-60 dark:text-red-400"
+                >
+                  <Trash2 size={14} /> {deletingCustomer ? 'Deleting…' : 'Delete Customer'}
                 </button>
               </form>
 

@@ -11,9 +11,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
 
-    // 1. Calculate CRM dashboard aggregates server-side
-    const totalCustomers = await prisma.customer.count()
+    // 1. Calculate CRM dashboard aggregates server-side.
+    // Anonymized (deleted) accounts are excluded everywhere so the visible
+    // list and the summary cards always describe the same population.
+    const activeWhere = { acquisitionSource: { not: 'Deleted' } }
+
+    const totalCustomers = await prisma.customer.count({ where: activeWhere })
     const spendAgg = await prisma.customer.aggregate({
+      where: activeWhere,
       _sum: {
         totalSpent: true,
       },
@@ -26,19 +31,19 @@ export async function GET(request: Request) {
     // New Contacts/Customers registered in the last 30 days
     const newCustomers = await prisma.customer.count({
       where: {
-        createdAt: { gte: thirtyDaysAgo },
+        AND: [activeWhere, { createdAt: { gte: thirtyDaysAgo } }],
       },
     })
 
     // Returning Customers: profiles with 2 or more completed orders
     const returningCustomers = await prisma.customer.count({
       where: {
-        ordersCount: { gte: 2 },
+        AND: [activeWhere, { ordersCount: { gte: 2 } }],
       },
     })
 
     // 2. Build listing query
-    const where: any = {}
+    const where: any = { acquisitionSource: { not: 'Deleted' } }
     if (search) {
       // Try to see if search matches phone number prefix
       let phoneSearch = search

@@ -14,6 +14,7 @@ export default function DiscountsEnginePage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingCoupon, setEditingCoupon] = useState<any>(null)
+const [deletingCoupon, setDeletingCoupon] = useState<number | null>(null)
   const { toast, showToast, clearToast } = useToast()
 
   const [form, setForm] = useState({
@@ -163,26 +164,51 @@ export default function DiscountsEnginePage() {
 
   async function handleToggleActive(c: any) {
     try {
-      await fetch(`/api/coupons/${c.id}`, {
+      const res = await fetch(`/api/coupons/${c.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !c.isActive }),
       })
+
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        showToast(data?.error || 'Failed to update coupon', 'error')
+        return
+      }
+
       showToast(`Coupon ${c.code} ${!c.isActive ? 'activated' : 'deactivated'}`)
       fetchCoupons()
     } catch {
-      showToast('Error toggling coupon', 'error')
+      showToast('Network error while updating coupon', 'error')
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Delete this coupon promo code? (This will soft-deactivate it if campaigns or redemptions exist)')) return
+    const target = coupons.find((c: any) => c.id === id)
+    if (!confirm(`Delete "${target?.code || 'this coupon'}"? Coupons with past redemptions or live campaigns are protected automatically.`)) return
+
+    setDeletingCoupon(id)
     try {
-      await fetch(`/api/coupons/${id}`, { method: 'DELETE' })
-      showToast('Coupon updated/deleted')
+      const res = await fetch(`/api/coupons/${id}`, { method: 'DELETE' })
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        showToast(data?.error || 'Failed to delete coupon', 'error')
+        return
+      }
+
+      // The API may deactivate instead of deleting when history exists.
+      if (data?.deactivated) {
+        showToast(data.message || 'Coupon deactivated to preserve history', 'error')
+      } else {
+        showToast(data?.message || 'Coupon deleted')
+      }
       fetchCoupons()
     } catch {
-      showToast('Error deleting coupon', 'error')
+      showToast('Network error while deleting coupon', 'error')
+    } finally {
+      setDeletingCoupon(null)
     }
   }
 
@@ -338,9 +364,10 @@ export default function DiscountsEnginePage() {
                   </button>
                   <button
                     onClick={() => handleDelete(c.id)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition"
+                    disabled={deletingCoupon !== null}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Trash2 size={13} /> Delete / Disable
+                    <Trash2 size={13} /> {deletingCoupon === c.id ? 'Working…' : 'Delete / Disable'}
                   </button>
                 </div>
               </div>

@@ -218,9 +218,6 @@ export default function AdminProductsPage() {
             )}
           </div>
         </div>
-            <Plus size={14} /> Add product
-          </Link>
-        </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-card-bg)] shadow-sm">
           {/* Mobile cards */}
