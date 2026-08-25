@@ -40,3 +40,75 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority,
   }))
 }
+
+// ============================================
+// 100 SEO KEYWORDS FOR JESSY LUXURY FRAGRANCE
+// ============================================
+// Category: General Perfume/Fragrance Terms (25)
+export const keywordsGeneral = [
+  'perfume', 'fragrance', 'scents', 'aromatic', 'scented', 'parfum',
+  'niche perfume', 'designer perfume', 'arabian perfume', 'middle eastern perfume',
+  'long lasting perfume', 'premium fragrance', 'luxury scent', 'high end perfume',
+  'affordable luxury perfume', 'signature scent', 'personal fragrance', 'perfume collection',
+  'fragrance for women', 'fragrance for men', 'unisex perfume', 'exclusive fragrances',
+  'designer scents', 'arabian scents', 'middle eastern scents'
+]
+
+// Category: Product Types (20)
+export const keywordsProductTypes = [
+  'eau de parfum', 'eau de toilette', 'perfume oil', 'fragrance oil', 'body mist',
+  'oil perfume', 'attar perfume', 'oud oil', 'attar', 'mukhallat',
+  'perfume set', 'gift set', 'travel size perfume', 'sample perfume', 'mini perfume',
+  'tester perfume', 'refillable perfume', 'premium perfume oil', 'natural perfume oil',
+  'synthetic perfume oil'
+]
+
+// Category: Scents/Notes (20)
+export const keywordsScents = [
+  'oud', 'amber', 'rose', 'jasmine', 'sandalwood', 'musk', 'vanilla', 'ambergris',
+  'amber oud', 'oud amber', 'oud and amber', 'oud & amber', 'oud amber blend',
+  'oud amber perfume', 'oud amber oil', 'oud amber fragrance', 'oud amber scent',
+  'oud amber mixture', 'oud amber perfume blend'
+]
+
+// Category: Nigerian Market (20)
+export const keywordsNigeria = [
+  'Nigeria perfume', 'Lagos perfume shop', 'Abuja perfume', 'Port Harcourt perfume',
+  'Owerri perfume', 'best perfume in Nigeria', 'Nigerian perfume shop', 'Nigeria fragrance',
+  'affordable perfume Nigeria', 'luxury perfume Nigeria', 'perfume delivery Nigeria',
+  'Nigeria perfume online', 'Nigeria perfume store', 'Nigerian perfume brands',
+  'Nigeria perfume prices', 'perfume shop Nigeria', 'Nigeria perfume delivery',
+  'Nigeria perfume outlet', 'Nigeria perfume market', 'Nigeria perfume dealers'
+]
+
+// Category: Long Lasting & Quality (15)
+export const keywordsQuality = [
+  'long lasting perfume', 'long lasting fragrance', 'all day perfume', 'all night fragrance',
+  'sillage perfume', 'projection perfume', 'high concentration perfume', 'pure perfume oil',
+  'concentrated perfume', 'long lasting oil perfume', 'all day oil perfume', 'night time perfume',
+  'strong perfume', 'powerful fragrance', 'intense perfume'
+]
+
+// ============================================
+// HOW TO USE THESE KEYWORDS:
+// ============================================
+// 1. Add to page meta tags in app/layout.tsx and individual pages
+// 2. Use in product descriptions
+// 3. Use in blog content
+// 4. Use in alt text for images
+// 5. Use in schema markup
+
+// Example usage in metadata:
+/*
+export const metadata: Metadata = {
+  title: 'Jessy Luxury Fragrance',
+  description: 'Original designer and Arabian fragrances from Jessy Luxury.',
+  keywords: [
+    ...keywordsGeneral,
+    ...keywordsProductTypes,
+    ...keywordsScents,
+    ...keywordsNigeria,
+    ...keywordsQuality,
+  ].slice(0, 50), // Google recommends max 50 keywords
+}
+*/

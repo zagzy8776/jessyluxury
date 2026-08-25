@@ -15,12 +15,52 @@ import ProductCard from '@/components/ProductCard'
 import { site, wa } from '@/lib/site'
 
 const CATEGORY_CARDS = [
-  { label: 'Best Sellers', href: '/shop?filter=best', tone: 'oud', kind: 'best' },
-  { label: 'New Arrivals', href: '/shop?filter=new', tone: 'fresh', kind: 'new' },
-  { label: 'Oud & Amber', href: '/shop?cat=Oud+%26+Amber', tone: 'oud', kind: 'category', category: 'Oud & Amber' },
-  { label: 'Fresh & Floral', href: '/shop?cat=Fresh', tone: 'fresh', kind: 'category', category: 'Fresh' },
-  { label: 'Sweet & Gourmand', href: '/shop?cat=Sweet+%26+Gourmand', tone: 'sweet', kind: 'category', category: 'Sweet & Gourmand' },
-  { label: 'Gift Sets', href: '/shop?cat=Gift+Sets', tone: 'amber', kind: 'category', category: 'Gift Sets' },
+  { 
+    label: 'Best Sellers', 
+    href: '/shop?filter=best', 
+    tone: 'oud', 
+    kind: 'best',
+    fallbackImage: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=500&fit=crop'
+  },
+  { 
+    label: 'New Arrivals', 
+    href: '/shop?filter=new', 
+    tone: 'fresh', 
+    kind: 'new',
+    fallbackImage: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=500&fit=crop'
+  },
+  { 
+    label: 'Oud & Amber', 
+    href: '/shop?cat=Oud+%26+Amber', 
+    tone: 'oud', 
+    kind: 'category', 
+    category: 'Oud & Amber',
+    fallbackImage: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=400&h=500&fit=crop'
+  },
+  { 
+    label: 'Fresh & Floral', 
+    href: '/shop?cat=Fresh', 
+    tone: 'fresh', 
+    kind: 'category', 
+    category: 'Fresh',
+    fallbackImage: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59d75?w=400&h=500&fit=crop'
+  },
+  { 
+    label: 'Sweet & Gourmand', 
+    href: '/shop?cat=Sweet+%26+Gourmand', 
+    tone: 'sweet', 
+    kind: 'category', 
+    category: 'Sweet & Gourmand',
+    fallbackImage: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=500&fit=crop'
+  },
+  { 
+    label: 'Gift Sets', 
+    href: '/shop?cat=Gift+Sets', 
+    tone: 'amber', 
+    kind: 'category', 
+    category: 'Gift Sets',
+    fallbackImage: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?w=400&h=500&fit=crop'
+  },
 ] as const
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -80,7 +120,7 @@ export default function Home() {
       } else {
         match = products.find((product) => categoryName(product) === card.category && getFirstImage(product))
       }
-      return { ...card, imageUrl: getFirstImage(match) }
+      return { ...card, imageUrl: getFirstImage(match) || card.fallbackImage }
     })
   }, [products, bestSellers, newArrivals])
 
@@ -256,6 +296,7 @@ export default function Home() {
               copy: 'Ready-to-give boxes pairing EDPs, oils and travel sprays — wrapped to impress.',
               href: '/shop?cat=Gift+Sets',
               gradient: CATEGORY_GRADIENTS.amber,
+              bgImage: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?w=800&h=600&fit=crop',
             },
             {
               eyebrow: 'Deep & captivating',
@@ -263,10 +304,19 @@ export default function Home() {
               copy: 'Rich Arabian blends built for evenings, occasions and unforgettable entrances.',
               href: '/shop?cat=Oud+%26+Amber',
               gradient: CATEGORY_GRADIENTS.oud,
+              bgImage: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=800&h=600&fit=crop',
             },
           ].map((b) => (
             <Link key={b.title} href={b.href} className="group relative flex min-h-[300px] flex-col justify-end overflow-hidden rounded-3xl border border-[var(--border)] p-8 shadow-card transition duration-300 hover:shadow-card-hover sm:min-h-[340px]">
               <span className="absolute inset-0 transition duration-700 group-hover:scale-105" style={{ background: b.gradient }} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={b.bgImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover opacity-40 transition duration-700 group-hover:scale-105 group-hover:opacity-50"
+                loading="lazy"
+              />
               <span className="grain absolute inset-0 opacity-30" />
               <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
               <span className="relative z-10 max-w-sm">

@@ -52,7 +52,12 @@ export default function AboutPage() {
           <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-3xl border border-[var(--border)] bg-gradient-to-br from-amber-500/10 via-[var(--card-bg)] to-amber-500/5 shadow-sm">
             <div className="grain absolute inset-0 opacity-30" />
             <div className="absolute h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
-            <Bottle tone="amber" className="scale-150 origin-bottom drop-shadow-xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/logo.png.jpeg" 
+              alt="Jessy Luxury Fragrance Logo" 
+              className="relative h-64 w-auto max-w-full rounded-2xl object-contain drop-shadow-2xl" 
+            />
           </div>
         </div>
 
