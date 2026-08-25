@@ -13,7 +13,15 @@ export async function GET(request: Request) {
     const featured = searchParams.get('featured')
     const gift = searchParams.get('gift')
 
+    const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
+
     const where: any = {}
+
+    // Customer-facing requests only ever see active products.
+    // Staff/admin can see and manage both active and hidden products.
+    if (!isStaff) {
+      where.isActive = true
+    }
 
     if (category && category !== 'All') where.Category = { name: category }
     if (featured === 'true') where.featured = true
@@ -34,7 +42,6 @@ export async function GET(request: Request) {
     })
 
     let customerId = await isCustomerAuthenticated(request)
-    const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
     if (isStaff) {
       const forCustomerId = Number(searchParams.get('forCustomerId'))
       if (!isNaN(forCustomerId) && forCustomerId > 0) customerId = forCustomerId
@@ -115,6 +122,7 @@ export async function POST(request: Request) {
         stock: normalizedStock,
         featured: Boolean(featured),
         gift: Boolean(gift),
+        isActive: true,
         images: Array.isArray(images) ? images : [],
         updatedAt: new Date(),
       },
