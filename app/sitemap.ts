@@ -6,7 +6,7 @@ const BASE_URL = 'https://jessyluxury.com'
 // (the file is generated at build time by Next.js and served at /sitemap.xml).
 const LAST_MODIFIED = '2025-01-01'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages - all public indexable pages
   const staticPages = [
     { path: '/', priority: 1.0, changefreq: 'weekly' as const },
@@ -36,9 +36,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/shop?filter=new', priority: 0.8 },
   ]
 
+  // Dynamic product pages
+  let productPages: Array<{ path: string; priority: number; changefreq: 'daily' | 'weekly' | 'monthly' | 'yearly' }> = []
+
+  try {
+    const products = await fetch(`${BASE_URL}/api/products`, {
+      cache: 'no-store',
+    }).then((res) => res.json())
+
+    if (Array.isArray(products) && products.length > 0) {
+      productPages = products.map((product: any) => ({
+        path: `/shop/${product.id}`,
+        priority: 0.75,
+        changefreq: 'weekly' as const,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching products for sitemap:', error)
+    // Fallback: return only static pages if API call fails
+    productPages = []
+  }
+
   const allPages = [
     ...staticPages.map(p => ({ path: p.path, priority: p.priority, changeFrequency: p.changefreq })),
     ...categoryPages.map(p => ({ path: p.path, priority: p.priority, changeFrequency: 'weekly' as const })),
+    ...productPages.map(p => ({ path: p.path, priority: p.priority, changeFrequency: p.changefreq })),
   ]
 
   return allPages.map(({ path, priority, changeFrequency }) => ({
