@@ -12,14 +12,17 @@ export async function GET(request: Request) {
     const search = searchParams.get('search')
     const featured = searchParams.get('featured')
     const gift = searchParams.get('gift')
+    const includeInactive = searchParams.get('includeInactive') === 'true'
 
     const isStaff = (await isAdminAuthenticated(request)) || (await getStaffIdFromToken(request) !== null)
 
     const where: any = {}
 
-    // Customer-facing requests only ever see active products.
-    // Staff/admin can see and manage both active and hidden products.
-    if (!isStaff) {
+    // Default: only active products for both customers and admin catalog.
+    // Soft-deleted (hidden) products stay out of the normal admin list so
+    // Delete removes them from the UI permanently. Staff can still request
+    // them with ?includeInactive=true if a "show hidden" view is needed later.
+    if (!(isStaff && includeInactive)) {
       where.isActive = true
     }
 
